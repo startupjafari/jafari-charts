@@ -1,0 +1,53 @@
+{
+  "name": "@jafari/charts-themes",
+  "version": "0.1.0",
+  "author": "Mehman Jafari",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "keywords": [
+    "charts",
+    "data-visualization",
+    "svg",
+    "canvas",
+    "react",
+    "typescript"
+  ],
+  "description": "Design tokens, light/dark themes and CSS variables for Jafari Charts.",
+  "exports": {
+    ".": {
+      "@jafari/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json",
+    "./styles.css": "./dist/styles.css"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json && node scripts/write-css.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      },
+      "./package.json": "./package.json",
+      "./styles.css": "./dist/styles.css"
+    }
+  }
+}

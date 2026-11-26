@@ -1,0 +1,49 @@
+{
+  "name": "@jafari/charts-core",
+  "version": "0.1.0",
+  "author": "Mehman Jafari",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": [
+    "charts",
+    "data-visualization",
+    "svg",
+    "canvas",
+    "react",
+    "typescript"
+  ],
+  "description": "Framework-independent math core of Jafari Charts: scales, geometry, layout, data processing.",
+  "exports": {
+    ".": {
+      "@jafari/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  }
+}

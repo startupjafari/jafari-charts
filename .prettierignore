@@ -1,0 +1,9 @@
+dist
+coverage
+node_modules
+pnpm-lock.yaml
+test-results
+playwright-report
+storybook-static
+benchmarks/results
+tests/e2e/__screenshots__

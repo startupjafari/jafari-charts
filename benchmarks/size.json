@@ -1,0 +1,79 @@
+[
+  {
+    "scenario": "core: scales + ticks + format",
+    "min KB": "6.2",
+    "gzip KB": "2.3",
+    "budget KB": 5,
+    "status": "ok"
+  },
+  {
+    "scenario": "core: base (scales, ticks, geometry, curves, data, formatting)",
+    "min KB": "22.0",
+    "gzip KB": "8.7",
+    "budget KB": 15,
+    "status": "ok"
+  },
+  {
+    "scenario": "core: everything (incl. chart models)",
+    "min KB": "52.5",
+    "gzip KB": "20.6",
+    "budget KB": 24,
+    "status": "ok"
+  },
+  {
+    "scenario": "react layer: LineChart (core external)",
+    "min KB": "34.7",
+    "gzip KB": "13.2",
+    "budget KB": 25,
+    "status": "ok"
+  },
+  {
+    "scenario": "react layer: all components (core external)",
+    "min KB": "42.5",
+    "gzip KB": "15.7",
+    "budget KB": 25,
+    "status": "ok"
+  },
+  {
+    "scenario": "app: LineChart (React layer + core it needs)",
+    "min KB": "84.6",
+    "gzip KB": "30.9",
+    "budget KB": 32,
+    "status": "ok"
+  },
+  {
+    "scenario": "app: AreaChart + BarChart + Sparkline",
+    "min KB": "85.4",
+    "gzip KB": "31.1",
+    "budget KB": 32,
+    "status": "ok"
+  },
+  {
+    "scenario": "app: everything from @jafari/charts",
+    "min KB": "93.4",
+    "gzip KB": "33.8",
+    "budget KB": 45,
+    "status": "ok"
+  },
+  {
+    "scenario": "canvas renderer (lazy chunk, core external)",
+    "min KB": "3.3",
+    "gzip KB": "1.6",
+    "budget KB": 3,
+    "status": "ok"
+  },
+  {
+    "scenario": "export module",
+    "min KB": "5.8",
+    "gzip KB": "2.5",
+    "budget KB": 4,
+    "status": "ok"
+  },
+  {
+    "scenario": "themes: tokens only",
+    "min KB": "1.4",
+    "gzip KB": "0.7",
+    "budget KB": 2,
+    "status": "ok"
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "name": "@jafari/charts-playground",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Development sandbox and test fixtures (e2e, visual regression, benchmarks).",
+  "scripts": {
+    "dev": "vite --port 5174",
+    "build": "vite build",
+    "preview": "vite preview --port 5174",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@jafari/charts": "workspace:*",
+    "@jafari/charts-core": "workspace:*",
+    "@jafari/charts-react": "workspace:*",
+    "@jafari/charts-themes": "workspace:*",
+    "@jafari/charts-canvas": "workspace:*",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  }
+}
