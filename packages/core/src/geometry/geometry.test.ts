@@ -240,6 +240,53 @@ describe('arcs', () => {
     expect(r.maxY).toBeLessThanOrEqual(1e-9);
   });
 
+  it('narrows tiny donut slices to a wedge instead of inverting the inner arc', () => {
+    // 0.3% slice: at the inner radius the 2px gap is wider than the slice.
+    const r = new Recorder();
+    drawArc(r, {
+      cx: 0,
+      cy: 0,
+      innerRadius: 84,
+      outerRadius: 124,
+      startAngle: 1,
+      endAngle: 1.018,
+      padding: 2,
+      cornerRadius: 4,
+    });
+    expect(r.cmds.length).toBeGreaterThan(0);
+    // Every point must stay within the slice's angular range; the bug swept the
+    // inner arc the long way round, drawing a disc across the whole donut.
+    const angles: number[] = [];
+    const see = (x: number, y: number) =>
+      angles.push((Math.atan2(y, x) + Math.PI / 2 + Math.PI * 2) % (Math.PI * 2));
+    const probe = {
+      moveTo: see,
+      lineTo: see,
+      bezierCurveTo: () => {},
+      arc: (x: number, y: number, rad: number, a0: number, a1: number, ccw = false) => {
+        let sweep = ccw ? a0 - a1 : a1 - a0;
+        if (sweep < 0) sweep += Math.PI * 2;
+        for (let i = 0; i <= 16; i++) {
+          const a = a0 + ((ccw ? -1 : 1) * sweep * i) / 16;
+          see(x + rad * Math.cos(a), y + rad * Math.sin(a));
+        }
+      },
+      closePath: () => {},
+    };
+    drawArc(probe, {
+      cx: 0,
+      cy: 0,
+      innerRadius: 84,
+      outerRadius: 124,
+      startAngle: 1,
+      endAngle: 1.018,
+      padding: 2,
+      cornerRadius: 4,
+    });
+    expect(Math.min(...angles)).toBeGreaterThanOrEqual(1 - 1e-6);
+    expect(Math.max(...angles)).toBeLessThanOrEqual(1.018 + 1e-6);
+  });
+
   it('draws full rings as two subpaths and skips empty sectors', () => {
     const ring = buildPath((s) => drawArc(s, { ...base, startAngle: 0, endAngle: Math.PI * 2 }));
     expect(ring.match(/M/g)).toHaveLength(2);

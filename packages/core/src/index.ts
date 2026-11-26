@@ -48,3 +48,4 @@ export * from './layout/cartesian';
 export * from './layout/polar';
 export * from './charts/cartesian';
 export * from './charts/waterfall';
+export * from './charts/polar';

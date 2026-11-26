@@ -100,3 +100,12 @@ export type {
   ZoomOptions,
   DownsampleOptions,
 } from './charts/cartesian/types';
+
+export { PieChart, DonutChart } from './charts/polar/PieChart';
+export type { PieChartProps, DonutChartProps, SliceEvent } from './charts/polar/PieChart';
+export { RadialProgressChart, GaugeChart } from './charts/polar/RadialCharts';
+export type {
+  RadialProgressChartProps,
+  GaugeChartProps,
+  ProgressItem,
+} from './charts/polar/RadialCharts';

@@ -17,6 +17,8 @@ export interface ThemeTokens {
   /** Unfilled tracks (radial progress, gauge) and empty heatmap cells. */
   track: string;
   focus: string;
+  /** Text drawn inside filled marks (labels on bars and slices). */
+  onFill: string;
   /** Categorical series colours, assigned in order. */
   series: readonly string[];
   positive: string;
@@ -98,6 +100,8 @@ export const lightTheme: ThemeTokens = {
   crosshair: '#94a3b8',
   track: '#eef2f7',
   focus: palette.primary,
+  // Near-black ink beats white on every palette hue by WCAG contrast (validated).
+  onFill: '#0b0d12',
   series: lightSeries,
   positive: '#059669',
   negative: '#DC2626',
@@ -119,6 +123,7 @@ export const darkTheme: ThemeTokens = {
   crosshair: '#64748b',
   track: '#1d222c',
   focus: palette.blue,
+  onFill: '#0b0d12',
   series: darkSeries,
   positive: '#10B981',
   negative: '#EF4444',
@@ -142,6 +147,7 @@ const VAR_NAMES: Record<Exclude<keyof ThemeTokens, 'series'>, string> = {
   crosshair: '--jc-crosshair',
   track: '--jc-track',
   focus: '--jc-focus',
+  onFill: '--jc-on-fill',
   positive: '--jc-positive',
   negative: '--jc-negative',
   warning: '--jc-warning',

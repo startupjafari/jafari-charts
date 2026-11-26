@@ -238,7 +238,11 @@ export function drawArc(sink: PathSink, spec: ArcSpec): void {
   let outerEnd: Corner | null = null;
   let innerStart: Corner | null = null;
   let innerEnd: Corner | null = null;
-  const hasInner = r0 > h + EPS;
+  // The offset edges meet at the apex (distance h / sin(sweep / 2) from the centre).
+  // When that point lies outside the inner radius, the gap swallows the inner edge
+  // of the sector and it narrows to a wedge instead of an (inverted) inner arc.
+  const apexDistance = h > 0 ? h / Math.sin(Math.min(HALF_PI, sweep / 2)) : 0;
+  const hasInner = r0 > h + EPS && r0 > apexDistance + EPS && 2 * padAt(r0) < sweep;
   for (let attempt = 0; attempt < 12; attempt++) {
     if (rc < 0.05) rc = 0;
     outerStart = corner(a0, 1, h, rc, r1, true);
@@ -309,6 +313,7 @@ export function drawArc(sink: PathSink, spec: ArcSpec): void {
     const mid = (a0 + a1) / 2;
     const half = (a1 - a0) / 2;
     const apex = h > 0 ? h / Math.sin(half) : 0;
+    if (apex >= r1) return; // nothing left of the sector
     sink.lineTo(cx + apex * Math.cos(mid), cy + apex * Math.sin(mid));
   }
   sink.closePath();

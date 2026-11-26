@@ -141,3 +141,11 @@ export function withAlpha(color: string, alpha: number): string {
   if (!c) return color;
   return formatColor({ ...c, a: Math.min(1, Math.max(0, alpha)) });
 }
+
+/**
+ * Text colour for a label drawn inside a filled mark: the higher-contrast ink for
+ * concrete colours, or the `--jc-on-fill` token for theme variables.
+ */
+export function onFillColor(fill: string): string {
+  return parseColor(fill) ? readableTextColor(fill) : 'var(--jc-on-fill)';
+}

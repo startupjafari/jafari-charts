@@ -4,6 +4,7 @@ import { downsample, type DownsampleMethod } from '../data/downsample';
 import { stack, type StackOffset } from '../data/stack';
 import { formatDate, inferDateFormat } from '../formatting/date';
 import { createTickFormat } from '../formatting/number';
+import { onFillColor } from '../color/color';
 import { estimateTextWidth } from '../formatting/text';
 import type { CornerRadii, SymbolShape } from '../geometry/shapes';
 import type { CurveType } from '../interpolation/curves';
@@ -453,7 +454,8 @@ export function buildCartesianModel(spec: CartesianSpec): CartesianModel {
                 text,
                 anchor: positive ? 'end' : 'start',
                 baseline: 'middle',
-                tone: 'inverse',
+                fill: onFillColor(color),
+                fontWeight: 600,
               });
             }
           } else if (tw <= barSize + 24) {
