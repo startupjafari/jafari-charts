@@ -2,7 +2,7 @@
   "name": "jafari-charts",
   "version": "0.1.0",
   "private": true,
-  "description": "Jafari Charts — engineered for performance. Beautiful charts. Zero compromise.",
+  "description": "Jafari Charts \u2014 engineered for performance. Beautiful charts. Zero compromise.",
   "author": "Mehman Jafari",
   "license": "MIT",
   "type": "module",
@@ -32,7 +32,8 @@
     "test:visual": "playwright test --project desktop --grep @visual",
     "test:visual:update": "playwright test --project desktop --grep @visual --update-snapshots",
     "storybook": "pnpm --filter @jafari/charts-storybook storybook",
-    "bench:core": "node benchmarks/core.mjs"
+    "bench:core": "node benchmarks/core.mjs",
+    "bench:leak": "node benchmarks/leak.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.1",

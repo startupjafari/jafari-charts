@@ -77,8 +77,14 @@ happens during render. Errors are a few pixels and err on the wide side.
 
 `ChartView` is the single shell used by every chart. It owns:
 
-- **Layers**: background SVG (grid, cursor) → data layer (SVG or canvas) →
-  labels/axes/children → active marks → overlay (crosshair, brush).
+- **Layers** (separate elements): underlay SVG (band cursor) → static data layer
+  (SVG `jc-static` or canvas) → interactive SVG (active marks, labels, axes,
+  children, crosshair, brush). Measured: when data and hover shared one SVG,
+  every hover repainted all data marks (scatter, 10k points: 48 ms per frame;
+  100k: 559 ms). Separate layers — promoted to compositor layers above 1 000
+  marks, with "dim everything" as a layer opacity — bring hover back to one
+  frame (16.6 ms) at both sizes.
+
 - **Interaction**: one `pointermove` handler on the surface, coalesced with
   `requestAnimationFrame` (`frameThrottle`); touch keeps the tooltip after the
   finger lifts; keyboard navigation (arrows, Home/End, Enter, Escape, +/−/0 for zoom).
@@ -160,7 +166,21 @@ x value (timestamp or category label) is published by the chart under the
 pointer/keyboard and resolved by the others with a binary search; a chart whose
 range does not contain the value shows nothing.
 
-## 9. Decisions log
+## 9. Packaging for React Server Components
+
+Measured with a Next.js 15 production build (LineChart + DonutChart imported in a
+Server Component): a `"use client"` barrel made the whole package one client
+boundary (every chart shipped, 69.5 KB route JS), and Next's barrel optimisation
+does not follow a re-export into another package's full barrel. Therefore:
+
+- component modules carry `"use client"`; barrels (`index.js`, `entries/*`) do not;
+- `@jafari/charts-react` exposes one entry per chart family (subpath exports);
+- `@jafari/charts` re-exports those family entries.
+
+With `optimizePackageImports: ['@jafari/charts']` the route ships 41 KB and no
+unused chart code; without it, 74 KB (documented in the README).
+
+## 10. Decisions log
 
 | Decision                                             | Reason                                                                                                                   |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |

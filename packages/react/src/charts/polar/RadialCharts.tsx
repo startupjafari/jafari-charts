@@ -150,7 +150,7 @@ export function RadialProgressChart(props: RadialProgressChartProps): ReactEleme
       plot={{ x: 0, y: 0, width: root.width, height: root.height }}
       series={series}
       toggleSeries={noop}
-      empty={items.length === 0}
+      empty={props.data ? props.data.length === 0 : props.value === undefined}
       tooltip={tooltip === false ? false : tooltip}
       legend={
         props.legend === true || (props.legend === undefined && items.length > 1)

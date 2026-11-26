@@ -136,3 +136,10 @@ describe('RadialProgressChart and GaugeChart', () => {
     expect(container.querySelectorAll('.jc-series path').length).toBeGreaterThanOrEqual(4);
   });
 });
+
+describe('RadialProgressChart empty data', () => {
+  it('shows the empty state for empty data', () => {
+    render(<RadialProgressChart data={[]} />);
+    expect(screen.getByRole('status').textContent).toBe('No data');
+  });
+});

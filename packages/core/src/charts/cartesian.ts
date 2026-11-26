@@ -373,7 +373,9 @@ export function buildCartesianModel(spec: CartesianSpec): CartesianModel {
       for (let p = v0; p <= v1; p++) {
         const raw = s.values[p] as number;
         if (!Number.isFinite(raw)) continue;
-        const v0p = scale.map(lo[i]?.[p] ?? 0);
+        const loValue = lo[i]?.[p] ?? 0;
+        // Log scales have no zero: bars start at the bottom of the axis.
+        const v0p = scale.kind === 'log' && !(loValue > 0) ? scale.range[0] : scale.map(loValue);
         const v1p = scale.map(hi[i]?.[p] ?? raw);
         if (!Number.isFinite(v0p) || !Number.isFinite(v1p)) continue;
         const positive = s.base ? true : raw >= 0;

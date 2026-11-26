@@ -16,6 +16,20 @@ function toPixel(scale: AnyScale, value: Value): number {
   return scale.map(typeof value === 'number' ? value : Number(value));
 }
 
+/**
+ * Converts data values to chart pixels inside a cartesian chart, e.g. to place
+ * `ChartLabel`, `ChartMarker` or `ChartAnnotation` (which take pixels) at data points.
+ * `x` accepts the x/category value (number, Date, ISO string or category label);
+ * `y` accepts a value on the value axis.
+ */
+export function useChartCoordinates(): {
+  x: (value: Value) => number;
+  y: (value: number) => number;
+} {
+  const { horizontal, xPx, yPx } = useScales();
+  return horizontal ? { x: (v) => yPx(v as number), y: (v) => xPx(v) } : { x: xPx, y: yPx };
+}
+
 function useScales() {
   const { frame, plot } = useChart();
   if (!frame) throw new Error('Reference primitives require a cartesian chart.');

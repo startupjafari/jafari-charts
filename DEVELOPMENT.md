@@ -57,18 +57,21 @@ scripts           build helpers (vite-lib, size, pack-check, screenshots)
 
 ## Progress log
 
-### 2026-11-26 — Phases 1–4 complete; 5–6 in progress; 7 waiting for the owner
+### 2026-11-26 — Phases 1–6 complete; 7 waiting for the owner
 
 - All 20 chart types implemented on two shared engines (cartesian, polar) plus
   dedicated models (heatmap, calendar, scatter, radar, funnel, treemap); every
   model is pure, in the core, and unit-tested.
-- Tests: 313 unit/component/SSR/hydration tests (Vitest), 41 Playwright tests
-  (interaction, touch, zoom/brush, locales, responsive 320–1440 px, axe in both
-  themes) and 116 visual baselines.
+- Tests: 318 unit/component/SSR/hydration tests (Vitest, also green on React
+  18.3), 51 Playwright tests (interaction, touch, zoom/brush, locales,
+  responsive 320–1440 px, axe in both themes, 116 visual baselines).
 - Sizes (gzip, consumer build): base core 9.9 KB; React layer for LineChart
-  13.7 KB; LineChart with all core it needs + CSS 33.0 KB; everything 65.5 KB.
-- Benchmarks (`pnpm bench`, production build): see benchmarks/results/REPORT.md.
-- Storybook (`pnpm storybook`), docs site (`pnpm dev:docs`), CI workflow.
+  13.8 KB; LineChart with all core it needs + CSS 33.3 KB; everything 65.8 KB.
+  Next.js 15 route with LineChart + DonutChart: 41 KB (optimizePackageImports).
+- Benchmarks: benchmarks/results/REPORT.md (browser), core.json (µs-level hit
+  tests), leak check (no leak). Two performance fixes came from them: canvas
+  path flushing and separate static/interactive SVG layers.
+- Storybook (`pnpm storybook`), docs site (`pnpm dev:docs`, 33 routes), CI.
 
 #### StudentHub analysis (read-only, Phase 7 preparation)
 
@@ -83,5 +86,5 @@ scripts           build helpers (vite-lib, size, pack-check, screenshots)
   `docs/DESIGN_SYSTEM.md` §12/§17 must be updated with any chart change.
   Their commits must not carry AI attribution trailers.
 
-Next: full benchmark run on an idle machine, React 18 compatibility check,
-docs site review, then the owner's decisions for Phase 7 and npm publishing.
+Next: the owner's decisions on Phase 7 (StudentHub) and on npm publishing /
+repository visibility; then a GPU-machine benchmark to revisit canvas thresholds.

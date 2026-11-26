@@ -1,0 +1,6 @@
+import { BarChart } from '@jafari/charts';
+import { registrations } from '../data';
+
+export default function OneLine() {
+  return <BarChart data={registrations} xKey="month" yKey="students" height={220} />;
+}

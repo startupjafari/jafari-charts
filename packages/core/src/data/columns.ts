@@ -15,19 +15,31 @@ export function access<T, V = unknown>(
 
 export type DimensionType = 'number' | 'time' | 'category';
 
-/** Infers how the x dimension should be scaled from the first defined values. */
+// Integer timestamps between 2000-01-01 and 2100-01-01 (ms) are read as time.
+const EPOCH_MS_MIN = 946_684_800_000;
+const EPOCH_MS_MAX = 4_102_444_800_000;
+
+/**
+ * Infers how the x dimension should be scaled from the first defined values.
+ * Dates, ISO date strings and integer epoch-millisecond numbers become `time`.
+ */
 export function detectDimensionType<T>(data: readonly T[], accessor: Accessor<T>): DimensionType {
   let sawNumber = false;
+  let allEpochMs = true;
   for (let i = 0, checked = 0; i < data.length && checked < 20; i++) {
     const v = access(data[i] as T, accessor, i);
     if (v === null || v === undefined) continue;
     checked++;
     if (v instanceof Date) return 'time';
     if (typeof v === 'string') return isDateString(v.trim()) ? 'time' : 'category';
-    if (typeof v === 'number' || typeof v === 'bigint') sawNumber = true;
-    else return 'category';
+    if (typeof v === 'number' || typeof v === 'bigint') {
+      sawNumber = true;
+      const n = Number(v);
+      if (!Number.isInteger(n) || n < EPOCH_MS_MIN || n > EPOCH_MS_MAX) allEpochMs = false;
+    } else return 'category';
   }
-  return sawNumber ? 'number' : 'category';
+  if (!sawNumber) return 'category';
+  return allEpochMs ? 'time' : 'number';
 }
 
 /** Extracts a numeric column as a Float64Array; invalid values become NaN (gaps). */

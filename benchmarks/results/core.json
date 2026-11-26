@@ -1,0 +1,86 @@
+{
+  "date": "2026-11-26T14:30:41.804Z",
+  "node": "v24.21.0",
+  "rows": [
+    {
+      "operation": "LTTB 100,000 → 2 000",
+      "ms": 2.35,
+      "note": ""
+    },
+    {
+      "operation": "min-max 100,000 → 2 000",
+      "ms": 8.94,
+      "note": ""
+    },
+    {
+      "operation": "nearestIndex in 100,000",
+      "ms": 0.000602,
+      "note": "per hover"
+    },
+    {
+      "operation": "line model build, 100,000 points",
+      "ms": 1.9,
+      "note": "incl. downsampling"
+    },
+    {
+      "operation": "line hit test, 100,000 points",
+      "ms": 0.000272,
+      "note": "per pointer move"
+    },
+    {
+      "operation": "LTTB 1,000,000 → 2 000",
+      "ms": 4.69,
+      "note": ""
+    },
+    {
+      "operation": "min-max 1,000,000 → 2 000",
+      "ms": 8.43,
+      "note": ""
+    },
+    {
+      "operation": "nearestIndex in 1,000,000",
+      "ms": 0.000339,
+      "note": "per hover"
+    },
+    {
+      "operation": "line model build, 1,000,000 points",
+      "ms": 8.71,
+      "note": "incl. downsampling"
+    },
+    {
+      "operation": "line hit test, 1,000,000 points",
+      "ms": 0.000327,
+      "note": "per pointer move"
+    },
+    {
+      "operation": "scatter model build, 10,000 points",
+      "ms": 2.24,
+      "note": ""
+    },
+    {
+      "operation": "scatter k-d tree build, 10,000 points",
+      "ms": 1.7,
+      "note": ""
+    },
+    {
+      "operation": "scatter hit test, 10,000 points",
+      "ms": 0.000917,
+      "note": "per pointer move"
+    },
+    {
+      "operation": "scatter model build, 100,000 points",
+      "ms": 3.75,
+      "note": ""
+    },
+    {
+      "operation": "scatter k-d tree build, 100,000 points",
+      "ms": 19.4,
+      "note": ""
+    },
+    {
+      "operation": "scatter hit test, 100,000 points",
+      "ms": 0.00125,
+      "note": "per pointer move"
+    }
+  ]
+}

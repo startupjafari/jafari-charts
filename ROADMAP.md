@@ -50,7 +50,7 @@ Waterfall, Combo, Calendar Heatmap, Stacked Area; zoom, pan, reset, brush.
 **Done criteria:** zoom/pan/brush via mouse, wheel (Ctrl/pinch), touch pinch and
 keyboard; controlled `xDomain`; calendar heatmap localised (week start, month names).
 
-## Phase 5 — Performance 🔄
+## Phase 5 — Performance ✅
 
 Canvas renderer integration and `renderer="auto"` thresholds from benchmarks;
 downsampling defaults; benchmark suite (30 → 1 000 000 points; 1/10/20/50 charts;
@@ -60,7 +60,7 @@ streaming, resize, filter switching); memory/leak checks; bundle optimisation.
 no leaks after 100 mount/unmount cycles; no long tasks > 50 ms when hovering
 charts up to 10 k points (SVG) / 1 M points (canvas, downsampled).
 
-## Phase 6 — Developer experience 🔄
+## Phase 6 — Developer experience ✅
 
 Docs site (all pages, live examples, props tables), Playground (code generation,
 SVG/Canvas toggle, performance panel), Storybook, export module, npm packaging.

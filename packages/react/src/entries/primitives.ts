@@ -36,6 +36,7 @@ export {
   ChartReferenceLine,
   ChartReferenceArea,
   ChartReferenceDot,
+  useChartCoordinates,
 } from '../components/ChartReference';
 export type {
   ChartReferenceLineProps,

@@ -77,6 +77,23 @@ Composable primitives (`ChartReferenceLine`, `ChartReferenceArea`,
 </LineChart>
 ```
 
+Reference primitives take data values. `ChartLabel`, `ChartMarker` and
+`ChartAnnotation` take pixels — convert with `useChartCoordinates()` inside a chart:
+
+```tsx
+function Peak() {
+  const { x, y } = useChartCoordinates();
+  return (
+    <ChartAnnotation x={x('2025-03-01')} y={y(812)}>
+      Record
+    </ChartAnnotation>
+  );
+}
+```
+
+Primitives rendered outside a chart need the theme scope: wrap them in an element
+with `className="jc-root"` and render `<ChartStyles />` once.
+
 ## Theming
 
 All visual parameters are CSS custom properties (`--jc-*`):
@@ -155,11 +172,29 @@ Measured with `pnpm size` (consumer build, minified + gzip, React external):
 
 | Import                                                   | gzip    |
 | -------------------------------------------------------- | ------- |
-| Base core (scales, geometry, curves, data, formatting)   | 8.7 KB  |
-| React layer for `LineChart`                              | 13.2 KB |
-| `LineChart` total (React layer + all math it uses + CSS) | 30.9 KB |
-| Canvas renderer (lazy chunk)                             | 1.6 KB  |
-| Export module                                            | 2.5 KB  |
+| Base core (scales, geometry, curves, data, formatting)   | 9.9 KB  |
+| React layer for `LineChart` (core external)              | 13.8 KB |
+| `LineChart` total (React layer + all math it uses + CSS) | 33.3 KB |
+| Everything from `@jafari/charts` (20 charts)             | 65.8 KB |
+| Canvas renderer (lazy chunk)                             | 1.7 KB  |
+| Export module (separate entry)                           | 2.5 KB  |
+
+## Performance
+
+Reproducible with `pnpm bench`, `pnpm bench:core` and `pnpm bench:leak`
+(production build, Chromium; full tables in
+[benchmarks/results/REPORT.md](benchmarks/results/REPORT.md)). Absolute numbers
+depend on the machine; these come from an Intel i5-12400 without GPU acceleration:
+
+- Hover costs one frame (16.6 ms p50) for every chart and size measured, including
+  line charts with 1 000 000 points and scatter plots with 100 000 points.
+- Pointer hit testing: 0.4 µs (line, 1 M points), 1.3 µs (scatter, 100 k points).
+- Line chart with 1 000 000 points: first render 117 ms, data update 140 ms (LTTB
+  downsampling to ~2 points per pixel); DOM size stays ~75 nodes at any data size.
+- 50 charts on one page: mount 147 ms, filter switch 46 ms, resize 43 ms.
+- No leak: 0.17 MB heap growth over 3 500 chart mounts after warm-up, 0 DOM nodes left.
+
+No comparison with other libraries is claimed.
 
 ## Packages
 

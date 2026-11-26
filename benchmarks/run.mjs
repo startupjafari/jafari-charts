@@ -4,7 +4,7 @@
 /* global window */
 import { chromium } from '@playwright/test';
 import { execSync, spawn } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { cpus, totalmem } from 'node:os';
 import { join, resolve } from 'node:path';
 
@@ -12,6 +12,36 @@ const root = resolve(import.meta.dirname, '..');
 const quick = process.argv.includes('--quick');
 const PORT = 5175;
 const URL = `http://localhost:${PORT}`;
+
+function writeReport(results) {
+  const outDir = join(root, 'benchmarks', 'results');
+  mkdirSync(outDir, { recursive: true });
+
+  const table = (rows) => {
+    if (!rows.length) return '';
+    const cols = [...new Set(rows.flatMap((r) => Object.keys(r)))];
+    return [
+      `| ${cols.join(' | ')} |`,
+      `| ${cols.map(() => '---').join(' | ')} |`,
+      ...rows.map((r) => `| ${cols.map((c) => r[c] ?? '—').join(' | ')} |`),
+    ].join('\n');
+  };
+  const m = results.meta;
+  writeFileSync(
+    join(outDir, 'REPORT.md'),
+    `# Benchmark report\n\nGenerated ${m.date} · ${m.cpu} (${m.cores} cores, ${m.memoryGB} GB) · Chromium ${m.browser}${quick ? ' · quick run' : ''}\n\n` +
+      'Production build, animations off, viewport 1000×800. Times include layout and paint of the next frame. ' +
+      'Each machine produces different absolute numbers; compare runs on the same machine.\n\n' +
+      `## Single chart\n\n${table(results.scaling)}\n\n## Many charts (365 points each)\n\n${table(results.multi)}\n\n## Scenarios\n\n${table(results.scenarios)}\n`,
+  );
+
+  console.log(`\nWrote ${join(outDir, 'REPORT.md')}`);
+}
+
+if (process.argv.includes('--report-only')) {
+  writeReport(JSON.parse(readFileSync(join(root, 'benchmarks', 'results', 'latest.json'), 'utf8')));
+  process.exit(0);
+}
 
 console.log('Building playground (production)…');
 execSync('pnpm --filter @jafari/charts-playground build', { cwd: root, stdio: 'ignore' });
@@ -204,26 +234,10 @@ for (const charts of quick ? [10, 50] : [1, 10, 20, 50]) {
 await browser.close();
 stopServer();
 
-const outDir = join(root, 'benchmarks', 'results');
-mkdirSync(outDir, { recursive: true });
-writeFileSync(join(outDir, 'latest.json'), `${JSON.stringify(results, null, 2)}\n`);
-
-const table = (rows) => {
-  if (!rows.length) return '';
-  const cols = Object.keys(rows[0]);
-  return [
-    `| ${cols.join(' | ')} |`,
-    `| ${cols.map(() => '---').join(' | ')} |`,
-    ...rows.map((r) => `| ${cols.map((c) => r[c] ?? '—').join(' | ')} |`),
-  ].join('\n');
-};
-const m = results.meta;
 writeFileSync(
-  join(outDir, 'REPORT.md'),
-  `# Benchmark report\n\nGenerated ${m.date} · ${m.cpu} (${m.cores} cores, ${m.memoryGB} GB) · Chromium ${m.browser}${quick ? ' · quick run' : ''}\n\n` +
-    'Production build, animations off, viewport 1000×800. Times include layout and paint of the next frame. ' +
-    'Each machine produces different absolute numbers; compare runs on the same machine.\n\n' +
-    `## Single chart\n\n${table(results.scaling)}\n\n## Many charts (365 points each)\n\n${table(results.multi)}\n\n## Scenarios\n\n${table(results.scenarios)}\n`,
+  join(root, 'benchmarks', 'results', 'latest.json'),
+  `${JSON.stringify(results, null, 2)}\n`,
 );
-console.log(`\nWrote ${join(outDir, 'REPORT.md')}`);
+writeReport(results);
+
 process.exit(0);

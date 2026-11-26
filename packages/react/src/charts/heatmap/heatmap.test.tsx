@@ -64,7 +64,7 @@ describe('HeatmapChart', () => {
     expect(live(container)).toBe('Physics · B, Score: 40');
     // Active cell: halo, cell and outline; other cells dimmed.
     expect(container.querySelectorAll('.jc-active path')).toHaveLength(3);
-    expect(container.querySelector('.jc-series[data-jc-dim]')).not.toBeNull();
+    expect(container.querySelector('.jc-static[data-jc-dim]')).not.toBeNull();
     fireEvent.keyDown(surface, { key: 'Enter' });
     expect(onClick).toHaveBeenCalledWith(
       expect.objectContaining({

@@ -62,6 +62,12 @@ describe('columns', () => {
     expect(detectDimensionType(data, 'cat')).toBe('category');
     expect(detectDimensionType([{ d: new Date() }], 'd')).toBe('time');
     expect(detectDimensionType([], 'x' as never)).toBe('category');
+    // Integer epoch milliseconds are time; other large numbers stay numeric.
+    expect(
+      detectDimensionType([{ t: Date.UTC(2025, 0, 1) }, { t: Date.UTC(2025, 0, 2) }], 't'),
+    ).toBe('time');
+    expect(detectDimensionType([{ t: 1.5e12 + 0.5 }], 't')).toBe('number');
+    expect(detectDimensionType([{ t: 5e15 }], 't')).toBe('number');
   });
 
   it('extracts typed columns with gaps', () => {

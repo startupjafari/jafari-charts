@@ -50,8 +50,10 @@ export interface ChartViewProps {
   toggleSeries: (id: string) => void;
   labels?: readonly TextMark[];
   empty: boolean;
-  /** SVG drawn below the data marks (grid, cursor). */
+  /** Static SVG drawn below the data marks (grid). */
   background?: ReactNode;
+  /** Interactive SVG drawn below the data marks (band cursor); kept off the static layer. */
+  underlay?: ReactNode;
   /** SVG drawn above the data marks (axes, reference lines). */
   foreground?: ReactNode;
   /** SVG drawn on top of everything (crosshair). */
@@ -79,6 +81,8 @@ export interface ChartViewProps {
   controls?: ReactNode;
   /** Charts with the same id share the active x value (crosshair + tooltip). */
   syncId?: string;
+  /** Show the legend even for a single series (explicit `legend` prop). */
+  legendForSingle?: boolean;
   /** Controlled emphasis: the series with this id stays, others fade (`null` = none). */
   highlightedSeries?: string | null;
 }
@@ -102,29 +106,61 @@ const KEYS: Record<string, 'next' | 'prev' | 'first' | 'last' | 'up' | 'down'> =
   End: 'last',
 };
 
-function ConnectedSeries(props: {
+/**
+ * Static data layer in its own <svg>. Hover never touches it: "dim everything"
+ * (active bar/slice) is an opacity on the whole layer, so with a promoted
+ * compositor layer it costs no repaint; legend highlights dim per series.
+ */
+function StaticLayer(props: {
   marks: Mark[];
   chartId: string;
-  clipPath?: string;
+  width: number;
+  height: number;
+  clip: Rect | null;
   dimOnActive: boolean;
+  promote: boolean;
+  background?: ReactNode;
 }) {
   const { store } = useChart();
-  const { dimOnActive } = props;
+  const { dimOnActive, chartId } = props;
   const select = useCallback(
     (s: InteractionState) =>
       s.highlight !== null ? s.highlight : dimOnActive && s.active ? -2 : null,
     [dimOnActive],
   );
   const dim = useStoreSelector(store, select);
+  const clipId = `${chartId}-clip`;
   return (
-    <SeriesLayer
-      marks={props.marks}
-      chartId={props.chartId}
-      dim={dim}
-      {...(props.clipPath ? { clipPath: props.clipPath } : {})}
-    />
+    <svg
+      className="jc-static"
+      width={props.width}
+      height={props.height}
+      viewBox={`0 0 ${props.width} ${props.height}`}
+      aria-hidden="true"
+      focusable="false"
+      data-jc-dim={dim === -2 ? '' : undefined}
+      style={props.promote ? { willChange: 'opacity' } : undefined}
+    >
+      {props.clip ? (
+        <defs>
+          <clipPath id={clipId}>
+            <rect {...props.clip} />
+          </clipPath>
+        </defs>
+      ) : null}
+      {props.background}
+      <SeriesLayer
+        marks={props.marks}
+        chartId={chartId}
+        dim={dim === -2 ? null : dim}
+        {...(props.clip ? { clipPath: `url(#${clipId})` } : {})}
+      />
+    </svg>
   );
 }
+
+/** Mark count above which layers are promoted (measured: hover cost grows with scene size). */
+const HEAVY_SCENE = 1000;
 
 const selectTouchOpen = (s: InteractionState) => s.source === 'touch' && s.active !== null;
 
@@ -158,6 +194,9 @@ export function ChartView(props: ChartViewProps) {
   const onItemClick = useEvent(props.onItemClick);
   const handlers = props.surfaceHandlers;
 
+  // Large scenes get their static and interactive layers promoted to compositor
+  // layers, so hover repaints never re-rasterise thousands of data marks.
+  const heavy = markComplexity(adapter.marks) > HEAVY_SCENE;
   const rendererChoice =
     root.renderer === 'auto'
       ? markComplexity(adapter.marks) > (props.canvasThreshold ?? Number.POSITIVE_INFINITY)
@@ -385,7 +424,6 @@ export function ChartView(props: ChartViewProps) {
   ]
     .filter(Boolean)
     .join(' ');
-  const clipId = `${id}-clip`;
   const showContent = !empty && !base.error;
   const pad = 8; // markers on the plot edge must not be clipped
 
@@ -422,7 +460,9 @@ export function ChartView(props: ChartViewProps) {
       <ChartStyles />
       {root.themeCss ? <style>{root.themeCss}</style> : null}
       <ChartInstanceProvider value={instance}>
-        {legendOpts && legendOpts.position === 'top' && series.length > 1 ? (
+        {legendOpts &&
+        legendOpts.position === 'top' &&
+        (series.length > 1 || props.legendForSingle) ? (
           <ChartLegend {...legendOpts} />
         ) : null}
         {/* The frame holds the focusable chart image plus siblings that must stay
@@ -449,6 +489,7 @@ export function ChartView(props: ChartViewProps) {
                     aria-hidden="true"
                     style={{ position: 'absolute', left: 0, top: 0 }}
                   >
+                    {props.underlay}
                     {props.background}
                   </svg>
                   <CanvasMarks
@@ -467,28 +508,39 @@ export function ChartView(props: ChartViewProps) {
                   </svg>
                 </>
               ) : (
-                <svg {...svgProps}>
-                  {props.clip === false ? null : (
-                    <defs>
-                      <clipPath id={clipId}>
-                        <rect {...inflate(plot, pad)} />
-                      </clipPath>
-                    </defs>
-                  )}
-                  {props.background}
-                  <ConnectedSeries
+                <>
+                  {props.underlay ? (
+                    <svg className="jc-static" width={width} height={height} aria-hidden="true">
+                      {props.underlay}
+                    </svg>
+                  ) : null}
+                  <StaticLayer
                     marks={marks}
                     chartId={id}
+                    width={width}
+                    height={height}
+                    clip={props.clip === false ? null : inflate(plot, pad)}
                     dimOnActive={props.dimOnActive ?? false}
-                    {...(props.clip === false ? {} : { clipPath: `url(#${clipId})` })}
+                    promote={heavy}
+                    background={props.background}
                   />
-                  {/* Highlighted marks sit under the labels so values stay readable. */}
-                  <ActiveLayer chartId={id} />
-                  <TextLabels labels={props.labels ?? []} />
-                  {props.foreground}
-                  {props.children}
-                  {props.overlay}
-                </svg>
+                  <svg
+                    {...svgProps}
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      ...(heavy ? { willChange: 'transform' } : {}),
+                    }}
+                  >
+                    {/* Highlighted marks sit under the labels so values stay readable. */}
+                    <ActiveLayer chartId={id} />
+                    <TextLabels labels={props.labels ?? []} />
+                    {props.foreground}
+                    {props.children}
+                    {props.overlay}
+                  </svg>
+                </>
               )
             ) : null}
             {showContent ? props.html : null}
@@ -512,7 +564,9 @@ export function ChartView(props: ChartViewProps) {
             )
           ) : null}
         </div>
-        {legendOpts && legendOpts.position !== 'top' && series.length > 1 ? (
+        {legendOpts &&
+        legendOpts.position !== 'top' &&
+        (series.length > 1 || props.legendForSingle) ? (
           <ChartLegend {...legendOpts} />
         ) : null}
         <ChartLiveRegion />

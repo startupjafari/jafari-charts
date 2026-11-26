@@ -24,10 +24,20 @@ All notable changes to this project are documented here. The format follows
   Radar, Funnel, Treemap (drill-down).
 - `syncId` (shared crosshair/tooltip), `highlightedSeries`, zoom/pan/brush.
 - Kazakh number/date formatting fallback for browsers whose ICU lacks `kk`.
+- `useChartCoordinates()` hook (data values → pixels for primitives).
+- Verified React 18.3 compatibility (full test suite).
 - `@jafari/charts`: umbrella package; Storybook workbench; benchmark suite;
   Playwright e2e/visual/a11y tests; CI workflow; pack check.
 
 ### Fixed
+
+- Hover on large SVG scenes repainted every data mark (scatter 10k points: 48 ms
+  per frame); static and interactive layers are now separate (16.6 ms).
+- Next.js App Router shipped every chart type (69.5 KB): per-family entries +
+  `optimizePackageImports` → 41 KB.
+- Integer epoch-millisecond x values are read as time; log-scale bars render;
+  explicit `legend` shows for a single series; empty `RadialProgressChart` data
+  shows the empty state.
 
 - Tiny donut slices no longer draw an inverted inner arc (disc) when the gap is
   wider than the slice at the inner radius.

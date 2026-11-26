@@ -527,6 +527,7 @@ export function CartesianChart<T extends object>({
         if (e) props.onClick?.(e);
       }}
       surfaceHandlers={handlers.handlers}
+      legendForSingle={Boolean(props.legend)}
       {...(props.syncId ? { syncId: props.syncId } : {})}
       {...(props.highlightedSeries !== undefined
         ? { highlightedSeries: props.highlightedSeries }
@@ -543,12 +544,14 @@ export function CartesianChart<T extends object>({
           ) : zero !== null ? (
             <ChartGrid horizontal={false} vertical={false} zeroLine={zero} />
           ) : null}
-          {isBar &&
-          tooltipOpts &&
-          (tooltipOpts.mode ?? preset.tooltipMode ?? 'shared') === 'shared' ? (
-            <ChartCursor bandRect={model.bandRect} />
-          ) : null}
         </>
+      }
+      underlay={
+        isBar &&
+        tooltipOpts &&
+        (tooltipOpts.mode ?? preset.tooltipMode ?? 'shared') === 'shared' ? (
+          <ChartCursor bandRect={model.bandRect} />
+        ) : undefined
       }
       foreground={
         minimal ? null : (

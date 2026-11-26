@@ -3,6 +3,7 @@ import { StrictMode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { observedElementCount } from '../../hooks/useElementWidth';
 import { resize } from '../../test/setup';
+import { useChartCoordinates } from '../../components/ChartReference';
 import { BarChart, LineChart, StackedBarChart, WaterfallChart } from './charts';
 
 const data = [
@@ -359,5 +360,40 @@ describe('global listeners', () => {
     await frame();
     expect(add.mock.calls.filter(([type]) => type === 'pointerdown')).toHaveLength(1);
     add.mockRestore();
+  });
+});
+
+describe('docs-reported fixes', () => {
+  it('reads integer epoch-ms x values as time', () => {
+    const rows = [0, 1, 2].map((i) => ({ t: Date.UTC(2025, 0, 1 + i), v: i + 1 }));
+    const { container } = render(<LineChart data={rows} xKey="t" yKey="v" animation={false} />);
+    const labels = Array.from(
+      container.querySelectorAll('.jc-axis[data-position="bottom"] text'),
+    ).map((t) => t.textContent);
+    expect(labels.join(' ')).toMatch(/Jan|2025/);
+    expect(labels.join(' ')).not.toMatch(/T$/);
+  });
+
+  it('shows an explicitly requested legend for a single series', () => {
+    const { container } = render(
+      <LineChart data={data} xKey="day" yKey="students" legend animation={false} />,
+    );
+    expect(container.querySelectorAll('.jc-legend-item')).toHaveLength(1);
+  });
+
+  it('positions pixel primitives from data values with useChartCoordinates', () => {
+    function Dot() {
+      const { x, y } = useChartCoordinates();
+      return <circle data-testid="dot" cx={x('2025-01-04')} cy={y(18)} r={3} />;
+    }
+    const { container } = render(
+      <LineChart data={data} xKey="day" yKey="students" animation={false}>
+        <Dot />
+      </LineChart>,
+    );
+    const dot = container.querySelector('[data-testid="dot"]') as SVGCircleElement;
+    const active = Number(dot.getAttribute('cx'));
+    expect(active).toBeGreaterThan(500); // last date sits at the right edge
+    expect(Number(dot.getAttribute('cy'))).toBeLessThan(60); // max value near the top
   });
 });

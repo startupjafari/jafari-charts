@@ -51,6 +51,9 @@ const COMPONENT_CSS = `
 .jc-surface{display:block;overflow:visible;user-select:none;-webkit-user-select:none;touch-action:pan-y}
 .jc-surface[data-jc-zoomable]{touch-action:none}
 .jc-canvas{position:absolute;left:0;top:0;pointer-events:none}
+.jc-static{position:absolute;left:0;top:0;display:block;overflow:visible;pointer-events:none;transition:opacity var(--jc-duration) var(--jc-easing)}
+.jc-static[data-jc-dim]{opacity:.32}
+.jc-surface{position:relative}
 .jc-axis text,.jc-tick{fill:var(--jc-text-secondary);font-size:var(--jc-font-size);font-variant-numeric:tabular-nums}
 .jc-axis-line{stroke:var(--jc-axis);shape-rendering:crispEdges}
 .jc-grid line{stroke:var(--jc-grid);shape-rendering:crispEdges}

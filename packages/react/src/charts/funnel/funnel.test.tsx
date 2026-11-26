@@ -108,7 +108,7 @@ describe('FunnelChart', () => {
     expect(tip.textContent).toContain('4,100');
     expect(onHover).toHaveBeenLastCalledWith(expect.objectContaining({ index: 2 }));
     expect(container.querySelectorAll('.jc-active path')).toHaveLength(1);
-    expect(container.querySelector('.jc-series')?.hasAttribute('data-jc-dim')).toBe(true);
+    expect(container.querySelector('.jc-static[data-jc-dim]')).not.toBeNull(); // whole data layer dimmed
     fireEvent.pointerLeave(surface(container), { pointerType: 'mouse' });
     expect(onHover).toHaveBeenLastCalledWith(null);
   });

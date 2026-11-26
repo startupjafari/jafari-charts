@@ -104,6 +104,14 @@ describe('cartesian model: bars', () => {
     expect(m.bandRect(0)!.width).toBeGreaterThan(0);
   });
 
+  it('draws bars on a log scale from the bottom of the axis', () => {
+    const m = buildCartesianModel(base([series('a', f(10, 100, 1000))], { y: { scale: 'log' } }));
+    const r = rects(m.marks);
+    expect(r).toHaveLength(3);
+    expect(r[0]!.y + r[0]!.height).toBeCloseTo(m.frame.plot.y + m.frame.plot.height);
+    expect(r[2]!.height).toBeGreaterThan(r[0]!.height);
+  });
+
   it('copes with empty, all-zero and all-missing data', () => {
     expect(
       buildCartesianModel(
