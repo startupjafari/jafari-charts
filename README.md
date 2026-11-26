@@ -47,7 +47,7 @@ must be numeric fields of your data type.
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | `LineChart` · `AreaChart` · `BarChart` · `HorizontalBarChart` · `GroupedBarChart` · `StackedBarChart` · `DonutChart` · `PieChart` · `Sparkline` · `RadialProgressChart` | `HeatmapChart` · `RadarChart` · `ScatterChart` · `FunnelChart` · `TreemapChart` · `GaugeChart` | `WaterfallChart` · `ComboChart` · `CalendarHeatmap` · `StackedAreaChart` |
 
-See [ROADMAP.md](ROADMAP.md) for implementation status.
+All 20 chart types are implemented. See [ROADMAP.md](ROADMAP.md) for project status.
 
 ## Common props
 
@@ -120,6 +120,23 @@ await exportChart(element, { format: 'png', scale: 2, background: 'light', filen
 - Legend items are buttons with `aria-pressed`.
 - `differentiate` adds marker shapes and dash patterns so series never rely on colour alone.
 - Reduced motion and forced-colours modes are respected.
+
+## Next.js
+
+Charts work in the App Router, including imports from Server Components (component
+modules carry `"use client"`; pages prerender with the chart SVG). Add the package
+to `optimizePackageImports` so only the chart families you import are shipped —
+Next.js does the same for other barrel packages such as Recharts:
+
+```js
+// next.config.mjs
+export default { experimental: { optimizePackageImports: ['@jafari/charts'] } };
+```
+
+Measured with Next.js 15 (`LineChart` + `DonutChart` imported in a Server
+Component): 41 KB of route JS with the option, 74 KB without it. Each chart
+family is also available as a subpath (`@jafari/charts-react/cartesian`, `/pie`,
+`/radial`, `/scatter`, `/radar`, `/heatmap`, `/funnel`, `/treemap`, `/primitives`).
 
 ## Server rendering
 

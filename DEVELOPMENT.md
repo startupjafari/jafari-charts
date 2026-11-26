@@ -57,18 +57,31 @@ scripts           build helpers (vite-lib, size, pack-check, screenshots)
 
 ## Progress log
 
-### 2026-11-26 — Phase 1 complete, Phase 2 in progress
+### 2026-11-26 — Phases 1–4 complete; 5–6 in progress; 7 waiting for the owner
 
-- Monorepo, tooling, docs; core math with 146 unit tests.
-- Themes with validated palette; `auto` follows the host app (`light-dark()` + classes).
-- React layer: ChartView shell (layers, interaction, states, a11y), primitives
-  (axes, grid, tooltip, legend, crosshair, cursor, reference line/area/dot, label,
-  gradient, marker, annotation, empty/loading/error states).
-- Cartesian charts: Line, Area, Stacked Area, Bar, Horizontal Bar, Grouped Bar,
-  Stacked Bar (absolute/percent), Combo (secondary axis), Waterfall, Sparkline.
-- Zoom/pan/brush engine for continuous x axes.
-- Canvas renderer (lazy) and export module (SVG/PNG/WebP/CSV).
-- Sizes (gzip): base core 8.7 KB; React layer for LineChart 13.2 KB; LineChart
-  with all core it needs + CSS 30.9 KB.
+- All 20 chart types implemented on two shared engines (cartesian, polar) plus
+  dedicated models (heatmap, calendar, scatter, radar, funnel, treemap); every
+  model is pure, in the core, and unit-tested.
+- Tests: 313 unit/component/SSR/hydration tests (Vitest), 41 Playwright tests
+  (interaction, touch, zoom/brush, locales, responsive 320–1440 px, axe in both
+  themes) and 116 visual baselines.
+- Sizes (gzip, consumer build): base core 9.9 KB; React layer for LineChart
+  13.7 KB; LineChart with all core it needs + CSS 33.0 KB; everything 65.5 KB.
+- Benchmarks (`pnpm bench`, production build): see benchmarks/results/REPORT.md.
+- Storybook (`pnpm storybook`), docs site (`pnpm dev:docs`), CI workflow.
 
-Next: Donut, Pie, Radial Progress (polar engine), then Phase 3.
+#### StudentHub analysis (read-only, Phase 7 preparation)
+
+- Recharts is used only in `apps/web/src/shared/ui/chart/` (bar, line/area,
+  stacked bar) by ~7 dashboards; hand-rolled sparkline/meter elsewhere.
+- Needs covered: row data (their props are column-oriented — a thin adapter),
+  `syncId` (added for this), external series focus (`highlightedSeries`),
+  `class="dark"` theming (next-themes) via `theme="auto"`, `kk`/`ru`/`en` locales
+  (Kazakh ICU fallback added), charts loaded with `next/dynamic({ ssr: false })`.
+- Their rules require owner approval: new dependencies are a stop point
+  (`AGENTS.md`), `docs/FRONTEND_RULES.md` §1 mandates Recharts, and
+  `docs/DESIGN_SYSTEM.md` §12/§17 must be updated with any chart change.
+  Their commits must not carry AI attribution trailers.
+
+Next: full benchmark run on an idle machine, React 18 compatibility check,
+docs site review, then the owner's decisions for Phase 7 and npm publishing.

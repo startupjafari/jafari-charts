@@ -5,8 +5,8 @@ import type { UserConfig } from 'vite';
 interface LibOptions {
   /** Entry name → source path (relative to the package). */
   entries?: Record<string, string>;
-  /** Prepended to every output chunk, e.g. '"use client";' for React components. */
-  banner?: string;
+  /** Prepended to output chunks, e.g. '"use client";' for React components. */
+  banner?: string | ((chunk: { fileName: string }) => string);
 }
 
 /**

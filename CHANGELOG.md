@@ -19,4 +19,18 @@ All notable changes to this project are documented here. The format follows
   keyboard navigation and accessibility.
 - `@jafari/charts-canvas`: lazily loaded Canvas 2D renderer.
 - `@jafari/charts-export`: SVG, PNG, WebP and CSV export.
-- `@jafari/charts`: umbrella package.
+- Polar charts: Pie, Donut (centre readout), Radial Progress, Gauge (bands, needle).
+- Advanced charts: Heatmap, Calendar Heatmap, Scatter (bubbles, k-d tree hover),
+  Radar, Funnel, Treemap (drill-down).
+- `syncId` (shared crosshair/tooltip), `highlightedSeries`, zoom/pan/brush.
+- Kazakh number/date formatting fallback for browsers whose ICU lacks `kk`.
+- `@jafari/charts`: umbrella package; Storybook workbench; benchmark suite;
+  Playwright e2e/visual/a11y tests; CI workflow; pack check.
+
+### Fixed
+
+- Tiny donut slices no longer draw an inverted inner arc (disc) when the gap is
+  wider than the slice at the inner radius.
+- Visually hidden data tables no longer widen the page on mobile.
+- Legend buttons expose their visible text as the accessible name (WCAG 2.5.3).
+- Canvas rendering of thousands of marks (Chromium `closePath()` slowdown).

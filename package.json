@@ -31,7 +31,8 @@
     "clean": "pnpm -r exec rm -rf dist .turbo && rm -rf coverage test-results playwright-report",
     "test:visual": "playwright test --project desktop --grep @visual",
     "test:visual:update": "playwright test --project desktop --grep @visual --update-snapshots",
-    "storybook": "pnpm --filter @jafari/charts-storybook storybook"
+    "storybook": "pnpm --filter @jafari/charts-storybook storybook",
+    "bench:core": "node benchmarks/core.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.1",

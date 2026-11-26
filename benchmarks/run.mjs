@@ -99,9 +99,10 @@ const results = {
 
 // 1. Single-chart scaling: mount, update, hover latency, DOM size, heap.
 const sizes = quick ? [365, 10_000, 100_000] : [30, 90, 365, 1_000, 10_000, 100_000, 1_000_000];
-for (const chart of ['line', 'area', 'bar']) {
+for (const chart of ['line', 'area', 'bar', 'scatter']) {
   for (const points of sizes) {
     if (chart === 'bar' && points > 10_000) continue; // one band per datum; beyond this bars are sub-pixel
+    if (chart === 'scatter' && points > 100_000) continue;
     for (const renderer of ['svg', 'canvas']) {
       if (renderer === 'canvas' && points < 1_000) continue;
       const mounts = [];
@@ -184,7 +185,7 @@ for (const charts of quick ? [10, 50] : [1, 10, 20, 50]) {
   await call(page, 'unmount');
   const baseHeap = await heapMB(page);
   const baseNodes = await call(page, 'domNodes');
-  const cycles = quick ? 20 : 50;
+  const cycles = quick ? 20 : 100;
   for (let k = 0; k < cycles; k++) {
     await call(page, 'mount');
     await call(page, 'unmount');
