@@ -310,8 +310,8 @@ const AXIS: PropDef[] = [
     type: 'readonly AxisTick[]',
     default: CHART_TICKS,
     description: {
-      en: '`{ value, position, label, anchor }` — required outside a chart.',
-      ru: '`{ value, position, label, anchor }` — обязателен вне диаграммы.',
+      en: '`{ value, position, label, anchor, lines? }` — required outside a chart. `lines` — the lines of a multi-line label.',
+      ru: '`{ value, position, label, anchor, lines? }` — обязателен вне диаграммы. `lines` — строки многострочной подписи.',
     },
   },
   {

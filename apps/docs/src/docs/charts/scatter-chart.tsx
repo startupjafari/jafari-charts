@@ -241,8 +241,8 @@ export const scatterChart: ChartDoc = {
           type: 'boolean | ScatterChartAxisOptions',
           default: 'true',
           description: {
-            en: 'YAxisOptions (`min`, `max`, `scale`, `format`, `title`…) plus `line`.',
-            ru: 'YAxisOptions (`min`, `max`, `scale`, `format`, `title`…) и `line`.',
+            en: 'YAxisOptions (`min`, `max`, `scale`, `format`, `title`…) plus `line`. `integer: true` keeps whole-number ticks only (counts, scores).',
+            ru: 'YAxisOptions (`min`, `max`, `scale`, `format`, `title`…) и `line`. `integer: true` оставляет только целые деления (количества, баллы).',
           },
         },
         {

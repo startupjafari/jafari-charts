@@ -16,26 +16,82 @@ export const horizontalBarChart: ChartDoc = {
   },
   description: {
     en: (
-      <p>
-        Categories run down the y axis, so long names stay readable (and are truncated with the full
-        name in the tooltip). Value labels are on by default. The height grows with the number of
-        rows — 32 px per row, between 160 and 560 px — unless you pass <code>height</code>.
-      </p>
+      <>
+        <p>
+          Categories run down the left axis, so long names stay readable: they wrap at word
+          boundaries onto two lines instead of being truncated. Only a name that does not fit even
+          in two lines ends with an ellipsis; the tooltip always shows it in full. Value labels are
+          on by default. The height grows with the number of rows — 32 px per row, between 160 and
+          560 px — unless you pass <code>height</code>.
+        </p>
+        <p>
+          As in every cartesian chart, <code>xAxis</code> configures the categories and{' '}
+          <code>yAxis</code> the values, whichever side they are drawn on:{' '}
+          <code>
+            xAxis={'{'}false{'}'}
+          </code>{' '}
+          hides the names,{' '}
+          <code>
+            yAxis={'{'}false{'}'}
+          </code>{' '}
+          the value axis at the bottom.
+        </p>
+      </>
     ),
     ru: (
-      <p>
-        Категории идут сверху вниз по оси Y, поэтому длинные названия остаются читаемыми (слишком
-        длинные обрезаются, а полное название видно в подсказке). Подписи значений включены по
-        умолчанию. Высота растёт с числом строк — 32 px на строку, от 160 до 560 px, — если вы не
-        передали <code>height</code>.
-      </p>
+      <>
+        <p>
+          Категории идут сверху вниз по левой оси, поэтому длинные названия остаются читаемыми: они
+          переносятся по словам на две строки, а не обрезаются. Многоточием заканчивается только
+          название, которое не помещается и в две строки; в подсказке оно всегда видно целиком.
+          Подписи значений включены по умолчанию. Высота растёт с числом строк — 32 px на строку, от
+          160 до 560 px, — если вы не передали <code>height</code>.
+        </p>
+        <p>
+          Как и в любой декартовой диаграмме, <code>xAxis</code> настраивает категории, а{' '}
+          <code>yAxis</code> — значения, на какой бы стороне они ни были:{' '}
+          <code>
+            xAxis={'{'}false{'}'}
+          </code>{' '}
+          скрывает названия,{' '}
+          <code>
+            yAxis={'{'}false{'}'}
+          </code>{' '}
+          — ось значений внизу.
+        </p>
+      </>
     ),
   },
   thumbnail: () => (
     <HorizontalBarChart data={universities} xKey="name" yKey="score" {...THUMB} labels={false} />
   ),
   sections: {
-    usage: [{ id: 'horizontal-bar-chart/Basic', title: { en: 'Basic', ru: 'Базовый пример' } }],
+    usage: [
+      { id: 'horizontal-bar-chart/Basic', title: { en: 'Basic', ru: 'Базовый пример' } },
+      {
+        id: 'horizontal-bar-chart/LongNames',
+        title: {
+          en: 'Long names and a highlighted bar',
+          ru: 'Длинные названия и выделенный столбец',
+        },
+        description: {
+          en: (
+            <p>
+              Long university names wrap onto two lines at word boundaries, so names with the same
+              beginning stay distinguishable. <code>colorBy</code> on the series colours one bar by
+              its datum; the tooltip shows that colour, the legend keeps the series colour.
+            </p>
+          ),
+          ru: (
+            <p>
+              Длинные названия университетов переносятся по словам на две строки, поэтому названия с
+              одинаковым началом не сливаются. <code>colorBy</code> в настройках ряда задаёт цвет
+              столбца по его строке данных; подсказка показывает этот цвет, легенда — цвет ряда.
+            </p>
+          ),
+        },
+      },
+    ],
     styling: [
       {
         id: 'horizontal-bar-chart/Styling',

@@ -12,7 +12,7 @@ export default function Styling() {
       barRadius={6}
       maxBarSize={18}
       valueFormatter={(v) => `${v}%`}
-      xAxis={false}
+      yAxis={false}
       grid={false}
     />
   );

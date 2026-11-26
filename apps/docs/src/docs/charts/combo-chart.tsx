@@ -131,8 +131,8 @@ export const comboChart: ChartDoc = {
           name: 'y2Axis',
           type: 'boolean | YAxisOptions',
           description: {
-            en: 'Options of the secondary axis (format, min, max, title…).',
-            ru: 'Параметры второй оси значений (format, min, max, title…).',
+            en: 'Options of the secondary axis (`format`, `min`, `max`, `title`, `integer`…).',
+            ru: 'Параметры второй оси значений (`format`, `min`, `max`, `title`, `integer`…).',
           },
         },
       ],

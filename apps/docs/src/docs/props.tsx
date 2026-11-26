@@ -237,8 +237,25 @@ export const CARTESIAN_PROPS: readonly PropDef[] = [
     type: 'boolean | XAxisOptions',
     default: 'true',
     description: {
-      en: '`false` hides the axis; options: `tickCount`, `format`, `type`, `utc`, `line`, `title`.',
-      ru: '`false` скрывает ось; параметры: `tickCount`, `format`, `type`, `utc`, `line`, `title`.',
+      en: 'Category / x axis, whichever side it is drawn on (left in horizontal bar charts). `false` hides it; options: `tickCount`, `format`, `type`, `utc`, `line`, `title`, `maxLines`, `maxLabelWidth`.',
+      ru: 'Ось категорий / ось X, на какой бы стороне она ни была (в горизонтальной столбчатой диаграмме — слева). `false` скрывает её; параметры: `tickCount`, `format`, `type`, `utc`, `line`, `title`, `maxLines`, `maxLabelWidth`.',
+    },
+  },
+  {
+    name: 'xAxis.maxLines',
+    type: 'number',
+    default: { en: '2 (text)', ru: '2 (текст)' },
+    description: {
+      en: 'Category axes: long labels wrap at word boundaries onto up to this many lines (1 for dates and numbers); `1` truncates. The tooltip shows the full label.',
+      ru: 'Ось категорий: длинные подписи переносятся по словам, не более чем на столько строк (для дат и чисел — 1); `1` обрезает. Полная подпись — в подсказке.',
+    },
+  },
+  {
+    name: 'xAxis.maxLabelWidth',
+    type: 'number',
+    description: {
+      en: 'Category axes: longest a label line may be, px. Defaults: 140 at the bottom, 32% of the chart width on the left.',
+      ru: 'Ось категорий: наибольшая ширина строки подписи, px. По умолчанию 140 снизу и 32% ширины диаграммы слева.',
     },
   },
   {
@@ -246,16 +263,34 @@ export const CARTESIAN_PROPS: readonly PropDef[] = [
     type: 'boolean | YAxisOptions',
     default: 'true',
     description: {
-      en: '`false` hides the axis; options: `tickCount`, `format`, `min`, `max`, `includeZero`, `scale` (linear/log), `nice`, `title`.',
-      ru: '`false` скрывает ось; параметры: `tickCount`, `format`, `min`, `max`, `includeZero`, `scale` (linear/log), `nice`, `title`.',
+      en: 'Value axis, whichever side it is drawn on (bottom in horizontal bar charts). `false` hides it; options: `tickCount`, `format`, `min`, `max`, `includeZero`, `scale`, `nice`, `title`, `line`, `integer`.',
+      ru: 'Ось значений, на какой бы стороне она ни была (в горизонтальной столбчатой диаграмме — снизу). `false` скрывает её; параметры: `tickCount`, `format`, `min`, `max`, `includeZero`, `scale`, `nice`, `title`, `line`, `integer`.',
+    },
+  },
+  {
+    name: 'yAxis.line',
+    type: 'boolean',
+    default: 'false',
+    description: {
+      en: 'Draw the value axis baseline.',
+      ru: 'Рисовать базовую линию оси значений.',
+    },
+  },
+  {
+    name: 'yAxis.integer',
+    type: 'boolean',
+    default: 'false',
+    description: {
+      en: 'Whole-number ticks only, for counts: a 0–2 range gets 0, 1, 2, never 0.5 or 1.5. The domain is rounded out to whole numbers.',
+      ru: 'Только целые деления, для количеств: на диапазоне 0–2 — 0, 1, 2 без дробных 0,5 и 1,5. Границы округляются до целых.',
     },
   },
   {
     name: 'y2Axis',
     type: 'boolean | YAxisOptions',
     description: {
-      en: "Secondary value axis used by series with `axis: 'right'`.",
-      ru: "Вторая ось значений — для рядов с `axis: 'right'`.",
+      en: "Secondary value axis used by series with `axis: 'right'`. Same options as `yAxis`, including `integer`.",
+      ru: "Вторая ось значений — для рядов с `axis: 'right'`. Параметры те же, что у `yAxis`, включая `integer`.",
     },
   },
   {
@@ -535,6 +570,14 @@ export const SERIES_CONFIG_PROPS: readonly PropDef[] = [
     description: {
       en: "Formats this series' values in tooltips and labels.",
       ru: 'Форматирует значения этого ряда в подсказках и подписях.',
+    },
+  },
+  {
+    name: 'colorBy',
+    type: '(datum: T, index: number) => string | undefined',
+    description: {
+      en: 'Colour of each bar (`index` is the index in `data`; `undefined` keeps the series colour). Shown in tooltips; the legend keeps the series colour.',
+      ru: 'Цвет каждого столбца (`index` — индекс в `data`, `undefined` — цвет ряда). Виден в подсказке; в легенде — цвет ряда.',
     },
   },
 ];

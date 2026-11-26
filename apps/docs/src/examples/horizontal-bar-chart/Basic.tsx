@@ -1,7 +1,7 @@
 import { HorizontalBarChart } from '@jafari/charts';
 import { universities } from '../data';
 
-/** Long category names are truncated to fit; the full name is in the tooltip. */
+/** Long category names wrap onto two lines; the full name is in the tooltip. */
 export default function Basic() {
   return (
     <HorizontalBarChart

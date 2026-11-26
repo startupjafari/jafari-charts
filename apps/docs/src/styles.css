@@ -1069,11 +1069,13 @@ hr {
   background: none;
   padding: 0;
   font-size: 12.5px;
-  overflow-wrap: anywhere;
+  /* break-word (not anywhere): types wrap at spaces and never inside identifiers */
+  overflow-wrap: break-word;
 }
 
 .prop-type {
   display: inline-block;
+  min-width: 7.5rem;
   max-width: 280px;
 }
 

@@ -144,8 +144,8 @@ export const barChart: ChartDoc = {
           type: "'vertical' | 'horizontal'",
           default: "'vertical'",
           description: {
-            en: '`horizontal` draws categories on the y axis.',
-            ru: '`horizontal` размещает категории на оси Y.',
+            en: '`horizontal` draws categories on the left. `xAxis` still configures the categories and `yAxis` the values, whichever side they are on.',
+            ru: '`horizontal` размещает категории слева. Категории по-прежнему настраивает `xAxis`, а значения — `yAxis`, на какой бы стороне они ни были.',
           },
         },
         {
