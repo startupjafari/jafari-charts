@@ -76,6 +76,33 @@ describe('axis ticks', () => {
     for (const t of ticks) expect(estimateTextWidth(t.label, 11)).toBeLessThanOrEqual(141);
   });
 
+  it('drops a neighbour that would collide with an inward-shifted edge label', () => {
+    const labels = ['a', 'b', 'c', 'scatter · 365', 'scatter · 100k'];
+    const scale = createBandScale({
+      domain: labels,
+      range: [10, 300],
+      paddingInner: 0.3,
+      paddingOuter: 0,
+    });
+    const ticks = bandTicks({ scale, direction: 'x', fontSize: 11, bounds: [0, 300] });
+    for (let i = 1; i < ticks.length; i++) {
+      const w = (t: (typeof ticks)[number]) => estimateTextWidth(t.label, 11);
+      const right = (t: (typeof ticks)[number]) =>
+        t.anchor === 'start'
+          ? t.position + w(t)
+          : t.anchor === 'end'
+            ? t.position
+            : t.position + w(t) / 2;
+      const left = (t: (typeof ticks)[number]) =>
+        t.anchor === 'start'
+          ? t.position
+          : t.anchor === 'end'
+            ? t.position - w(t)
+            : t.position - w(t) / 2;
+      expect(left(ticks[i]!)).toBeGreaterThan(right(ticks[i - 1]!));
+    }
+  });
+
   it('anchors edge labels inside the bounds', () => {
     const scale = createLinearScale({ domain: [0, 100], range: [0, 300] });
     const ticks = continuousTicks({ scale, direction: 'x', bounds: [0, 300] });

@@ -28,8 +28,38 @@ All notable changes to this project are documented here. The format follows
 - Verified React 18.3 compatibility (full test suite).
 - `@jafari/charts`: umbrella package; Storybook workbench; benchmark suite;
   Playwright e2e/visual/a11y tests; CI workflow; pack check.
+- `ScatterChart`: 2D zoom and pan (`zoom`, controlled `xDomain`/`onXDomainChange` and
+  `yDomain`/`onYDomainChange`; log axes zoom in decades) and rectangle `brush` with
+  `onBrush({ x, y, indices })`. Points outside the view are neither drawn nor hit-tested.
+- Categorical zoom for bar, grouped/stacked bar, combo, waterfall and category-axis
+  line/area charts: `zoom` shows a window of whole categories (Ctrl/⌘ + wheel, pinch,
+  drag, `+` `-` `0`, Shift + arrows), `brush` selects a category range (same `onBrush`
+  payload), controlled `categoryRange`/`onCategoryRangeChange`. Core: `x.range` cartesian
+  option, `CartesianModel.indexAt`, `BandScale.offset`.
+- `CalendarHeatmap`: controlled `activeDate`/`onActiveDateChange` and range selection
+  (`brush`, `onBrush({ from, to })`) by dragging or with Shift + arrows.
+- `TreemapChart`: controlled drill-down `drilldownPath`/`onDrilldownPathChange`.
+- Zoom, pan and selection announce the visible/selected range in the live region
+  (`visibleRange`, `selectedRange` messages); Shift + arrows pan a zoomed view.
+
+### Changed
+
+- Funnel, treemap and heatmap strings moved into the shared `ChartMessages` (en/ru/kk):
+  they can be overridden with `messages` (per chart or in `ChartProvider`); the `texts`
+  props keep working as per-chart overrides.
+- Zoom/pan/brush gestures are one shared implementation (`useZoomGestures`) used by
+  cartesian and scatter charts.
+
+- Cross-browser test runs (Chromium, Firefox, WebKit, mobile Chrome/Safari) and
+  visual baselines in the official Playwright Docker image (`pnpm test:e2e:all`).
+- Export tests in real browsers (SVG standalone output, PNG scale/transparency,
+  WebP, CSV quoting/formula neutralisation, downloads).
+- Russian version of the documentation site (EN/RU switch, `#/ru/...` URLs).
+- Localised chart-type names in accessible descriptions (ru, kk).
 
 ### Fixed
+
+- Edge axis labels no longer overlap their neighbour after being shifted inwards.
 
 - Hover on large SVG scenes repainted every data mark (scatter 10k points: 48 ms
   per frame); static and interactive layers are now separate (16.6 ms).

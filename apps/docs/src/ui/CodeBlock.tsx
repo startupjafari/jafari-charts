@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useT } from '../i18n';
 import { tokenize, type Language } from '../lib/highlight';
 import { CopyButton } from './CopyButton';
 
@@ -38,6 +39,7 @@ export interface CodeBlockProps {
 
 /** A code panel with an optional file tab bar and a copy button. */
 export function CodeBlock({ code, language = 'tsx', files, title, className }: CodeBlockProps) {
+  const t = useT().code;
   const list: readonly CodeFile[] = files ?? [{ name: title ?? '', code: code ?? '', language }];
   const [active, setActive] = useState(0);
   const file = list[Math.min(active, list.length - 1)] as CodeFile;
@@ -48,7 +50,7 @@ export function CodeBlock({ code, language = 'tsx', files, title, className }: C
       {showHeader ? (
         <div className="codeblock-head">
           {list.length > 1 ? (
-            <div className="codeblock-tabs" role="tablist" aria-label="Files">
+            <div className="codeblock-tabs" role="tablist" aria-label={t.files}>
               {list.map((f, i) => (
                 <button
                   key={f.name}
@@ -70,7 +72,7 @@ export function CodeBlock({ code, language = 'tsx', files, title, className }: C
       ) : null}
       <div className="codeblock-body">
         {showHeader ? null : <CopyButton text={text} floating />}
-        <pre tabIndex={0} aria-label={file.name ? `Code: ${file.name}` : 'Code'}>
+        <pre tabIndex={0} aria-label={file.name ? t.codeOf(file.name) : t.code}>
           <Code code={text} language={file.language ?? language} />
         </pre>
       </div>

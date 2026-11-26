@@ -40,10 +40,16 @@ jobs:
           retention-days: 7
 
   e2e:
-    name: Browser tests (interaction, touch, responsive, a11y)
+    name: Browser tests (Chromium, Firefox, WebKit, mobile, visual)
     needs: quality
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    # Same image as scripts/e2e-docker.sh, so visual baselines match exactly.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -52,9 +58,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
-      # Visual baselines are font/OS specific; they run locally (pnpm test:visual).
-      - run: pnpm test:e2e --grep-invert @visual
+      - run: pnpm exec playwright test
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

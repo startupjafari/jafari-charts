@@ -18,9 +18,25 @@ export default defineConfig({
       testIgnore: /touch\.spec\.ts/,
     },
     { name: 'mobile', use: { ...devices['Pixel 7'] }, testMatch: /(responsive|touch)\.spec\.ts/ },
+    // Cross-browser runs of the functional suites (visual baselines are Chromium-only).
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'], viewport: { width: 1280, height: 900 } },
+      testIgnore: /(touch|visual)\.spec\.ts/,
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'], viewport: { width: 1280, height: 900 } },
+      testIgnore: /(touch|visual)\.spec\.ts/,
+    },
+    {
+      name: 'mobile-safari',
+      use: { ...devices['iPhone 14'] },
+      testMatch: /(responsive|touch)\.spec\.ts/,
+    },
   ],
   webServer: {
-    command: `pnpm --filter @jafari/charts-playground exec vite --port ${PORT} --strictPort`,
+    command: `node node_modules/vite/bin/vite.js apps/playground --port ${PORT} --strictPort`,
     port: PORT,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

@@ -9,4 +9,5 @@ export type {
   CalendarHeatmapProps,
   CalendarDayEvent,
   CalendarLegendOptions,
+  CalendarBrushEvent,
 } from '../charts/heatmap/CalendarHeatmap';

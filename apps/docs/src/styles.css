@@ -334,6 +334,55 @@ hr {
   display: none;
 }
 
+/* EN / RU switch (two toggle buttons in a pill). */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 3px;
+  gap: 2px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.lang-option {
+  min-width: 32px;
+  height: 28px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.lang-option:hover {
+  color: var(--text);
+  background: var(--bg-muted);
+}
+
+.lang-option[aria-pressed='true'] {
+  color: var(--text);
+  background: var(--bg-muted);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+
+.lang-option:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+@media (forced-colors: active) {
+  .lang-option[aria-pressed='true'] {
+    outline: 1px solid ButtonText;
+  }
+}
+
 /* ─── Shell, sidebar, drawer ─────────────────────────────────────────────── */
 .shell {
   display: grid;
@@ -1255,6 +1304,10 @@ details.prop-group .prop-group-note {
     font-size: 12px;
   }
 
+  :lang(ru) .props-table td:nth-of-type(2)::before {
+    content: 'По умолчанию: ';
+  }
+
   .props-table .prop-desc {
     min-width: 0;
     padding-top: 4px;
@@ -1386,6 +1439,13 @@ details.prop-group .prop-group-note {
 .prop-default code {
   overflow-wrap: normal;
   white-space: nowrap;
+}
+
+/* Russian headers and prose defaults (“зависит от диаграммы”) are longer: let them wrap
+   instead of squeezing the Type column. */
+:lang(ru) .props-table thead th,
+:lang(ru) .prop-default-text code {
+  white-space: normal;
 }
 
 /* ─── Themes page ────────────────────────────────────────────────────────── */

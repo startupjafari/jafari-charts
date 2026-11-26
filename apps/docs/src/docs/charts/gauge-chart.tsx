@@ -5,16 +5,28 @@ import type { ChartDoc } from '../types';
 export const gaugeChart: ChartDoc = {
   slug: 'gauge-chart',
   component: 'GaugeChart',
-  title: 'Gauge chart',
+  title: { en: 'Gauge chart', ru: 'Шкала-индикатор (gauge)' },
   group: 'Advanced',
-  summary: 'A single value against a range, with optional threshold bands and a needle.',
-  description: (
-    <p>
-      The value arc takes the colour of the band it falls into (or <code>color</code>). With{' '}
-      <code>needle</code>, the bands become the scale and a needle points at the value. Variants:
-      semicircle, 270° arc and full ring.
-    </p>
-  ),
+  summary: {
+    en: 'A single value against a range, with optional threshold bands and a needle.',
+    ru: 'Одно значение на шкале диапазона — при желании с цветовыми диапазонами порогов и стрелкой.',
+  },
+  description: {
+    en: (
+      <p>
+        The value arc takes the colour of the band it falls into (or <code>color</code>). With{' '}
+        <code>needle</code>, the bands become the scale and a needle points at the value. Variants:
+        semicircle, 270° arc and full ring.
+      </p>
+    ),
+    ru: (
+      <p>
+        Дуга значения принимает цвет диапазона, в который попадает значение (или цвет из{' '}
+        <code>color</code>). С <code>needle</code> цветовые диапазоны становятся шкалой, а на
+        значение указывает стрелка. Варианты: полукруг, дуга 270° и полное кольцо.
+      </p>
+    ),
+  },
   thumbnail: () => (
     <GaugeChart
       value={68}
@@ -31,74 +43,147 @@ export const gaugeChart: ChartDoc = {
   ),
   sections: {
     usage: [
-      { id: 'gauge-chart/Basic', title: 'Threshold bands' },
-      { id: 'gauge-chart/Needle', title: 'Needle on an arc' },
+      {
+        id: 'gauge-chart/Basic',
+        title: { en: 'Threshold bands', ru: 'Цветовые диапазоны порогов' },
+      },
+      { id: 'gauge-chart/Needle', title: { en: 'Needle on an arc', ru: 'Стрелка на дуге' } },
     ],
-    styling: [{ id: 'gauge-chart/Styling', title: 'Custom range, colour, full ring' }],
-    interaction: [{ id: 'gauge-chart/Interaction', title: 'Animated value' }],
-    responsive: [{ id: 'gauge-chart/Responsive', title: 'Narrow container', width: 320 }],
-    empty: [{ id: 'gauge-chart/States', title: 'No value' }],
+    styling: [
+      {
+        id: 'gauge-chart/Styling',
+        title: {
+          en: 'Custom range, colour, full ring',
+          ru: 'Свой диапазон, цвет, полное кольцо',
+        },
+      },
+    ],
+    interaction: [
+      {
+        id: 'gauge-chart/Interaction',
+        title: { en: 'Animated value', ru: 'Анимированное значение' },
+      },
+    ],
+    responsive: [
+      {
+        id: 'gauge-chart/Responsive',
+        title: { en: 'Narrow container', ru: 'Узкий контейнер' },
+        width: 320,
+      },
+    ],
+    empty: [{ id: 'gauge-chart/States', title: { en: 'No value', ru: 'Нет значения' } }],
   },
   sectionNotes: {
-    interaction: (
-      <p>
-        The gauge shows one value, so it has no tooltip; the value is announced to screen readers
-        and listed in the hidden data table with the range.
-      </p>
-    ),
+    interaction: {
+      en: (
+        <p>
+          The gauge shows one value, so it has no tooltip; the value is announced to screen readers
+          and listed in the hidden data table with the range.
+        </p>
+      ),
+      ru: (
+        <p>
+          Шкала-индикатор показывает одно значение, поэтому подсказки у неё нет; значение
+          озвучивается скринридерами и вместе с диапазоном приводится в скрытой таблице данных.
+        </p>
+      ),
+    },
   },
-  keyboard: [['Tab', 'Focus the gauge; its value, minimum and maximum are announced']],
+  keyboard: [
+    [
+      'Tab',
+      {
+        en: 'Focus the gauge; its value, minimum and maximum are announced',
+        ru: 'Перевести фокус на шкалу; озвучиваются значение, минимум и максимум',
+      },
+    ],
+  ],
   props: [
     {
-      title: 'GaugeChart props',
+      title: { en: 'GaugeChart props', ru: 'Пропсы GaugeChart' },
       props: [
         {
           name: 'value',
           type: 'number',
           required: true,
-          description: 'Current value. `NaN` shows the empty state.',
+          description: {
+            en: 'Current value. `NaN` shows the empty state.',
+            ru: 'Текущее значение. При `NaN` показывается состояние «нет данных».',
+          },
         },
-        { name: 'min', type: 'number', default: '0', description: 'Start of the scale.' },
-        { name: 'max', type: 'number', default: '100', description: 'End of the scale.' },
+        {
+          name: 'min',
+          type: 'number',
+          default: '0',
+          description: { en: 'Start of the scale.', ru: 'Начало шкалы.' },
+        },
+        {
+          name: 'max',
+          type: 'number',
+          default: '100',
+          description: { en: 'End of the scale.', ru: 'Конец шкалы.' },
+        },
         {
           name: 'bands',
           type: 'readonly { to: number; color: string; label?: string }[]',
-          description: 'Coloured ranges, ascending by `to`. The active band’s label is shown.',
+          description: {
+            en: 'Coloured ranges, ascending by `to`. The active band’s label is shown.',
+            ru: 'Цветовые диапазоны в порядке возрастания `to`. Показывается подпись активного диапазона.',
+          },
         },
         {
           name: 'variant',
           type: "'semi' | 'arc' | 'full'",
           default: "'semi'",
-          description: 'Semicircle, 270° arc or full ring.',
+          description: {
+            en: 'Semicircle, 270° arc or full ring.',
+            ru: 'Полукруг, дуга 270° или полное кольцо.',
+          },
         },
         {
           name: 'needle',
           type: 'boolean',
           default: 'false',
-          description: 'Needle over the band scale.',
+          description: {
+            en: 'Needle over the band scale.',
+            ru: 'Стрелка поверх шкалы из цветовых диапазонов.',
+          },
         },
         {
           name: 'color',
           type: 'string',
-          description: 'Value arc colour (default: band colour or series 1).',
+          description: {
+            en: 'Value arc colour (default: band colour or series 1).',
+            ru: 'Цвет дуги значения (по умолчанию — цвет диапазона или ряда 1).',
+          },
         },
         {
           name: 'thickness',
           type: 'number',
-          default: '16 % of radius',
-          description: 'Arc thickness, px.',
+          default: { en: '16 % of radius', ru: '16 % радиуса' },
+          description: { en: 'Arc thickness, px.', ru: 'Толщина дуги, px.' },
         },
-        { name: 'label', type: 'ReactNode', description: 'Caption under the value.' },
+        {
+          name: 'label',
+          type: 'ReactNode',
+          description: { en: 'Caption under the value.', ru: 'Подпись под значением.' },
+        },
         {
           name: 'valueFormatter',
           type: '(value: number) => string',
-          description: 'Formats value and scale labels.',
+          description: {
+            en: 'Formats value and scale labels.',
+            ru: 'Форматирует значение и подписи шкалы.',
+          },
         },
         {
           name: 'scaleLabels',
           type: 'boolean',
           default: 'true (semi, arc)',
-          description: 'Min/max labels at the arc ends.',
+          description: {
+            en: 'Min/max labels at the arc ends.',
+            ru: 'Подписи минимума и максимума на концах дуги.',
+          },
         },
       ],
     },

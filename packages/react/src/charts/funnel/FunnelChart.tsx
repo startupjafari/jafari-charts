@@ -120,7 +120,10 @@ export function FunnelChart<T extends object>(props: FunnelChartProps<T>): React
   const { data, labelKey, valueKey, valueFormatter, percentFormatter } = props;
   const horizontal = props.orientation === 'horizontal';
   const root = useChartRoot(props, { height: defaultHeight(data.length, horizontal) });
-  const texts = useMemo(() => funnelTexts(root.locale, props.texts), [root.locale, props.texts]);
+  const texts = useMemo(
+    () => funnelTexts(root.messages, props.texts),
+    [root.messages, props.texts],
+  );
   const names = useMemo(() => labelColumn(data, labelKey), [data, labelKey]);
   const values = useMemo(() => numericColumn(data, valueKey), [data, valueKey]);
   // Duplicate stage names still need distinct keys.

@@ -14,6 +14,15 @@
     "typescript"
   ],
   "description": "Framework-independent math core of Jafari Charts: scales, geometry, layout, data processing.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehmanaseventhills/jafari-charts.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/mehmanaseventhills/jafari-charts#readme",
+  "bugs": {
+    "url": "https://github.com/mehmanaseventhills/jafari-charts/issues"
+  },
   "exports": {
     ".": {
       "@jafari/source": "./src/index.ts",

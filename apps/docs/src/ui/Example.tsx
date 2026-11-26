@@ -1,5 +1,6 @@
 import { Suspense, use, useState, type ReactNode } from 'react';
 import { loadCode, loadExample } from '../examples';
+import { useT } from '../i18n';
 import { CodeBlock } from './CodeBlock';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Segmented } from './Segmented';
@@ -22,18 +23,6 @@ export interface ExampleProps {
   fixedWidth?: boolean;
 }
 
-const THEMES = [
-  { value: 'auto', label: 'Auto' },
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-] as const;
-
-const WIDTHS = [
-  { value: 'fill', label: 'Fill' },
-  { value: 480, label: '480' },
-  { value: 320, label: '320' },
-] as const;
-
 /** The example's source files (loaded on demand). */
 function ExampleCode({ id }: { id: string }) {
   const files = use(loadCode(id));
@@ -54,6 +43,17 @@ export function Example({
   fixedWidth = false,
 }: ExampleProps) {
   const { Component } = loadExample(id);
+  const t = useT();
+  const themes = [
+    { value: 'auto', label: t.example.themeAuto },
+    { value: 'light', label: t.example.themeLight },
+    { value: 'dark', label: t.example.themeDark },
+  ] as const;
+  const widths = [
+    { value: 'fill', label: t.example.widthFill },
+    { value: 480, label: '480' },
+    { value: 320, label: '320' },
+  ] as const;
   const [theme, setTheme] = useState<PreviewTheme>('auto');
   const [w, setW] = useState<PreviewWidth>(width);
   const [open, setOpen] = useState(codeOpen);
@@ -71,19 +71,19 @@ export function Example({
       <div className="example-frame">
         <div className="example-toolbar">
           <Segmented
-            label={`Preview theme for ${title}`}
+            label={t.example.previewTheme(title)}
             hideLabel
             size="sm"
-            options={THEMES}
+            options={themes}
             value={theme}
             onChange={setTheme}
           />
           {fixedWidth ? null : (
             <Segmented
-              label={`Preview width for ${title}`}
+              label={t.example.previewWidth(title)}
               hideLabel
               size="sm"
-              options={WIDTHS}
+              options={widths}
               value={w}
               onChange={setW}
             />
@@ -105,7 +105,7 @@ export function Example({
                 strokeLinejoin="round"
               />
             </svg>
-            {open ? 'Hide code' : 'Show code'}
+            {open ? t.example.hideCode : t.example.showCode}
           </button>
         </div>
         <div
@@ -117,15 +117,15 @@ export function Example({
             style={w === 'fill' ? undefined : { maxWidth: w }}
             data-width={w}
           >
-            <ErrorBoundary label={title}>
+            <ErrorBoundary label={t.errors.example(title)}>
               <Component />
             </ErrorBoundary>
           </div>
         </div>
         <div id={codeId} hidden={!open}>
           {open ? (
-            <ErrorBoundary label="The source code">
-              <Suspense fallback={<p className="code-loading">Loading code…</p>}>
+            <ErrorBoundary label={t.errors.code}>
+              <Suspense fallback={<p className="code-loading">{t.example.loadingCode}</p>}>
                 <ExampleCode id={id} />
               </Suspense>
             </ErrorBoundary>

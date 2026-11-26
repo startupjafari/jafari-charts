@@ -92,6 +92,8 @@ export type AxisSpec =
       format?: (label: string, index: number) => string;
       hidden?: boolean;
       maxLabelWidth?: number;
+      /** Index of the first label in the full category list (zoomed window). */
+      offset?: number;
     };
 
 export type AnyScale = LinearScale | LogScale | TimeScale | BandScale;
@@ -139,9 +141,15 @@ function makeScale(spec: AxisSpec, range: Extent): AnyScale {
         range,
         paddingInner: spec.paddingInner ?? 0.28,
         paddingOuter: spec.paddingOuter ?? 0.14,
+        ...(spec.offset ? { offset: spec.offset } : {}),
       });
     case 'point':
-      return createPointScale({ domain: spec.labels, range, padding: spec.paddingOuter ?? 0.5 });
+      return createPointScale({
+        domain: spec.labels,
+        range,
+        padding: spec.paddingOuter ?? 0.5,
+        ...(spec.offset ? { offset: spec.offset } : {}),
+      });
   }
 }
 

@@ -7,6 +7,7 @@ import {
   type CartesianFrame,
   type ValueDomainOptions,
 } from '../layout/cartesian';
+import { clampDomain } from '../interaction/zoom';
 import type { LinearScale } from '../scales/linear';
 import type { LogScale } from '../scales/log';
 import type { Mark, SymbolMark, TextMark } from '../scene/marks';
@@ -40,6 +41,11 @@ export interface ScatterAxisOptions extends ValueDomainOptions {
   format?: (value: number) => string;
   hidden?: boolean;
   tickCount?: number;
+  /**
+   * Visible domain (zoom). Used as is (no rounding), clamped to the full domain the data
+   * would get without it (`model.bounds`); only points inside are drawn and hit-tested.
+   */
+  domain?: Extent;
 }
 
 export interface ScatterSpec {
@@ -107,6 +113,12 @@ export interface ScatterModel {
   zero: { x: number | null; y: number | null };
   /** Bubble scale, null without sizes: radius = max(minRadius, maxRadius·√(value / sizeMax)). */
   bubble: { minRadius: number; maxRadius: number; sizeMax: number } | null;
+  /** Full (unzoomed) domain of each axis: the bounds a zoom domain is clamped to. */
+  bounds: { x: Extent; y: Extent };
+  /** True when an axis `domain` (zoom) narrows the view. */
+  zoomed: boolean;
+  /** Flat indices of the drawn points whose centre lies in a pixel rectangle. */
+  inRect(x0: number, y0: number, x1: number, y1: number): number[];
   point(flat: number): ScatterPoint | null;
   /** Flat index of datum `index` in `group`, or -1. */
   find(group: number, index: number): number;
@@ -160,7 +172,8 @@ export function buildScatterModel(spec: ScatterSpec): ScatterModel {
   let y0 = Number.POSITIVE_INFINITY;
   let y1 = Number.NEGATIVE_INFINITY;
   let sizeMax = 0;
-  let total = 0;
+  /** Points with finite coordinates (marker density does not change while zooming). */
+  let all = 0;
   for (const g of groups) {
     if (!visible(g)) continue;
     const n = Math.min(g.xs.length, g.ys.length);
@@ -168,7 +181,7 @@ export function buildScatterModel(spec: ScatterSpec): ScatterModel {
       const x = g.xs[i] as number;
       const y = g.ys[i] as number;
       if (!finiteOn(x, xLog) || !finiteOn(y, yLog)) continue;
-      total++;
+      all++;
       if (x < x0) x0 = x;
       if (x > x1) x1 = x;
       if (y < y0) y0 = y;
@@ -178,7 +191,7 @@ export function buildScatterModel(spec: ScatterSpec): ScatterModel {
     }
   }
   if (spec.sizeMax !== undefined && spec.sizeMax > 0) sizeMax = spec.sizeMax;
-  const density = total > 5000 ? 4 : total > 1000 ? 6 : 8;
+  const density = all > 5000 ? 4 : all > 1000 ? 6 : 8;
   const pointSize = Math.max(1, spec.pointSize ?? density);
   const minRadius = Math.max(0.5, spec.minRadius ?? 3);
   const maxRadius = Math.max(
@@ -229,7 +242,7 @@ export function buildScatterModel(spec: ScatterSpec): ScatterModel {
   // by the domain resolver.
   const ring = bubble ? 4 : pointSize >= 6 ? 4 : 2;
   const reach = (bubble ? maxRadius : pointSize / 2) + ring / 2;
-  if (total > 0 && reach > CLIP_MARGIN) {
+  if (all > 0 && reach > CLIP_MARGIN) {
     const pad = reach + 1;
     const autoZero = (lo: number, hi: number) =>
       (lo >= 0 && lo <= hi * 0.25) || (hi <= 0 && hi >= lo * 0.25);
@@ -261,8 +274,42 @@ export function buildScatterModel(spec: ScatterSpec): ScatterModel {
     }
     if ((!fixedX && x1 > x0) || (!fixedY && y1 > y0)) frame = frameFor(xDomain, yDomain);
   }
+  const bounds = { x: xDomain, y: yDomain };
+
+  // Zoom: the visible domains replace the full ones (clamped to them, in log space on log
+  // axes); only points inside are drawn, so hover and keyboard reach visible points only.
+  const zoomTo = (d: Extent | undefined, full: Extent, log: boolean): Extent | null => {
+    if (!d || !Number.isFinite(d[0]) || !Number.isFinite(d[1]) || d[0] === d[1]) return null;
+    if (!log) return clampDomain(d, { bounds: full, minSpan: 0 });
+    if (!(d[0] > 0) || !(d[1] > 0)) return null;
+    const [a, b] = clampDomain([Math.log10(d[0]), Math.log10(d[1])], {
+      bounds: [Math.log10(full[0]), Math.log10(full[1])],
+      minSpan: 0,
+    });
+    return [10 ** a, 10 ** b];
+  };
+  const zx = zoomTo(spec.x?.domain, xDomain, xLog);
+  const zy = zoomTo(spec.y?.domain, yDomain, yLog);
+  if (zx || zy) frame = frameFor(zx ?? xDomain, zy ?? yDomain);
   const xs = frame.x as LinearScale | LogScale;
   const ys = frame.y as LinearScale | LogScale;
+  const within = (v: number, d: Extent | null) => {
+    if (!d) return true;
+    const eps = (d[1] - d[0]) * 1e-9;
+    return v >= d[0] - eps && v <= d[1] + eps;
+  };
+  let total = 0;
+  if (zx || zy) {
+    for (const g of groups) {
+      if (!visible(g)) continue;
+      const n = Math.min(g.xs.length, g.ys.length);
+      for (let i = 0; i < n; i++) {
+        const x = g.xs[i] as number;
+        const y = g.ys[i] as number;
+        if (finiteOn(x, xLog) && finiteOn(y, yLog) && within(x, zx) && within(y, zy)) total++;
+      }
+    }
+  } else total = all;
 
   // ---- 3. Flat point arrays ----------------------------------------------------------------
   const px = new Float64Array(total);
@@ -284,7 +331,7 @@ export function buildScatterModel(spec: ScatterSpec): ScatterModel {
       for (let i = 0; i < n; i++) {
         const x = g.xs[i] as number;
         const y = g.ys[i] as number;
-        if (!finiteOn(x, xLog) || !finiteOn(y, yLog)) continue;
+        if (!finiteOn(x, xLog) || !finiteOn(y, yLog) || !within(x, zx) || !within(y, zy)) continue;
         const s = g.sizes ? (g.sizes[i] as number) : Number.NaN;
         px[f] = xs.map(x);
         py[f] = ys.map(y);
@@ -520,6 +567,21 @@ export function buildScatterModel(spec: ScatterSpec): ScatterModel {
     py,
     zero: { x: zeroOf(xs), y: zeroOf(ys) },
     bubble,
+    bounds,
+    zoomed: Boolean(zx || zy),
+    inRect(ax, ay, bx, by) {
+      const l = Math.min(ax, bx);
+      const r = Math.max(ax, bx);
+      const t = Math.min(ay, by);
+      const b = Math.max(ay, by);
+      const out: number[] = [];
+      for (let k = 0; k < total; k++) {
+        const x = px[k] as number;
+        const y = py[k] as number;
+        if (x >= l && x <= r && y >= t && y <= b) out.push(k);
+      }
+      return out;
+    },
     point,
     find,
     hitTest,

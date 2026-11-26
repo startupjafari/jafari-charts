@@ -55,17 +55,27 @@ export const ChartDataTable = memo(function ChartDataTable({
 });
 
 const selectAnnouncement = (s: InteractionState) =>
-  s.source === 'keyboard' && s.active ? `${s.active.position}:${s.active.series}` : '';
+  s.announcement !== null
+    ? `m:${s.announcement}`
+    : s.source === 'keyboard' && s.active
+      ? `${s.active.position}:${s.active.series}`
+      : '';
 
-/** Polite live region announcing values during keyboard navigation. */
+/**
+ * Polite live region announcing values during keyboard navigation, and chart messages
+ * (visible range after zooming, a selected range) when a chart sets one.
+ */
 export function ChartLiveRegion() {
   const { store, adapter } = useChart();
   const key = useStoreSelector(store, selectAnnouncement);
-  const active = key ? store.getState().active : null;
+  const state = key ? store.getState() : null;
+  const active = state && state.announcement === null ? state.active : null;
   const data = active ? adapter.tooltip(active) : null;
-  const text = data
-    ? [data.title, ...data.rows.map((r) => `${r.label}: ${r.value}`)].filter(Boolean).join(', ')
-    : '';
+  const text =
+    state?.announcement ??
+    (data
+      ? [data.title, ...data.rows.map((r) => `${r.label}: ${r.value}`)].filter(Boolean).join(', ')
+      : '');
   return (
     <div className="jc-sr-only" aria-live="polite" aria-atomic="true">
       {text}

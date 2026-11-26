@@ -1,4 +1,5 @@
 import type { CurveType, Renderer, ThemeMode } from '@jafari/charts';
+import type { L, Lang } from '../i18n/lang';
 
 /**
  * Playground configuration, data generation and code generation. The data
@@ -325,8 +326,39 @@ export const DEFAULT_CONFIG: PlaygroundConfig = {
 };
 
 export const SERIES_KEYS = ['a', 'b', 'c', 'd'] as const;
-export const SERIES_LABELS = ['Series A', 'Series B', 'Series C', 'Series D'] as const;
-const SLICE_LABELS = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta'];
+
+/**
+ * Labels in the demo data. They follow the site language, and so does the
+ * generated code, which stays an exact copy of the preview.
+ */
+export interface DemoText {
+  series: readonly string[];
+  slices: readonly string[];
+  ring: (n: number) => string;
+  slice: (n: number) => string;
+  item: (n: number) => string;
+  gauge: string;
+}
+
+export const DEMO_TEXT: L<DemoText> = {
+  en: {
+    series: ['Series A', 'Series B', 'Series C', 'Series D'],
+    slices: ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta'],
+    ring: (n) => `Ring ${n}`,
+    slice: (n) => `Slice ${n}`,
+    item: (n) => `Item ${n}`,
+    gauge: 'Score',
+  },
+  ru: {
+    series: ['Ряд A', 'Ряд B', 'Ряд C', 'Ряд D'],
+    slices: ['Альфа', 'Бета', 'Гамма', 'Дельта', 'Эпсилон', 'Дзета', 'Эта', 'Тета'],
+    ring: (n) => `Кольцо ${n}`,
+    slice: (n) => `Сектор ${n}`,
+    item: (n) => `Элемент ${n}`,
+    gauge: 'Оценка',
+  },
+};
+
 const START = Date.UTC(2025, 0, 1);
 
 /** The colours a config applies, or null for the theme palette. */
@@ -365,7 +397,8 @@ export type PlaygroundData =
   | { type: 'gauge'; value: number }
   | { type: 'points'; rows: PointRow[] };
 
-export function makeData(config: PlaygroundConfig): PlaygroundData {
+export function makeData(config: PlaygroundConfig, lang: Lang): PlaygroundData {
+  const text = DEMO_TEXT[lang];
   const info = kindInfo(config.kind);
   const n = config.points;
   if (info.kind === 'gauge') return { type: 'gauge', value: config.gaugeValue };
@@ -387,7 +420,7 @@ export function makeData(config: PlaygroundConfig): PlaygroundData {
     return {
       type: 'rings',
       rows: Array.from({ length: n }, (_, i) => ({
-        label: SLICE_LABELS[i] ?? `Ring ${i + 1}`,
+        label: text.slices[i] ?? text.ring(i + 1),
         value: 30 + ((i * 37 + 52) % 65),
         ...(colors?.[i] ? { color: colors[i] } : {}),
       })),
@@ -398,7 +431,7 @@ export function makeData(config: PlaygroundConfig): PlaygroundData {
       type: 'category',
       rows: Array.from({ length: n }, (_, i) => ({
         label:
-          info.kind === 'horizontal-bar' ? `Item ${i + 1}` : (SLICE_LABELS[i] ?? `Slice ${i + 1}`),
+          info.kind === 'horizontal-bar' ? text.item(i + 1) : (text.slices[i] ?? text.slice(i + 1)),
         value: valueAt(i * 13, 0),
       })),
     };
@@ -432,7 +465,8 @@ export type SeriesSpec =
     };
 
 /** Single-series shortcut (`yKey`) or a `series` list for time-based charts. */
-export function seriesSpec(config: PlaygroundConfig): SeriesSpec {
+export function seriesSpec(config: PlaygroundConfig, lang: Lang): SeriesSpec {
+  const labels = DEMO_TEXT[lang].series;
   const info = kindInfo(config.kind);
   const colors = activeColors(config);
   const count = effectiveSeries(config);
@@ -443,7 +477,7 @@ export function seriesSpec(config: PlaygroundConfig): SeriesSpec {
     mode: 'multi',
     series: SERIES_KEYS.slice(0, count).map((key, j) => ({
       key,
-      label: SERIES_LABELS[j] ?? key,
+      label: labels[j] ?? key,
       ...(info.kind === 'combo' ? { type: j === 0 ? ('bar' as const) : ('line' as const) } : {}),
       ...(colors?.[j] ? { color: colors[j] } : {}),
     })),
@@ -478,8 +512,12 @@ function formatInt(n: number): string {
   return n >= 10000 ? n.toLocaleString('en').replace(/,/g, '_') : String(n);
 }
 
-/** React code for the current configuration (only non-default props are listed). */
-export function generateCode(config: PlaygroundConfig): string {
+/**
+ * React code for the current configuration (only non-default props are listed).
+ * On the Russian site the preview inherits `locale="ru"` from the site's
+ * ChartProvider, so the code states it explicitly.
+ */
+export function generateCode(config: PlaygroundConfig, lang: Lang): string {
   const info = kindInfo(config.kind);
   const colors = activeColors(config);
   const count = effectiveSeries(config);
@@ -488,10 +526,10 @@ export function generateCode(config: PlaygroundConfig): string {
   const header: string[] = [`import { ${info.component} } from '@jafari/charts';`, ''];
 
   if (info.kind === 'gauge') {
-    props.push(`value={${config.gaugeValue}}`, `label="Score"`);
+    props.push(`value={${config.gaugeValue}}`, `label="${DEMO_TEXT[lang].gauge}"`);
     if (colors?.[0]) props.push(`color="${colors[0]}"`);
   } else if (info.kind === 'radial') {
-    const d = makeData(config);
+    const d = makeData(config, lang);
     if (d.type === 'rings') {
       lines.push('const data = [');
       for (const r of d.rows)
@@ -502,7 +540,7 @@ export function generateCode(config: PlaygroundConfig): string {
     }
     props.push('data={data}');
   } else if (info.x === 'category') {
-    const d = makeData(config);
+    const d = makeData(config, lang);
     if (d.type === 'category') {
       lines.push('const data = [');
       for (const r of d.rows) lines.push(`  { label: ${q(r.label)}, value: ${r.value} },`);
@@ -534,7 +572,7 @@ export function generateCode(config: PlaygroundConfig): string {
       '',
     );
     props.push('data={data}', info.x === 'number' ? 'xKey="x"' : 'xKey="time"');
-    const spec = seriesSpec(config);
+    const spec = seriesSpec(config, lang);
     if (spec.mode === 'single') {
       props.push(`yKey="a"`);
       if (spec.color) props.push(`color="${spec.color}"`);
@@ -568,6 +606,7 @@ export function generateCode(config: PlaygroundConfig): string {
     if (config.animation) props.push('animation');
   } else if (!config.animation) props.push('animation={false}');
   if (config.renderer !== 'svg') props.push(`renderer="${config.renderer}"`);
+  if (lang !== 'en') props.push(`locale="${lang}"`);
 
   const body = props.map((p) => `      ${p.replace(/\n/g, '\n    ')}`).join('\n');
   return [

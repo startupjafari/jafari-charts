@@ -57,6 +57,14 @@ scripts           build helpers (vite-lib, size, pack-check, screenshots)
 
 ## Progress log
 
+### 2026-11-26 (later) — owner approved publishing and integration
+
+- MIT confirmed; repository to be public on GitHub; npm publish under `@jafari`.
+- Added: export tests in browsers, Firefox/WebKit/mobile Safari runs and visual
+  baselines in Docker (173 tests pass in the container), zoom/pan/brush for
+  scatter, category axes and calendar, controlled calendar/treemap state, shared
+  en/ru/kk messages, Russian docs, localised chart names.
+
 ### 2026-11-26 — Phases 1–6 complete; 7 waiting for the owner
 
 - All 20 chart types implemented on two shared engines (cartesian, polar) plus

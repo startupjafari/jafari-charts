@@ -6,7 +6,9 @@ type Value = number | string | Date;
 
 function toPixel(scale: AnyScale, value: Value): number {
   if (isBandScale(scale)) {
-    const i = typeof value === 'number' ? value : scale.domain.indexOf(String(value));
+    // Numbers are positions in the full category list; a zoomed axis shows a window of it.
+    const i =
+      typeof value === 'number' ? value - (scale.offset ?? 0) : scale.domain.indexOf(String(value));
     return scale.center(i);
   }
   if (scale.kind === 'time')

@@ -1,63 +1,148 @@
+import type { ReactNode } from 'react';
 import type { ChartDoc, ChartSectionId, PropGroup } from '../docs/types';
+import { useLang, useT, useText, type L } from '../i18n';
 import { Link, useLocation } from '../lib/router';
 import { Callout, Kbd, PageHeader, Section } from '../ui/Callout';
 import { CodeBlock } from '../ui/CodeBlock';
 import { Example } from '../ui/Example';
-import { inlineCode, PropsTable } from '../ui/PropsTable';
+import { PropsTable, richText } from '../ui/PropsTable';
 
-const SECTIONS: { id: ChartSectionId; title: string; short: string; lead: string }[] = [
-  { id: 'usage', title: 'Usage', short: 'Usage', lead: '' },
-  {
-    id: 'styling',
-    title: 'Styling variants',
-    short: 'Styling',
-    lead: 'Every visual parameter has a sensible default; these examples show the props that change them. Use the Light/Dark switch above each preview to check both themes.',
+interface SectionText {
+  id: ChartSectionId;
+  title: string;
+  short: string;
+  lead: string;
+}
+
+interface ChartPageText {
+  /** The standard sections, in page order. */
+  sections: readonly SectionText[];
+  importTitle: string;
+  props: string;
+  keyboardCaption: string;
+  keys: string;
+  action: string;
+  typesCallout: ReactNode;
+  seeApi: ReactNode;
+}
+
+const TEXT: L<ChartPageText> = {
+  en: {
+    sections: [
+      { id: 'usage', title: 'Usage', short: 'Usage', lead: '' },
+      {
+        id: 'styling',
+        title: 'Styling variants',
+        short: 'Styling',
+        lead: 'Every visual parameter has a sensible default; these examples show the props that change them. Use the Light/Dark switch above each preview to check both themes.',
+      },
+      {
+        id: 'interaction',
+        title: 'Interaction',
+        short: 'Interaction',
+        lead: 'Tooltips, legend toggling and keyboard navigation work without configuration. Controlled props let your app read and drive the state.',
+      },
+      {
+        id: 'responsive',
+        title: 'Responsive',
+        short: 'Responsive',
+        lead: 'Charts fill their container and follow resizes through one shared ResizeObserver. Tick labels are thinned so they never overlap. Try the 480 and 320 width switches on any example.',
+      },
+      {
+        id: 'empty',
+        title: 'Empty, loading and error states',
+        short: 'States',
+        lead: 'States keep the chart’s footprint, so the layout never jumps while data loads.',
+      },
+    ],
+    importTitle: 'Import',
+    props: 'Props',
+    keyboardCaption: 'Keyboard (focus the chart with Tab first)',
+    keys: 'Keys',
+    action: 'Action',
+    typesCallout: (
+      <>
+        Types are exact: keys such as <code>xKey</code> and series keys are checked against your
+        data type, so a typo or a non-numeric field is a compile error.
+      </>
+    ),
+    seeApi: (
+      <>
+        See the <Link to="/api">API reference</Link> for exported types.
+      </>
+    ),
   },
-  {
-    id: 'interaction',
-    title: 'Interaction',
-    short: 'Interaction',
-    lead: 'Tooltips, legend toggling and keyboard navigation work without configuration. Controlled props let your app read and drive the state.',
+  ru: {
+    sections: [
+      { id: 'usage', title: 'Использование', short: 'Использование', lead: '' },
+      {
+        id: 'styling',
+        title: 'Варианты оформления',
+        short: 'Оформление',
+        lead: 'У каждого визуального параметра есть продуманное значение по умолчанию; эти примеры показывают пропсы, которые его меняют. Переключатель «Светлая / Тёмная» над каждым превью позволяет проверить обе темы.',
+      },
+      {
+        id: 'interaction',
+        title: 'Взаимодействие',
+        short: 'Взаимодействие',
+        lead: 'Подсказки, переключение рядов в легенде и навигация с клавиатуры работают без настройки. Контролируемые пропсы позволяют приложению читать это состояние и управлять им.',
+      },
+      {
+        id: 'responsive',
+        title: 'Адаптивность',
+        short: 'Адаптивность',
+        lead: 'Диаграммы заполняют контейнер и следят за изменением его размеров через один общий ResizeObserver. Подписи делений прореживаются, чтобы никогда не перекрываться. Попробуйте переключатели ширины 480 и 320 в любом примере.',
+      },
+      {
+        id: 'empty',
+        title: 'Состояния: нет данных, загрузка, ошибка',
+        short: 'Состояния',
+        lead: 'В любом состоянии диаграмма сохраняет свои размеры, поэтому макет не прыгает, пока загружаются данные.',
+      },
+    ],
+    importTitle: 'Импорт',
+    props: 'Пропсы',
+    keyboardCaption: 'Клавиатура (сначала переведите фокус на диаграмму клавишей Tab)',
+    keys: 'Клавиши',
+    action: 'Действие',
+    typesCallout: (
+      <>
+        Типы точные: ключи вроде <code>xKey</code> и ключи рядов проверяются по типу ваших данных,
+        поэтому опечатка или нечисловое поле — это ошибка компиляции.
+      </>
+    ),
+    seeApi: (
+      <>
+        Экспортируемые типы описаны в <Link to="/api">справочнике API</Link>.
+      </>
+    ),
   },
-  {
-    id: 'responsive',
-    title: 'Responsive',
-    short: 'Responsive',
-    lead: 'Charts fill their container and follow resizes through one shared ResizeObserver. Tick labels are thinned so they never overlap. Try the 480 and 320 width switches on any example.',
-  },
-  {
-    id: 'empty',
-    title: 'Empty, loading and error states',
-    short: 'States',
-    lead: 'States keep the chart’s footprint, so the layout never jumps while data loads.',
-  },
-];
+};
 
 function PropGroupView({ group, open }: { group: PropGroup; open: boolean }) {
+  const lang = useLang();
   return (
     <details className="prop-group" open={open}>
       <summary>
-        {group.title} <span className="muted">({group.props.length})</span>
+        {group.title[lang]} <span className="muted">({group.props.length})</span>
       </summary>
-      {group.note ? (
-        <p className="prop-group-note">
-          {typeof group.note === 'string' ? inlineCode(group.note) : group.note}
-        </p>
-      ) : null}
+      {group.note ? <p className="prop-group-note">{richText(group.note[lang])}</p> : null}
       <PropsTable props={group.props} />
     </details>
   );
 }
 
 function KeyboardTable({ keys }: { keys: ChartDoc['keyboard'] }) {
+  const lang = useLang();
+  const t = useText(TEXT);
   return (
     <div className="table-wrap">
       <table>
-        <caption>Keyboard (focus the chart with Tab first)</caption>
+        <caption>{t.keyboardCaption}</caption>
         <thead>
           <tr>
-            <th scope="col">Keys</th>
-            <th scope="col">Action</th>
+            <th scope="col">{t.keys}</th>
+            <th scope="col">{t.action}</th>
           </tr>
         </thead>
         <tbody>
@@ -70,7 +155,7 @@ function KeyboardTable({ keys }: { keys: ChartDoc['keyboard'] }) {
                   ))}
                 </span>
               </th>
-              <td>{action}</td>
+              <td>{action[lang]}</td>
             </tr>
           ))}
         </tbody>
@@ -81,48 +166,53 @@ function KeyboardTable({ keys }: { keys: ChartDoc['keyboard'] }) {
 
 export function ChartPage({ doc }: { doc: ChartDoc }) {
   const { path } = useLocation();
+  const lang = useLang();
+  const ui = useT();
+  const t = useText(TEXT);
   const usage = doc.sections.usage;
   const importLine = `import { ${doc.component} } from '@jafari/charts';`;
   const toc = [
-    ...SECTIONS.filter((s) => doc.sections[s.id].length > 0).map((s) => ({
-      id: s.id,
-      title: s.short,
-    })),
-    { id: 'props', title: 'Props' },
+    ...t.sections
+      .filter((s) => doc.sections[s.id].length > 0)
+      .map((s) => ({ id: s.id, title: s.short })),
+    { id: 'props', title: t.props },
   ];
   return (
     <article>
-      <PageHeader eyebrow={`${doc.group} chart`} title={doc.component} lead={doc.summary}>
-        <nav aria-label="On this page">
+      <PageHeader
+        eyebrow={ui.chartEyebrow(doc.group, doc.title[lang])}
+        title={doc.component}
+        lead={doc.summary[lang]}
+      >
+        <nav aria-label={ui.a11y.onThisPage}>
           <ul className="page-toc">
-            {toc.map((t) => (
-              <li key={t.id}>
-                <Link to={path} section={t.id}>
-                  {t.title}
+            {toc.map((s) => (
+              <li key={s.id}>
+                <Link to={path} section={s.id}>
+                  {s.title}
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
       </PageHeader>
-      <div className="prose">{doc.description}</div>
-      <CodeBlock code={importLine} language="tsx" title="Import" />
-      {SECTIONS.map((s) => {
+      <div className="prose">{doc.description[lang]}</div>
+      <CodeBlock code={importLine} language="tsx" title={t.importTitle} />
+      {t.sections.map((s) => {
         const examples = doc.sections[s.id];
         if (!examples.length) return null;
+        const note = doc.sectionNotes?.[s.id];
         return (
           <Section key={s.id} id={s.id} title={s.title} lead={s.lead || undefined}>
-            {doc.sectionNotes?.[s.id] ? (
-              <div className="prose">{doc.sectionNotes[s.id]}</div>
-            ) : null}
+            {note ? <div className="prose">{note[lang]}</div> : null}
             {s.id === 'interaction' ? <KeyboardTable keys={doc.keyboard} /> : null}
             {examples.map((e, i) => (
               <Example
                 key={e.id}
                 id={e.id}
                 anchor={`${s.id}-${e.id.split('/').pop()?.toLowerCase() ?? i}`}
-                title={e.title}
-                description={e.description}
+                title={e.title[lang]}
+                description={e.description?.[lang]}
                 codeOpen={s.id === 'usage' && i === 0 && e === usage[0]}
                 {...(e.width !== undefined ? { width: e.width } : {})}
               />
@@ -130,17 +220,12 @@ export function ChartPage({ doc }: { doc: ChartDoc }) {
           </Section>
         );
       })}
-      <Section id="props" title="Props">
-        <Callout>
-          Types are exact: keys such as <code>xKey</code> and series keys are checked against your
-          data type, so a typo or a non-numeric field is a compile error.
-        </Callout>
+      <Section id="props" title={t.props}>
+        <Callout>{t.typesCallout}</Callout>
         {doc.props.map((g, i) => (
-          <PropGroupView key={g.title} group={g} open={!g.collapsed || i === 0} />
+          <PropGroupView key={g.title.en} group={g} open={!g.collapsed || i === 0} />
         ))}
-        <p className="muted">
-          See the <Link to="/api">API reference</Link> for exported types.
-        </p>
+        <p className="muted">{t.seeApi}</p>
       </Section>
     </article>
   );

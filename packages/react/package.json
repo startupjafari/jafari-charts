@@ -14,6 +14,15 @@
     "typescript"
   ],
   "description": "React components for Jafari Charts.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehmanaseventhills/jafari-charts.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/mehmanaseventhills/jafari-charts#readme",
+  "bugs": {
+    "url": "https://github.com/mehmanaseventhills/jafari-charts/issues"
+  },
   "exports": {
     ".": {
       "@jafari/source": "./src/index.ts",

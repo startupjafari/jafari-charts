@@ -93,7 +93,13 @@ happens during render. Errors are a few pixels and err on the wide side.
   `useSyncExternalStore` selectors. Moving the mouse re-renders only the tooltip
   content (when the active item changes), the crosshair and the active marks. The
   tooltip _position_ is applied directly to its style (no React render).
-- **Controlled/uncontrolled** `activeIndex`, `hiddenSeries`, `xDomain`.
+- **Zoom & brush**: one gesture implementation (`internal/useZoomGestures`) over
+  abstract axes in domain units — continuous x (cartesian), both axes (scatter, log in
+  decades) and category windows (bars; band i spans [i, i + 1], fractional steps
+  accumulate into whole categories). The core lays out only the visible window
+  (`x.range`, scatter `domain`), so ticks, bars and hit testing re-layout to fill the plot.
+- **Controlled/uncontrolled** `activeIndex`, `hiddenSeries`, `xDomain`/`yDomain`,
+  `categoryRange`, `activeDate`, `drilldownPath`.
 - **States**: empty, loading (keeps the previous render dimmed — no skeleton flash),
   error with retry.
 - **A11y**: `role="figure"`, a focusable `role="img"` surface with a label and a

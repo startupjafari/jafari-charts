@@ -89,7 +89,10 @@ export interface ChartItemEvent<T> {
 export interface ZoomOptions {
   /** Wheel zoom: `'ctrl'` requires Ctrl/⌘ (or a trackpad pinch); `true` zooms on any wheel. */
   wheel?: boolean | 'ctrl';
-  /** Smallest visible span as a fraction of the full range (default 0.01). */
+  /**
+   * Smallest visible span as a fraction of the full range (default 0.01). Category
+   * axes always keep at least one whole category.
+   */
   minSpan?: number;
 }
 
@@ -129,12 +132,25 @@ export interface CartesianChartProps<T extends object> extends BaseChartProps {
   onHover?: (event: ChartItemEvent<T> | null) => void;
   onClick?: (event: ChartItemEvent<T>) => void;
   downsample?: false | DownsampleOptions;
-  /** Zoom & pan along x (continuous axes). */
+  /**
+   * Zoom & pan: Ctrl/⌘ + wheel or pinch, drag to pan, `+` / `-` / `0` and Shift + arrows
+   * on the focused chart. Continuous x axes zoom their domain (`xDomain`); category axes
+   * (bars, category x) show a window of whole categories (`categoryRange`).
+   */
   zoom?: boolean | ZoomOptions;
-  /** Controlled visible x domain (timestamps or numbers). */
+  /** Controlled visible x domain (timestamps or numbers) of a continuous x axis. */
   xDomain?: readonly [number, number] | null;
   onXDomainChange?: (domain: readonly [number, number] | null) => void;
-  /** Drag to select an x range. With `zoom`, the selection zooms in. */
+  /**
+   * Controlled category window of a band axis as inclusive positions `[start, end]`
+   * (data order; time data in time order); `null` shows every category.
+   */
+  categoryRange?: readonly [number, number] | null;
+  onCategoryRangeChange?: (range: readonly [number, number] | null) => void;
+  /**
+   * Drag to select an x range or a range of categories. With `zoom`, the selection zooms in
+   * (Shift + drag pans a zoomed view).
+   */
   brush?: boolean;
   onBrush?: (range: {
     from: AxisValue;

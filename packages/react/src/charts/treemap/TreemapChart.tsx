@@ -7,7 +7,7 @@ import {
   type TreemapModel,
 } from '@jafari/charts-core';
 import { seriesColor } from '@jafari/charts-themes';
-import { useCallback, useMemo, useState, type KeyboardEvent, type ReactElement } from 'react';
+import { useCallback, useMemo, type KeyboardEvent, type ReactElement } from 'react';
 import type { DataTable } from '../../components/ChartA11y';
 import type { LegendOptions } from '../../components/ChartLegend';
 import type { TooltipOptions } from '../../components/ChartTooltip';
@@ -61,8 +61,17 @@ interface TreemapCommonProps<D> extends BaseChartProps {
   cornerRadius?: number;
   /** Slightly lighter tiles at deeper levels. */
   depthShading?: boolean;
-  /** Click (or Enter on) a category to zoom into it; Backspace or the breadcrumb zooms out. */
+  /**
+   * Click (or Enter on) a category to zoom into it; Backspace or the breadcrumb zooms out.
+   * Default: on when `drilldownPath` is given.
+   */
   drilldown?: boolean;
+  /**
+   * Controlled drill-down: names from the top-level category down to the zoomed tile
+   * (`[]` = the whole tree). Siblings with equal names are addressed as `name#1`, `name#2`…
+   */
+  drilldownPath?: readonly string[];
+  onDrilldownPathChange?: (path: string[]) => void;
   /** Overrides for treemap-specific strings. */
   texts?: Partial<TreemapTexts>;
   hiddenSeries?: readonly string[];
@@ -139,7 +148,10 @@ function ActiveOverlay({ model }: { model: Model }) {
  */
 export function TreemapChart<T extends object>(props: TreemapChartProps<T>): ReactElement {
   const root = useChartRoot(props, { height: 360 });
-  const texts = useMemo(() => treemapTexts(root.locale, props.texts), [root.locale, props.texts]);
+  const texts = useMemo(
+    () => treemapTexts(root.messages, props.texts),
+    [root.messages, props.texts],
+  );
   const { valueFormatter } = props;
 
   const data = props.data;
@@ -171,9 +183,16 @@ export function TreemapChart<T extends object>(props: TreemapChartProps<T>): Rea
     [hidden, hiddenList, setHidden],
   );
 
-  // Drill-down trail: keys from the top-level category down to the zoomed tile.
-  const [trail, setTrail] = useState<readonly string[]>([]);
-  const focusKey = props.drilldown ? (trail.at(-1) ?? null) : null;
+  // Drill-down path: name segments from the top-level category down to the zoomed tile;
+  // the trail holds the tile key of every level (segments joined by "/").
+  const drillable = props.drilldown ?? props.drilldownPath !== undefined;
+  const [path, setPath] = useControllableState<readonly string[]>(
+    props.drilldownPath,
+    [],
+    props.onDrilldownPathChange as ((path: readonly string[]) => void) | undefined,
+  );
+  const trail = useMemo(() => path.map((_, i) => path.slice(0, i + 1).join('/')), [path]);
+  const focusKey = drillable ? (trail.at(-1) ?? null) : null;
 
   const fmtValue = useCallback(
     (v: number) => (valueFormatter ? valueFormatter(v) : formatAuto(v, root.locale)),
@@ -338,7 +357,7 @@ export function TreemapChart<T extends object>(props: TreemapChartProps<T>): Rea
 
   // ---- Drill-down ----------------------------------------------------------------------------
   const drillTo = (next: readonly string[]) => {
-    setTrail(next);
+    setPath(next.map((key, i) => (i ? key.slice((next[i - 1] as string).length + 1) : key)));
     root.store.setState({ active: null, source: null });
     const names: string[] = [];
     if (next.length) {
@@ -354,13 +373,13 @@ export function TreemapChart<T extends object>(props: TreemapChartProps<T>): Rea
   const onItemClick = (a: ActiveItem) => {
     const e = event(a);
     if (e) (props.onClick as ((e: TreemapItemEvent<Source>) => void) | undefined)?.(e);
-    if (!props.drilldown) return;
+    if (!drillable) return;
     // Zoom one level: into the ancestor of the clicked tile right below the current root.
     let t = model.tiles[a.position];
     while (t && t.parent >= 0) t = model.tiles[t.parent];
     if (t && !t.leaf) drillTo([...current, t.key]);
   };
-  const surfaceHandlers: SurfaceHandlers | undefined = props.drilldown
+  const surfaceHandlers: SurfaceHandlers | undefined = drillable
     ? {
         onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
           if (e.key !== 'Backspace' || !current.length) return false;
@@ -372,7 +391,7 @@ export function TreemapChart<T extends object>(props: TreemapChartProps<T>): Rea
     : undefined;
 
   const controls =
-    props.drilldown && model.focus.key ? (
+    drillable && model.focus.key ? (
       <nav
         aria-label={texts.breadcrumb}
         style={{

@@ -213,3 +213,68 @@ describe('cartesian model: lines and areas', () => {
     expect(m.hitTest(p.x, p.y, 'item')).toEqual({ position: 1, series: 0 });
   });
 });
+
+describe('cartesian model: category window (x.range)', () => {
+  const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+  const values = f(1, 2, 3, 4, 5, 60);
+  const windowed = (range?: readonly [number, number], extra: Partial<CartesianSpec> = {}) =>
+    buildCartesianModel(
+      base([series('a', values)], {
+        x: {
+          type: 'category',
+          values: new Float64Array(0),
+          labels,
+          ...(range ? { range } : {}),
+        },
+        ...extra,
+      }),
+    );
+
+  it('lays out only the window, filling the plot', () => {
+    const full = windowed();
+    const m = windowed([1, 3]);
+    expect(m.visible).toEqual([1, 3]);
+    expect(m.length).toBe(6);
+    const r = rects(m.marks);
+    expect(r.map((x) => x.index)).toEqual([1, 2, 3]);
+    expect(m.frame.xTicks.map((t) => t.label)).toEqual(['Feb', 'Mar', 'Apr']);
+    // Three bands share the plot: about twice as wide as six.
+    const step = (mm: typeof m) => (mm.frame.x as { step: number }).step / mm.frame.plot.width;
+    expect(step(m) / step(full)).toBeCloseTo(2, 1);
+    // The value axis fits the visible values (60 is outside the window).
+    expect((m.frame.y as { domain: readonly number[] }).domain[1]).toBeLessThan(10);
+  });
+
+  it('positions, band rectangles and hit testing use full-data positions', () => {
+    const m = windowed([2, 4]);
+    const p = m.position(3);
+    expect(p).toBeGreaterThan(m.frame.plot.x);
+    expect(m.indexAt(p)).toBe(3);
+    expect(m.hitTest(p, m.frame.plot.y + 10)).toEqual({ position: 3, series: -1 });
+    expect(m.bandRect(0)).toBeNull();
+    expect(m.bandRect(2)!.x).toBeCloseTo(m.frame.plot.x, 0);
+    // Pixels left of the window resolve to its first category.
+    expect(m.indexAt(m.frame.plot.x - 50)).toBe(2);
+    expect((m.frame.x as { offset?: number }).offset).toBe(2);
+  });
+
+  it('clamps and orders the range, and ignores it on continuous axes', () => {
+    expect(windowed([4, 9]).visible).toEqual([4, 5]);
+    expect(windowed([3, 1]).visible).toEqual([1, 3]);
+    const line = buildCartesianModel({
+      width: 600,
+      height: 300,
+      x: { type: 'number', values: f(0, 1, 2, 3), labels: [], range: [1, 2] },
+      series: [series('a', f(1, 2, 3, 4), { type: 'line' })],
+    });
+    expect(line.visible).toEqual([0, 3]);
+  });
+
+  it('windows horizontal bars along y', () => {
+    const m = windowed([0, 1], { orientation: 'horizontal' });
+    expect(m.frame.yTicks.map((t) => t.label)).toEqual(['Jan', 'Feb']);
+    const r = rects(m.marks);
+    expect(r).toHaveLength(2);
+    expect(m.indexAt(m.position(1))).toBe(1);
+  });
+});

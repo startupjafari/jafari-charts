@@ -8,24 +8,6 @@ import { useMemo, type CSSProperties, type ReactNode } from 'react';
 import type { LegendOptions } from '../../components/ChartLegend';
 import { useChart, type SeriesInfo } from '../../providers/ChartContext';
 
-/** Strings the heatmaps need beyond the shared `ChartMessages`. */
-interface HeatmapStrings {
-  less: string;
-  more: string;
-  month: string;
-}
-
-const STRINGS: Record<'en' | 'ru' | 'kk', HeatmapStrings> = {
-  en: { less: 'Less', more: 'More', month: 'Month' },
-  ru: { less: 'Меньше', more: 'Больше', month: 'Месяц' },
-  kk: { less: 'Аз', more: 'Көп', month: 'Ай' },
-};
-
-export function heatmapStrings(locale: string): HeatmapStrings {
-  const lang = locale.toLowerCase().split(/[-_]/)[0] as keyof typeof STRINGS;
-  return STRINGS[lang] ?? STRINGS.en;
-}
-
 /** A colour step as a single CSS colour (tooltip keys), translucency included. */
 export function bucketCssColor(fill: string, fillOpacity?: number): string {
   if (fillOpacity === undefined || fillOpacity >= 1) return fill;

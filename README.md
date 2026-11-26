@@ -51,22 +51,37 @@ All 20 chart types are implemented. See [ROADMAP.md](ROADMAP.md) for project sta
 
 ## Common props
 
-| Prop                                                        | Description                                                                       |
-| ----------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `height` / `width`                                          | Surface height (default 280). Width follows the container unless fixed.           |
-| `theme`                                                     | `'auto'` (default, follows the app), `'light'`, `'dark'` or `createTheme({...})`. |
-| `locale`                                                    | `'en'`, `'ru'`, `'kk'` or any BCP 47 tag (Intl number/date formatting).           |
-| `animation`                                                 | `false` to disable, or `{ duration, easing, initial }`. Respects reduced motion.  |
-| `renderer`                                                  | `'svg'` (default), `'canvas'`, `'auto'`.                                          |
-| `tooltip`, `legend`, `crosshair`, `grid`, `xAxis`, `yAxis`  | `false` to hide or an options object.                                             |
-| `valueFormatter`, `xFormatter`                              | Custom formatting.                                                                |
-| `hiddenSeries` / `onHiddenSeriesChange`                     | Controlled legend toggling.                                                       |
-| `activeIndex` / `onActiveIndexChange`, `onHover`, `onClick` | Controlled interaction and events.                                                |
-| `zoom`, `brush`, `xDomain`                                  | Zoom/pan and range selection on continuous x axes.                                |
-| `syncId`                                                    | Charts with the same id share crosshair and tooltip.                              |
-| `highlightedSeries`                                         | Controlled emphasis of one series.                                                |
-| `loading`, `error`, `onRetry`, `emptyMessage`               | Data states without layout jumps.                                                 |
-| `title`, `description`                                      | Accessible name and description.                                                  |
+| Prop                                                         | Description                                                                                                                                                                                                                                                             |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `height` / `width`                                           | Surface height (default 280). Width follows the container unless fixed.                                                                                                                                                                                                 |
+| `theme`                                                      | `'auto'` (default, follows the app), `'light'`, `'dark'` or `createTheme({...})`.                                                                                                                                                                                       |
+| `locale`                                                     | `'en'`, `'ru'`, `'kk'` or any BCP 47 tag (Intl number/date formatting).                                                                                                                                                                                                 |
+| `animation`                                                  | `false` to disable, or `{ duration, easing, initial }`. Respects reduced motion.                                                                                                                                                                                        |
+| `renderer`                                                   | `'svg'` (default), `'canvas'`, `'auto'`.                                                                                                                                                                                                                                |
+| `tooltip`, `legend`, `crosshair`, `grid`, `xAxis`, `yAxis`   | `false` to hide or an options object.                                                                                                                                                                                                                                   |
+| `valueFormatter`, `xFormatter`                               | Custom formatting.                                                                                                                                                                                                                                                      |
+| `hiddenSeries` / `onHiddenSeriesChange`                      | Controlled legend toggling.                                                                                                                                                                                                                                             |
+| `activeIndex` / `onActiveIndexChange`, `onHover`, `onClick`  | Controlled interaction and events.                                                                                                                                                                                                                                      |
+| `zoom`, `brush` / `onBrush`                                  | Ctrl/⌘ + wheel or pinch zooms (a plain wheel scrolls the page), drag pans, `+` `-` `0` and Shift + arrows from the keyboard; drag selects a range. Continuous x axes zoom their domain, bar and category charts a window of whole categories, scatter charts both axes. |
+| `xDomain` / `onXDomainChange`, `yDomain` / `onYDomainChange` | Controlled visible domain (continuous x; scatter x and y).                                                                                                                                                                                                              |
+| `categoryRange` / `onCategoryRangeChange`                    | Controlled category window `[start, end]` of bar, combo, waterfall and category-axis charts.                                                                                                                                                                            |
+| `syncId`                                                     | Charts with the same id share crosshair and tooltip.                                                                                                                                                                                                                    |
+| `highlightedSeries`                                          | Controlled emphasis of one series.                                                                                                                                                                                                                                      |
+| `loading`, `error`, `onRetry`, `emptyMessage`                | Data states without layout jumps.                                                                                                                                                                                                                                       |
+| `title`, `description`                                       | Accessible name and description.                                                                                                                                                                                                                                        |
+| `messages`                                                   | Override any built-in string (also funnel, treemap and heatmap texts) per chart or in `ChartProvider`.                                                                                                                                                                  |
+
+Chart-specific interaction props:
+
+| Prop                                                     | Description                                                                                        |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `ScatterChart` `onBrush({ x, y, indices })`              | Rectangle selection: data ranges and the indices of the points inside.                             |
+| `CalendarHeatmap` `activeDate` / `onActiveDateChange`    | Controlled highlighted day (`Date`, timestamp or ISO string; `null` = none).                       |
+| `CalendarHeatmap` `brush` / `onBrush({ from, to })`      | Drag across days, or Shift + arrows, to select a date range (highlighted until Escape or a click). |
+| `TreemapChart` `drilldownPath` / `onDrilldownPathChange` | Controlled drill-down: names from the top-level category (`[]` = whole tree).                      |
+| `FunnelChart` / `TreemapChart` `texts`                   | Per-chart overrides of their strings (defaults come from `messages`).                              |
+
+Pie, donut, gauge, radial progress and radar charts intentionally have no zoom.
 
 Composable primitives (`ChartReferenceLine`, `ChartReferenceArea`,
 `ChartReferenceDot`, `ChartAnnotation`, …) can be placed inside any cartesian chart:
@@ -133,6 +148,9 @@ await exportChart(element, { format: 'png', scale: 2, background: 'light', filen
 
 - Focusable chart surface with name and description; arrow keys move between data
   points, values are announced in a polite live region; Enter triggers `onClick`.
+- Zoom and selection have keyboard equivalents (`+` `-` `0`, Shift + arrows to pan or to
+  extend a calendar selection); the visible or selected range is announced, and the reset
+  control is a real button outside the chart image.
 - Visually hidden data table (automatic up to 60 rows, configurable).
 - Legend items are buttons with `aria-pressed`.
 - `differentiate` adds marker shapes and dash patterns so series never rely on colour alone.
@@ -172,10 +190,10 @@ Measured with `pnpm size` (consumer build, minified + gzip, React external):
 
 | Import                                                   | gzip    |
 | -------------------------------------------------------- | ------- |
-| Base core (scales, geometry, curves, data, formatting)   | 9.9 KB  |
-| React layer for `LineChart` (core external)              | 13.8 KB |
-| `LineChart` total (React layer + all math it uses + CSS) | 33.3 KB |
-| Everything from `@jafari/charts` (20 charts)             | 65.8 KB |
+| Base core (scales, geometry, curves, data, formatting)   | 11.1 KB |
+| React layer for `LineChart` (core external)              | 15.5 KB |
+| `LineChart` total (React layer + all math it uses + CSS) | 36.5 KB |
+| Everything from `@jafari/charts` (20 charts)             | 69.9 KB |
 | Canvas renderer (lazy chunk)                             | 1.7 KB  |
 | Export module (separate entry)                           | 2.5 KB  |
 
@@ -213,4 +231,4 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) and [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## License
 
-MIT (proposed; final decision by the project owner). © Mehman Jafari.
+MIT © Mehman Jafari. See [LICENSE](LICENSE).

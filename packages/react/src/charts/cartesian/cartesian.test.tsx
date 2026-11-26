@@ -397,3 +397,21 @@ describe('docs-reported fixes', () => {
     expect(Number(dot.getAttribute('cy'))).toBeLessThan(60); // max value near the top
   });
 });
+
+describe('localised accessible description', () => {
+  it('names the chart type in the chart locale', () => {
+    render(
+      <LineChart
+        data={data}
+        xKey="day"
+        series={series}
+        locale="ru"
+        animation={false}
+        title="Активность"
+      />,
+    );
+    const img = screen.getByRole('img', { name: /Активность/ });
+    const description = document.getElementById(img.getAttribute('aria-describedby') ?? '');
+    expect(description?.textContent).toMatch(/^Линейный график: 2 ряда, 8 точек данных\./);
+  });
+});

@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { TreemapDatum } from './hierarchy';
 import { TreemapChart } from './TreemapChart';
@@ -271,5 +272,113 @@ describe('TreemapChart refinements', () => {
     // @ts-expect-error city is not numeric
     const badValue = <TreemapChart data={sales} groupKey="region" valueKey="city" />;
     expect([ok, badGroup, badValue]).toHaveLength(3);
+  });
+});
+
+describe('TreemapChart controlled drill-down', () => {
+  const nav = (c: HTMLElement) => c.querySelector('nav')?.textContent ?? null;
+
+  it('follows drilldownPath and reports navigation without changing it', () => {
+    const onPath = vi.fn();
+    const onDrilldown = vi.fn();
+    const { container, rerender } = render(
+      <TreemapChart
+        data={shop}
+        width={600}
+        height={360}
+        animation={false}
+        drilldownPath={['Electronics']}
+        onDrilldownPathChange={onPath}
+        onDrilldown={onDrilldown}
+      />,
+    );
+    expect(nav(container)).toContain('Shop›Electronics');
+    // Drilling deeper asks the owner; the view stays until the prop changes.
+    fireEvent.click(surface(container), pointIn(container, 'Smart'));
+    expect(onPath).toHaveBeenLastCalledWith(['Electronics', 'Phones']);
+    expect(onDrilldown).toHaveBeenLastCalledWith(['Electronics', 'Phones']);
+    expect(nav(container)).not.toContain('Phones');
+    rerender(
+      <TreemapChart
+        data={shop}
+        width={600}
+        height={360}
+        animation={false}
+        drilldownPath={['Electronics', 'Phones']}
+        onDrilldownPathChange={onPath}
+      />,
+    );
+    expect(nav(container)).toContain('Electronics›Phones');
+    fireEvent.click(screen.getByRole('button', { name: /Back/ }));
+    expect(onPath).toHaveBeenLastCalledWith(['Electronics']);
+    fireEvent.keyDown(screen.getByRole('img'), { key: 'Backspace' });
+    expect(onPath).toHaveBeenLastCalledWith(['Electronics']);
+    rerender(
+      <TreemapChart
+        data={shop}
+        width={600}
+        height={360}
+        animation={false}
+        drilldownPath={[]}
+        onDrilldownPathChange={onPath}
+      />,
+    );
+    expect(nav(container)).toBeNull();
+  });
+
+  it('falls back to the whole tree for an unknown path', () => {
+    const { container } = render(
+      <TreemapChart data={shop} animation={false} drilldownPath={['Nowhere', 'Else']} />,
+    );
+    expect(nav(container)).toBeNull();
+    expect(label(container, 'Books')).toBeTruthy();
+  });
+
+  it('round-trips through state, and drilldown={false} turns it off', () => {
+    function Controlled() {
+      const [path, setPath] = useState<string[]>([]);
+      return (
+        <>
+          <TreemapChart
+            data={shop}
+            width={600}
+            height={360}
+            animation={false}
+            drilldownPath={path}
+            onDrilldownPathChange={setPath}
+          />
+          <output data-testid="path">{path.join('/')}</output>
+        </>
+      );
+    }
+    const { container, unmount } = render(<Controlled />);
+    fireEvent.click(surface(container), pointIn(container, 'Smart'));
+    expect(screen.getByTestId('path').textContent).toBe('Electronics');
+    expect(nav(container)).toContain('Shop›Electronics');
+    fireEvent.click(screen.getByRole('button', { name: 'Shop' }));
+    expect(screen.getByTestId('path').textContent).toBe('');
+    unmount();
+    const off = render(
+      <TreemapChart data={shop} animation={false} drilldown={false} drilldownPath={['Grocery']} />,
+    );
+    expect(nav(off.container)).toBeNull();
+  });
+
+  it('takes strings from messages, with texts as overrides', () => {
+    const { container, rerender } = render(
+      <TreemapChart data={shop} animation={false} locale="ru" />,
+    );
+    expect(container.querySelector('thead')?.textContent).toBe('КатегорияЗначениеДоля');
+    rerender(<TreemapChart data={shop} animation={false} messages={{ share: 'Portion' }} />);
+    expect(container.querySelector('thead')?.textContent).toBe('CategoryValuePortion');
+    rerender(
+      <TreemapChart
+        data={shop}
+        animation={false}
+        messages={{ share: 'Portion' }}
+        texts={{ share: 'Slice' }}
+      />,
+    );
+    expect(container.querySelector('thead')?.textContent).toBe('CategoryValueSlice');
   });
 });

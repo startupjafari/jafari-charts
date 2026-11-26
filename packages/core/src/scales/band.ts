@@ -13,6 +13,8 @@ export interface BandScaleOptions {
   paddingOuter?: number;
   /** Where leftover space goes: 0 = start, 0.5 = centre, 1 = end. */
   align?: number;
+  /** Index of the first band in a longer category list (a zoomed window). Default 0. */
+  offset?: number;
 }
 
 export interface BandScale {
@@ -23,6 +25,11 @@ export interface BandScale {
   readonly bandwidth: number;
   /** Distance between the starts of adjacent bands. */
   readonly step: number;
+  /**
+   * Index of the first band in the full category list when the scale shows a window of it
+   * (zoom); band indices below are local to the window.
+   */
+  readonly offset?: number;
   /** Start of the band at `index` (centre for point scales). */
   position(index: number): number;
   /** Centre of the band at `index`. */
@@ -43,7 +50,7 @@ export function createBandScale(options: BandScaleOptions): BandScale {
   const paddingInner = clamp01(options.paddingInner ?? 0.2);
   const paddingOuter = Math.max(0, options.paddingOuter ?? paddingInner / 2);
   const align = clamp01(options.align ?? 0.5);
-  return build('band', domain, range, paddingInner, paddingOuter, align);
+  return build('band', domain, range, paddingInner, paddingOuter, align, options.offset ?? 0);
 }
 
 export interface PointScaleOptions {
@@ -52,6 +59,7 @@ export interface PointScaleOptions {
   /** Space before the first and after the last point, in steps. */
   padding?: number;
   align?: number;
+  offset?: number;
 }
 
 /** A band scale with zero bandwidth: categories map to evenly spaced points. */
@@ -63,6 +71,7 @@ export function createPointScale(options: PointScaleOptions): BandScale {
     1,
     Math.max(0, options.padding ?? 0.5),
     clamp01(options.align ?? 0.5),
+    options.offset ?? 0,
   );
 }
 
@@ -73,6 +82,7 @@ function build(
   paddingInner: number,
   paddingOuter: number,
   align: number,
+  offset: number,
 ): BandScale {
   const n = domain.length;
   const [r0, r1] = range;
@@ -97,6 +107,7 @@ function build(
     range,
     bandwidth,
     step,
+    offset,
     position,
     center: (index) => position(index) + bandwidth / 2,
     map: (label) => position(domain.indexOf(label)),

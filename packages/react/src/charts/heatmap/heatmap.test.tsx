@@ -1,4 +1,11 @@
+import {
+  aggregateCalendarDays,
+  buildCalendarModel,
+  numericColumn,
+  timeColumn,
+} from '@jafari/charts-core';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { CalendarHeatmap } from './CalendarHeatmap';
 import { HeatmapChart } from './HeatmapChart';
@@ -432,5 +439,208 @@ describe('CalendarHeatmap', () => {
     );
     expect(screen.getByRole('status').textContent).toBe('No data');
     expect(container.querySelector('.jc-scale-legend')).toBeNull();
+  });
+});
+
+describe('CalendarHeatmap: active date and range selection', () => {
+  // Same layout as the component at width 1000 (cell centres for pointer tests).
+  const model = buildCalendarModel({
+    width: 1000,
+    days: aggregateCalendarDays(timeColumn(year, 'date'), numericColumn(year, 'count'))!,
+    locale: 'en',
+    colors: {},
+    layout: 'auto',
+  });
+  const centre = (i: number) => {
+    const r = model.cellRect(i)!;
+    return { clientX: r.x + r.width / 2, clientY: r.y + r.height / 2 };
+  };
+  const surfaceOf = (c: HTMLElement) => c.querySelector('svg.jc-surface') as SVGSVGElement;
+  const mouse = { pointerId: 1, pointerType: 'mouse', button: 0 };
+  const day = (d: Date | null) =>
+    d ? `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}` : null;
+
+  it('follows a controlled active date (Date or ISO string) and reports changes', () => {
+    const onChange = vi.fn();
+    const { container, rerender } = render(
+      <CalendarHeatmap
+        data={year}
+        dateKey="date"
+        valueKey="count"
+        width={1000}
+        animation={false}
+        activeDate="2025-01-08"
+        onActiveDateChange={onChange}
+      />,
+    );
+    expect(container.querySelector('.jc-active')).toBeTruthy();
+    expect(container.querySelector('.jc-tooltip')?.textContent).toMatch(/Jan 8, 2025/);
+    // Keyboard navigation asks the owner to move; the controlled day stays until it does.
+    fireEvent.keyDown(screen.getByRole('img'), { key: 'ArrowRight' });
+    expect(day(onChange.mock.lastCall![0])).toBe('2025-1-15');
+    expect(container.querySelector('.jc-tooltip')?.textContent).toMatch(/Jan 8, 2025/);
+    rerender(
+      <CalendarHeatmap
+        data={year}
+        dateKey="date"
+        valueKey="count"
+        width={1000}
+        animation={false}
+        activeDate={new Date(2025, 2, 3)}
+        onActiveDateChange={onChange}
+      />,
+    );
+    expect(container.querySelector('.jc-tooltip')?.textContent).toMatch(/Mar 3, 2025/);
+    rerender(
+      <CalendarHeatmap
+        data={year}
+        dateKey="date"
+        valueKey="count"
+        width={1000}
+        animation={false}
+        activeDate={null}
+      />,
+    );
+    expect(container.querySelector('.jc-active')).toBeNull();
+  });
+
+  it('reports the active day when uncontrolled', () => {
+    const onChange = vi.fn();
+    render(
+      <CalendarHeatmap
+        data={year}
+        dateKey="date"
+        valueKey="count"
+        width={1000}
+        animation={false}
+        onActiveDateChange={onChange}
+      />,
+    );
+    fireEvent.keyDown(screen.getByRole('img'), { key: 'Home' });
+    expect(day(onChange.mock.lastCall![0])).toBe('2025-1-1');
+    fireEvent.keyDown(screen.getByRole('img'), { key: 'Escape' });
+    expect(onChange).toHaveBeenLastCalledWith(null);
+  });
+
+  it('selects a range by dragging and highlights it; a click clears it', () => {
+    const onBrush = vi.fn();
+    const { container } = render(
+      <CalendarHeatmap
+        data={year}
+        dateKey="date"
+        valueKey="count"
+        width={1000}
+        animation={false}
+        brush
+        onBrush={onBrush}
+      />,
+    );
+    const el = surfaceOf(container);
+    fireEvent.pointerDown(el, { ...mouse, ...centre(10) });
+    fireEvent.pointerMove(el, { ...mouse, ...centre(5) });
+    expect(container.querySelector('.jc-selection path')).toBeTruthy();
+    fireEvent.pointerMove(el, { ...mouse, ...centre(2) });
+    fireEvent.pointerUp(el, { ...mouse, ...centre(2) });
+    expect(onBrush).toHaveBeenCalledTimes(1);
+    const { from, to } = onBrush.mock.lastCall![0] as { from: Date; to: Date };
+    expect(day(from)).toBe('2025-1-3');
+    expect(day(to)).toBe('2025-1-11');
+    expect(container.querySelector('.jc-selection path')).toBeTruthy();
+    expect(container.querySelector('[aria-live]')?.textContent).toBe(
+      'Selected Fri, Jan 3, 2025 – Sat, Jan 11, 2025',
+    );
+    // A click without dragging clears the selection and reports nothing.
+    fireEvent.pointerDown(el, { ...mouse, ...centre(40) });
+    fireEvent.pointerUp(el, { ...mouse, ...centre(40) });
+    expect(container.querySelector('.jc-selection')).toBeNull();
+    expect(onBrush).toHaveBeenCalledTimes(1);
+  });
+
+  it('extends a selection with Shift + arrows and clears it with Escape', () => {
+    const onBrush = vi.fn();
+    const { container } = render(
+      <CalendarHeatmap
+        data={year}
+        dateKey="date"
+        valueKey="count"
+        width={1000}
+        animation={false}
+        brush
+        onBrush={onBrush}
+      />,
+    );
+    const img = screen.getByRole('img');
+    fireEvent.keyDown(img, { key: 'Home' });
+    fireEvent.keyDown(img, { key: 'ArrowRight', shiftKey: true });
+    let range = onBrush.mock.lastCall![0] as { from: Date; to: Date };
+    expect([day(range.from), day(range.to)]).toEqual(['2025-1-1', '2025-1-8']);
+    fireEvent.keyDown(img, { key: 'ArrowDown', shiftKey: true });
+    range = onBrush.mock.lastCall![0] as { from: Date; to: Date };
+    expect([day(range.from), day(range.to)]).toEqual(['2025-1-1', '2025-1-9']);
+    expect(container.querySelector('[aria-live]')?.textContent).toBe(
+      'Selected Wed, Jan 1, 2025 – Thu, Jan 9, 2025',
+    );
+    // The active day moved with the selection.
+    expect(container.querySelector('.jc-tooltip')?.textContent).toMatch(/Jan 9, 2025/);
+    expect(container.querySelector('.jc-selection path')).toBeTruthy();
+    fireEvent.keyDown(img, { key: 'Escape' });
+    expect(container.querySelector('.jc-selection')).toBeNull();
+    // Without `brush`, Shift + arrows only navigate.
+    const plain = vi.fn();
+    const other = render(
+      <CalendarHeatmap
+        data={year}
+        dateKey="date"
+        valueKey="count"
+        width={1000}
+        animation={false}
+        onBrush={plain}
+      />,
+    );
+    const otherImg = other.getAllByRole('img')[1] as HTMLElement;
+    fireEvent.keyDown(otherImg, { key: 'Home' });
+    fireEvent.keyDown(otherImg, { key: 'ArrowRight', shiftKey: true });
+    expect(plain).not.toHaveBeenCalled();
+  });
+
+  it('round-trips a controlled active date through state', () => {
+    function Controlled() {
+      const [date, setDate] = useState<Date | string | null>('2025-02-10');
+      return (
+        <>
+          <CalendarHeatmap
+            data={year}
+            dateKey="date"
+            valueKey="count"
+            width={1000}
+            animation={false}
+            activeDate={date}
+            onActiveDateChange={setDate}
+          />
+          <output data-testid="date">{date ? day(new Date(date)) : 'none'}</output>
+        </>
+      );
+    }
+    render(<Controlled />);
+    fireEvent.keyDown(screen.getByRole('img'), { key: 'ArrowDown' });
+    expect(screen.getByTestId('date').textContent).toBe('2025-2-11');
+  });
+
+  it('localises the legend through messages (and overrides)', () => {
+    const { container, rerender } = render(
+      <CalendarHeatmap data={year} dateKey="date" valueKey="count" width={1000} locale="ru" />,
+    );
+    expect(container.querySelector('.jc-scale-legend')?.textContent).toMatch(/^Меньше.*Больше$/);
+    rerender(
+      <CalendarHeatmap
+        data={year}
+        dateKey="date"
+        valueKey="count"
+        width={1000}
+        locale="kk"
+        messages={{ less: 'Сирек' }}
+      />,
+    );
+    expect(container.querySelector('.jc-scale-legend')?.textContent).toMatch(/^Сирек.*Көп$/);
   });
 });

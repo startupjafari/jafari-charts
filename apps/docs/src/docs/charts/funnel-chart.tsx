@@ -7,18 +7,32 @@ import type { ChartDoc } from '../types';
 export const funnelChart: ChartDoc = {
   slug: 'funnel-chart',
   component: 'FunnelChart',
-  title: 'Funnel chart',
+  title: { en: 'Funnel chart', ru: 'Воронка' },
   group: 'Advanced',
-  summary: 'Conversion through ordered stages, with percentages and drop-off.',
-  description: (
-    <p>
-      One row per stage, in funnel order. Each stage shows its value and its share of the first
-      stage (or of the previous one with <code>percentBase="previous"</code>); the loss between
-      stages is labelled where there is room. The default <code>bars</code> variant keeps values
-      readable; <code>trapezoid</code> draws a continuous funnel. Default height grows with the
-      number of stages (52 px each, 160–440 px).
-    </p>
-  ),
+  summary: {
+    en: 'Conversion through ordered stages, with percentages and drop-off.',
+    ru: 'Конверсия по последовательным этапам — с процентами и потерями.',
+  },
+  description: {
+    en: (
+      <p>
+        One row per stage, in funnel order. Each stage shows its value and its share of the first
+        stage (or of the previous one with <code>percentBase="previous"</code>); the loss between
+        stages is labelled where there is room. The default <code>bars</code> variant keeps values
+        readable; <code>trapezoid</code> draws a continuous funnel. Default height grows with the
+        number of stages (52 px each, 160–440 px).
+      </p>
+    ),
+    ru: (
+      <p>
+        Одна строка данных на этап, в порядке воронки. Для каждого этапа показываются значение и
+        доля от первого этапа (или от предыдущего при <code>percentBase="previous"</code>); потери
+        между этапами подписываются, если хватает места. Вариант по умолчанию, <code>bars</code>,
+        сохраняет значения читаемыми; <code>trapezoid</code> рисует сплошную воронку. Высота по
+        умолчанию растёт с числом этапов (по 52 px на этап, в пределах 160–440 px).
+      </p>
+    ),
+  },
   thumbnail: () => (
     <FunnelChart
       data={admissions}
@@ -34,110 +48,164 @@ export const funnelChart: ChartDoc = {
   ),
   sections: {
     usage: [
-      { id: 'funnel-chart/Basic', title: 'Bars (default)' },
-      { id: 'funnel-chart/Trapezoid', title: 'Trapezoid' },
-      { id: 'funnel-chart/Horizontal', title: 'Horizontal, step conversion' },
+      { id: 'funnel-chart/Basic', title: { en: 'Bars (default)', ru: 'Полосы (по умолчанию)' } },
+      { id: 'funnel-chart/Trapezoid', title: { en: 'Trapezoid', ru: 'Трапеция' } },
+      {
+        id: 'funnel-chart/Horizontal',
+        title: {
+          en: 'Horizontal, step conversion',
+          ru: 'Горизонтальная ориентация, конверсия от предыдущего этапа',
+        },
+      },
     ],
-    styling: [{ id: 'funnel-chart/Styling', title: 'Colours by stage and formatting' }],
-    interaction: [{ id: 'funnel-chart/Interaction', title: 'Click a stage' }],
-    responsive: [{ id: 'funnel-chart/Responsive', title: 'Narrow container', width: 320 }],
-    empty: [{ id: 'funnel-chart/States', title: 'Empty state' }],
+    styling: [
+      {
+        id: 'funnel-chart/Styling',
+        title: {
+          en: 'Colours by stage and formatting',
+          ru: 'Цвета по этапам и форматирование',
+        },
+      },
+    ],
+    interaction: [
+      { id: 'funnel-chart/Interaction', title: { en: 'Click a stage', ru: 'Нажатие на этап' } },
+    ],
+    responsive: [
+      {
+        id: 'funnel-chart/Responsive',
+        title: { en: 'Narrow container', ru: 'Узкий контейнер' },
+        width: 320,
+      },
+    ],
+    empty: [{ id: 'funnel-chart/States', title: { en: 'Empty state', ru: 'Нет данных' } }],
   },
   keyboard: ITEM_KEYS,
   props: [
     {
-      title: 'FunnelChart props',
+      title: { en: 'FunnelChart props', ru: 'Пропсы FunnelChart' },
       props: [
         {
           name: 'data',
           type: 'readonly T[]',
           required: true,
-          description: 'One row per stage, in funnel order.',
+          description: {
+            en: 'One row per stage, in funnel order.',
+            ru: 'Одна строка на этап, в порядке воронки.',
+          },
         },
         {
           name: 'labelKey',
           type: 'KeysMatching<T, string | number>',
           required: true,
-          description: 'Field naming each stage.',
+          description: { en: 'Field naming each stage.', ru: 'Поле с названием этапа.' },
         },
         {
           name: 'valueKey',
           type: 'NumericKey<T>',
           required: true,
-          description: "Each stage's value.",
+          description: { en: "Each stage's value.", ru: 'Поле со значением этапа.' },
         },
         {
           name: 'variant',
           type: "'bars' | 'trapezoid'",
           default: "'bars'",
-          description: 'Centred bars with soft connectors, or a continuous funnel.',
+          description: {
+            en: 'Centred bars with soft connectors, or a continuous funnel.',
+            ru: 'Полосы по центру с мягкими соединителями или сплошная воронка.',
+          },
         },
         {
           name: 'orientation',
           type: "'vertical' | 'horizontal'",
           default: "'vertical'",
-          description: 'Stages top → bottom or left → right.',
+          description: {
+            en: 'Stages top → bottom or left → right.',
+            ru: 'Этапы сверху вниз или слева направо.',
+          },
         },
         {
           name: 'percentBase',
           type: "'first' | 'previous'",
           default: "'first'",
-          description: 'Percentages relative to the first or the previous stage.',
+          description: {
+            en: 'Percentages relative to the first or the previous stage.',
+            ru: 'Проценты относительно первого или предыдущего этапа.',
+          },
         },
         {
           name: 'color',
           type: 'string',
-          default: 'series 1',
-          description: 'Colour of every stage.',
+          default: { en: 'series 1', ru: 'цвет ряда 1' },
+          description: { en: 'Colour of every stage.', ru: 'Цвет всех этапов.' },
         },
         {
           name: 'colors',
           type: 'readonly string[]',
-          description: 'Colours by stage position (overrides `color`).',
+          description: {
+            en: 'Colours by stage position (overrides `color`).',
+            ru: 'Цвета по порядку этапов (заменяют `color`).',
+          },
         },
         {
           name: 'labels',
           type: 'boolean',
           default: 'true',
-          description: 'Stage names and values on the chart.',
+          description: {
+            en: 'Stage names and values on the chart.',
+            ru: 'Названия и значения этапов на диаграмме.',
+          },
         },
         {
           name: 'dropOff',
           type: 'boolean',
           default: 'true',
-          description: 'Loss labels between stages when there is room.',
+          description: {
+            en: 'Loss labels between stages when there is room.',
+            ru: 'Подписи потерь между этапами, если хватает места.',
+          },
         },
         {
           name: 'valueFormatter',
           type: '(value: number) => string',
-          description: 'Formats values.',
+          description: { en: 'Formats values.', ru: 'Форматирует значения.' },
         },
         {
           name: 'percentFormatter',
           type: '(ratio: number) => string',
-          description: 'Formats ratios (0.25 → "25%").',
+          description: {
+            en: 'Formats ratios (0.25 → "25%").',
+            ru: 'Форматирует доли (0.25 → "25%").',
+          },
         },
         {
           name: 'tooltip',
           type: 'boolean | TooltipOptions',
           default: 'true',
-          description: 'Stage tooltip with conversion and drop-off.',
+          description: {
+            en: 'Stage tooltip with conversion and drop-off.',
+            ru: 'Подсказка этапа с конверсией и потерями.',
+          },
         },
         {
           name: 'texts',
           type: 'Partial<FunnelTexts>',
-          description:
-            'Overrides for `stage`, `ofFirst`, `ofPrevious`, `dropOff` (built in for en, ru, kk).',
+          description: {
+            en: 'Overrides for `stage`, `ofFirst`, `ofPrevious`, `dropOff` (built in for en, ru, kk).',
+            ru: 'Переопределения текстов `stage`, `ofFirst`, `ofPrevious`, `dropOff` (встроены для en, ru, kk).',
+          },
         },
         {
           name: 'activeIndex / onActiveIndexChange',
           type: 'number | null',
-          description: 'Controlled active stage.',
+          description: { en: 'Controlled active stage.', ru: 'Контролируемый активный этап.' },
         },
         {
           name: 'onHover / onClick',
           type: '(event: FunnelStageEvent<T>) => void',
-          description: 'Event with `value`, `ofFirst`, `ofPrevious`, `dropOff`, `dropOffRate`.',
+          description: {
+            en: 'Event with `value`, `ofFirst`, `ofPrevious`, `dropOff`, `dropOffRate`.',
+            ru: 'Событие с полями `value`, `ofFirst`, `ofPrevious`, `dropOff`, `dropOffRate`.',
+          },
         },
       ],
     },

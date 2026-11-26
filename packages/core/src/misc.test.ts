@@ -94,6 +94,19 @@ describe('messages', () => {
     expect(getMessages('kk').noData).toBe('Деректер жоқ');
     expect(getMessages('de').noData).toBe('No data');
     expect(getMessages('en', { noData: 'Nothing' }).noData).toBe('Nothing');
+    // Chart-specific strings live in the shared messages (funnel, treemap, heatmaps, zoom).
+    for (const locale of ['en', 'ru', 'kk']) {
+      const m = getMessages(locale);
+      for (const key of ['stage', 'ofFirst', 'ofPrevious', 'dropOff', 'all', 'back'] as const)
+        expect(m[key].length).toBeGreaterThan(1);
+      for (const key of ['breadcrumb', 'share', 'less', 'more', 'month'] as const)
+        expect(m[key].length).toBeGreaterThan(1);
+      expect(m.visibleRange('A', 'B')).toMatch(/A – B/);
+      expect(m.selectedRange('A', 'B')).toMatch(/A – B/);
+    }
+    expect(getMessages('ru').dropOff).toBe('Потери');
+    expect(getMessages('kk').ofParent('12%', 'Оқу')).toBe('«Оқу» ішінен 12%');
+    expect(getMessages('ru').less).toBe('Меньше');
     expect(
       getMessages('ru').describe({ type: 'Линейный график', series: 2, points: 21 }),
     ).toContain('21 точка');

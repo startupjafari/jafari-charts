@@ -1,42 +1,22 @@
-/** Treemap-specific strings (drill-down navigation and shares). */
-export interface TreemapTexts {
-  /** Breadcrumb label of the whole tree. */
-  all: string;
-  /** Zoom-out button. */
-  back: string;
-  /** Accessible name of the breadcrumb navigation. */
-  breadcrumb: string;
-  /** Data table header for the share of the total. */
-  share: string;
-  /** Tooltip footer: share of the parent category. */
-  ofParent: (share: string, parent: string) => string;
-}
+import type { ChartMessages } from '@jafari/charts-core';
 
-const TEXTS: Record<string, TreemapTexts> = {
-  en: {
-    all: 'All',
-    back: 'Back',
-    breadcrumb: 'Treemap level',
-    share: 'Share',
-    ofParent: (share, parent) => `${share} of ${parent}`,
-  },
-  ru: {
-    all: 'Все',
-    back: 'Назад',
-    breadcrumb: 'Уровень диаграммы',
-    share: 'Доля',
-    ofParent: (share, parent) => `${share} от «${parent}»`,
-  },
-  kk: {
-    all: 'Барлығы',
-    back: 'Артқа',
-    breadcrumb: 'Диаграмма деңгейі',
-    share: 'Үлесі',
-    ofParent: (share, parent) => `«${parent}» ішінен ${share}`,
-  },
-};
+/** Treemap-specific strings; defaults come from the chart's `ChartMessages` (en/ru/kk). */
+export type TreemapTexts = Pick<
+  ChartMessages,
+  'all' | 'back' | 'breadcrumb' | 'share' | 'ofParent'
+>;
 
-export function treemapTexts(locale: string, overrides?: Partial<TreemapTexts>): TreemapTexts {
-  const base = TEXTS[locale.toLowerCase().split(/[-_]/)[0] ?? 'en'] ?? (TEXTS.en as TreemapTexts);
+/** Resolves the treemap strings: chart messages, then the `texts` prop overrides. */
+export function treemapTexts(
+  messages: ChartMessages,
+  overrides?: Partial<TreemapTexts>,
+): TreemapTexts {
+  const base: TreemapTexts = {
+    all: messages.all,
+    back: messages.back,
+    breadcrumb: messages.breadcrumb,
+    share: messages.share,
+    ofParent: messages.ofParent,
+  };
   return overrides ? { ...base, ...overrides } : base;
 }

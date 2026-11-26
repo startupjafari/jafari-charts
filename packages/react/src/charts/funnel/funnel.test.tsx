@@ -226,3 +226,28 @@ describe('FunnelChart refinements', () => {
     expect([badLabel, badValue]).toHaveLength(2);
   });
 });
+
+describe('FunnelChart strings', () => {
+  const head = (c: HTMLElement) => c.querySelector('thead')?.textContent;
+  it('come from messages (en/ru/kk), with texts as overrides', () => {
+    const { container, rerender } = render(
+      <FunnelChart data={steps} labelKey="step" valueKey="users" locale="kk" animation={false} />,
+    );
+    expect(head(container)).toBe('КезеңМәнБірінші кезеңненАлдыңғы кезеңненШығын');
+    rerender(
+      <FunnelChart data={steps} labelKey="step" valueKey="users" locale="ru" animation={false} />,
+    );
+    expect(head(container)).toBe('ЭтапЗначениеОт первого этапаОт предыдущего этапаПотери');
+    rerender(
+      <FunnelChart
+        data={steps}
+        labelKey="step"
+        valueKey="users"
+        animation={false}
+        messages={{ dropOff: 'Lost', stage: 'Step' }}
+        texts={{ stage: 'Phase' }}
+      />,
+    );
+    expect(head(container)).toBe('PhaseValueOf first stageOf previous stageLost');
+  });
+});

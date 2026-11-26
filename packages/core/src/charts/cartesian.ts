@@ -78,6 +78,11 @@ export interface CartesianSpec {
     tickCount?: number;
     /** Visible domain of a continuous axis (zoom). */
     domain?: Extent;
+    /**
+     * Visible window of a band (category) axis as inclusive positions `[start, end]`
+     * (categorical zoom). Only those categories are laid out, filling the plot.
+     */
+    range?: readonly [number, number];
     /** Force a band scale (bars always use one). */
     band?: boolean;
   };
@@ -131,6 +136,8 @@ export interface CartesianModel {
   point(series: number, position: number): { x: number; y: number } | null;
   /** Pixel position of an x position along the category/x axis. */
   position(position: number): number;
+  /** Position nearest to a pixel along the category/x axis (clamped to the visible range). */
+  indexAt(pixel: number): number;
   /** Band rectangle of a position (for cursors), null for continuous axes. */
   bandRect(position: number): Rect | null;
   hitTest(x: number, y: number, mode?: 'shared' | 'item'): CartesianHit | null;
@@ -205,7 +212,17 @@ export function buildCartesianModel(spec: CartesianSpec): CartesianModel {
   if (!band && spec.x.domain && n > 0) {
     v0 = Math.max(0, bisectLeft(xs, spec.x.domain[0]) - 1);
     v1 = Math.min(n - 1, bisectRight(xs, spec.x.domain[1]));
+  } else if (band && spec.x.range && n > 0) {
+    const [r0, r1] = spec.x.range;
+    const a = Math.round(Math.min(r0, r1));
+    const b = Math.round(Math.max(r0, r1));
+    if (Number.isFinite(a) && Number.isFinite(b)) {
+      v0 = Math.min(n - 1, Math.max(0, a));
+      v1 = Math.min(n - 1, Math.max(v0, b));
+    }
   }
+  /** First drawn band: band scales index positions relative to it. */
+  const bandOffset = band ? v0 : 0;
 
   // ---- 3. Value domains --------------------------------------------------------------------
   const domainFor = (axis: 'y' | 'y2'): Extent => {
@@ -271,9 +288,10 @@ export function buildCartesianModel(spec: CartesianSpec): CartesianModel {
     }
     categoryAxis = {
       kind: 'band',
-      labels,
+      labels: bandOffset > 0 || v1 < n - 1 ? labels.slice(v0, v1 + 1) : labels,
       paddingInner: spec.bar?.categoryGap ?? (hasBars ? 0.3 : 0),
       paddingOuter: hasBars ? 0.15 : 0.5,
+      ...(bandOffset ? { offset: bandOffset } : {}),
       ...(spec.x.hidden ? { hidden: true } : {}),
     };
   } else {
@@ -322,7 +340,14 @@ export function buildCartesianModel(spec: CartesianSpec): CartesianModel {
   const bandScale = isBandScale(catScale) ? (catScale as BandScale) : null;
 
   const catPos = (p: number): number =>
-    bandScale ? bandScale.center(p) : (catScale as LinearScale).map(xs[p] as number);
+    bandScale ? bandScale.center(p - bandOffset) : (catScale as LinearScale).map(xs[p] as number);
+  const indexAt = (pixel: number): number => {
+    if (n === 0) return -1;
+    const p = bandScale
+      ? bandScale.invert(pixel) + bandOffset
+      : nearestIndex(xs, (catScale as LinearScale).invert(pixel));
+    return Math.min(v1, Math.max(v0, p));
+  };
 
   // ---- 5. Bar geometry ---------------------------------------------------------------------
   const barSeries = series
@@ -637,7 +662,7 @@ export function buildCartesianModel(spec: CartesianSpec): CartesianModel {
       return null;
     const along = horizontal ? y : x;
     let p: number;
-    if (bandScale) p = bandScale.invert(along);
+    if (bandScale) p = bandScale.invert(along) + bandOffset;
     else {
       const value = (catScale as LinearScale).invert(along);
       p = nearestIndex(xs, value);
@@ -688,9 +713,10 @@ export function buildCartesianModel(spec: CartesianSpec): CartesianModel {
     hi,
     point,
     position: catPos,
+    indexAt,
     bandRect(p) {
-      if (!bandScale || p < 0 || p >= n) return null;
-      const start = bandScale.position(p) - (bandScale.step - bandScale.bandwidth) / 2;
+      if (!bandScale || p < v0 || p > v1) return null;
+      const start = bandScale.position(p - bandOffset) - (bandScale.step - bandScale.bandwidth) / 2;
       return horizontal
         ? { x: plot.x, y: start, width: plot.width, height: bandScale.step }
         : { x: start, y: plot.y, width: bandScale.step, height: plot.height };

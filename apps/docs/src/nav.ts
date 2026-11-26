@@ -1,6 +1,9 @@
 import { CHARTS } from './docs/charts';
+import type { ChartGroup } from './docs/types';
+import type { Messages } from './i18n';
 
 export interface NavItem {
+  /** Language-neutral path. */
   to: string;
   label: string;
   /** Small badge (e.g. chart group). */
@@ -12,57 +15,58 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-const chartGroup = (group: 'Core' | 'Advanced' | 'Professional'): NavItem[] =>
+/** Chart entries keep the component name in every language (it is what you import). */
+const chartGroup = (group: ChartGroup): NavItem[] =>
   CHARTS.filter((c) => c.group === group).map((c) => ({
     to: `/charts/${c.slug}`,
     label: c.component,
   }));
 
-/** Sidebar navigation. Chart entries come from the chart registry. */
-export function navigation(): NavGroup[] {
+/** Sidebar navigation in a language. Chart entries come from the chart registry. */
+export function navigation(t: Messages): NavGroup[] {
   return [
     {
-      title: 'Getting started',
+      title: t.nav.gettingStarted,
       items: [
-        { to: '/', label: 'Home' },
-        { to: '/getting-started', label: 'Introduction' },
-        { to: '/installation', label: 'Installation' },
-        { to: '/quick-start', label: 'Quick start' },
+        { to: '/', label: t.pages.home },
+        { to: '/getting-started', label: t.pages.introduction },
+        { to: '/installation', label: t.pages.installation },
+        { to: '/quick-start', label: t.pages.quickStart },
       ],
     },
     {
-      title: 'Charts',
-      items: [{ to: '/charts', label: 'All charts' }, ...chartGroup('Core')],
+      title: t.nav.charts,
+      items: [{ to: '/charts', label: t.pages.allCharts }, ...chartGroup('Core')],
     },
-    { title: 'Advanced charts', items: chartGroup('Advanced') },
-    { title: 'Professional charts', items: chartGroup('Professional') },
+    { title: t.nav.advancedCharts, items: chartGroup('Advanced') },
+    { title: t.nav.professionalCharts, items: chartGroup('Professional') },
     {
-      title: 'Guides',
+      title: t.nav.guides,
       items: [
-        { to: '/components', label: 'Components' },
-        { to: '/themes', label: 'Themes' },
-        { to: '/performance', label: 'Performance' },
+        { to: '/components', label: t.pages.components },
+        { to: '/themes', label: t.pages.themes },
+        { to: '/performance', label: t.pages.performance },
       ],
     },
     {
-      title: 'Tools',
+      title: t.nav.tools,
       items: [
-        { to: '/playground', label: 'Playground' },
-        { to: '/examples', label: 'Examples' },
+        { to: '/playground', label: t.pages.playground },
+        { to: '/examples', label: t.pages.examples },
       ],
     },
     {
-      title: 'Reference',
+      title: t.nav.reference,
       items: [
-        { to: '/api', label: 'API reference' },
-        { to: '/changelog', label: 'Changelog' },
-        { to: '/github', label: 'GitHub' },
+        { to: '/api', label: t.pages.api },
+        { to: '/changelog', label: t.pages.changelog },
+        { to: '/github', label: t.pages.github },
       ],
     },
   ].filter((g) => g.items.length > 0);
 }
 
 /** Flat, ordered list of pages (for previous/next links). */
-export function pageOrder(): NavItem[] {
-  return navigation().flatMap((g) => g.items);
+export function pageOrder(t: Messages): NavItem[] {
+  return navigation(t).flatMap((g) => g.items);
 }

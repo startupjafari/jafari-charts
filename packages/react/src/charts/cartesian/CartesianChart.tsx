@@ -5,18 +5,14 @@ import {
   formatAuto,
   formatDate,
   inferDateFormat,
-  isFullDomain,
   isSortedAscending,
   labelColumn,
   nearestIndex,
   numericColumn,
-  panDomain,
   permute,
   sortIndices,
   SYMBOL_SHAPES,
   timeColumn,
-  wheelZoomFactor,
-  zoomDomain,
   type AxisValue,
   type CartesianModel,
   type CartesianSeriesSpec,
@@ -24,7 +20,6 @@ import {
   type DimensionType,
   type LinearScale,
   type Mark,
-  type Rect,
   type RuleMark,
   type StackOffset,
   type SymbolShape,
@@ -37,19 +32,22 @@ import { ChartCrosshair, ChartCursor } from '../../components/ChartCrosshair';
 import { ChartGrid } from '../../components/ChartGrid';
 import type { LegendOptions } from '../../components/ChartLegend';
 import type { TooltipOptions } from '../../components/ChartTooltip';
-import { ChartView, type SurfaceHandlers } from '../../components/ChartView';
+import { ChartView } from '../../components/ChartView';
 import { useControllableState } from '../../hooks/useControllableState';
-import { useStoreSelector } from '../../hooks/useStoreSelector';
 import { devWarn } from '../../internal/env';
 import { useChartRoot, type ChartRoot } from '../../internal/useChartRoot';
+import {
+  BrushOverlay,
+  useZoomGestures,
+  type BrushRect,
+  type ZoomAxis,
+} from '../../internal/useZoomGestures';
 import type {
   ActiveItem,
   ChartAdapter,
-  InteractionState,
   SeriesInfo,
   TooltipData,
 } from '../../providers/ChartContext';
-import { useChart } from '../../providers/ChartContext';
 import type {
   BarOptions,
   CartesianChartProps,
@@ -57,6 +55,7 @@ import type {
   SeriesConfig,
   XAxisOptions,
   YAxisOptions,
+  ZoomOptions,
 } from './types';
 import { resolveOption } from '../../internal/options';
 
@@ -273,23 +272,6 @@ function axisSpec(o: YAxisOptions | null) {
   };
 }
 
-function BrushOverlay({ plot }: { plot: Rect }) {
-  const { store } = useChart();
-  const brush = useStoreSelector(store, selectBrush);
-  if (!brush) return null;
-  const [a, b] = brush.split(':').map(Number) as [number, number];
-  return (
-    <rect
-      className="jc-brush"
-      x={Math.min(a, b)}
-      y={plot.y}
-      width={Math.abs(b - a)}
-      height={plot.height}
-    />
-  );
-}
-const selectBrush = (s: InteractionState) => (s.brush ? `${s.brush.from}:${s.brush.to}` : '');
-
 /**
  * The shared engine behind Line, Area, Bar (all variants), Combo, Stacked Area,
  * Waterfall and Sparkline charts.
@@ -313,7 +295,7 @@ export function CartesianChart<T extends object>({
     props.crosshair,
     !minimal && preset.type !== 'bar',
   );
-  const zoomOpts = resolveOption<{ wheel?: boolean | 'ctrl'; minSpan?: number }>(props.zoom, false);
+  const zoomOpts = resolveOption<ZoomOptions>(props.zoom, false);
 
   const prepared = usePrepared(props, xOpts);
   const [hiddenList, setHidden] = useControllableState<readonly string[]>(
@@ -354,6 +336,25 @@ export function CartesianChart<T extends object>({
   );
   const domain = xDomain && limits ? clampDomain(xDomain, limits) : null;
 
+  // Categorical zoom: a window of whole categories on band axes (bars, category x).
+  const banded =
+    prepared.type === 'category' ||
+    specs.some((s) => s.type === 'bar') ||
+    (preset.type === 'bar' && prepared.type === 'time');
+  const count = Math.max(n, prepared.labels.length);
+  const minCount = Math.max(1, Math.round((zoomOpts?.minSpan ?? 0.01) * count));
+  const [rangeProp, setRange] = useControllableState<readonly [number, number] | null>(
+    props.categoryRange,
+    null,
+    props.onCategoryRangeChange,
+  );
+  const range =
+    banded && count > 1 && rangeProp
+      ? categoryWindow([rangeProp[0], rangeProp[1] + 1], count, minCount)
+      : null;
+  const rangeLo = range?.[0];
+  const rangeHi = range?.[1];
+
   const yKeyDeps = JSON.stringify(yOpts);
   const y2KeyDeps = JSON.stringify(y2Opts);
   const domainLo = domain?.[0];
@@ -374,6 +375,7 @@ export function CartesianChart<T extends object>({
         ...(xOpts?.hidden || !xOpts ? { hidden: true } : {}),
         ...(xOpts?.tickCount !== undefined ? { tickCount: xOpts.tickCount } : {}),
         ...(domain ? { domain } : {}),
+        ...(range ? { range } : {}),
       },
       y: axisSpec(yOpts),
       y2: axisSpec(y2Opts),
@@ -409,6 +411,8 @@ export function CartesianChart<T extends object>({
     specs,
     domainLo,
     domainHi,
+    rangeLo,
+    rangeHi,
     preset,
     minimal,
     props.barRadius,
@@ -460,17 +464,107 @@ export function CartesianChart<T extends object>({
     return { columns: [root.messages.category, ...specs.map((s) => s.label)], rows };
   }, [adapter, model.length, minimal, props.accessibilityTable, specs, root.messages.category]);
 
-  const handlers = useZoomBrush(
-    model,
-    prepared,
-    props,
+  // Zoom & brush: a continuous x domain, or a window of categories (in category units:
+  // band i spans [i, i + 1]; fractional zoom steps accumulate between whole categories).
+  const fraction = useRef<{
+    window: readonly [number, number] | null;
+    domain: [number, number];
+  } | null>(null);
+  const title = (p: number) =>
+    adapter.tooltip({ position: p, series: -1, x: 0, y: 0 })?.title ?? '';
+  const brushAxis = continuous || banded ? (horizontal ? 'y' : 'x') : null;
+  let axes: ZoomAxis[] = [];
+  if (continuous && limits) {
+    const plotX = frame.plot;
+    axes = [
+      {
+        dim: 'x',
+        bounds: limits.bounds,
+        minSpan: limits.minSpan,
+        domain,
+        pixels: [plotX.x, plotX.x + plotX.width],
+        set: setXDomain,
+      },
+    ];
+  } else if (banded && count > 1) {
+    const [v0, v1] = model.visible;
+    const a = model.bandRect(v0);
+    const b = model.bandRect(v1);
+    axes = [
+      {
+        dim: horizontal ? 'y' : 'x',
+        bounds: [0, count],
+        minSpan: minCount,
+        // The fractional domain while it still rounds to the shown window.
+        get domain(): readonly [number, number] | null {
+          const f = fraction.current;
+          if (f && f.window?.[0] === range?.[0] && f.window?.[1] === range?.[1]) return f.domain;
+          return range ? [range[0], range[1] + 1] : null;
+        },
+        zoomed: range !== null,
+        pixels:
+          a && b
+            ? horizontal
+              ? [a.y, b.y + b.height]
+              : [a.x, b.x + b.width]
+            : horizontal
+              ? [frame.plot.y, frame.plot.y + frame.plot.height]
+              : [frame.plot.x, frame.plot.x + frame.plot.width],
+        step: 1,
+        set: (d) => {
+          const w = d ? categoryWindow(d, count, minCount) : null;
+          fraction.current = d ? { window: w, domain: d } : null;
+          if (w?.[0] !== range?.[0] || w?.[1] !== range?.[1]) setRange(w);
+        },
+      },
+    ];
+  }
+  const toIndex = (p: number) => (prepared.order ? (prepared.order[p] as number) : p);
+  const onBrushRect = (rect: BrushRect) => {
+    let start: number;
+    let end: number;
+    let from: AxisValue;
+    let to: AxisValue;
+    if (continuous) {
+      const xScale = frame.x as LinearScale;
+      const lo = xScale.invert(rect.x0);
+      const hi = xScale.invert(rect.x1);
+      start = nearestIndex(prepared.values, lo);
+      end = nearestIndex(prepared.values, hi);
+      from = prepared.raw(start) ?? lo;
+      to = prepared.raw(end) ?? hi;
+    } else {
+      start = model.indexAt(horizontal ? rect.y0 : rect.x0);
+      end = model.indexAt(horizontal ? rect.y1 : rect.x1);
+      from = prepared.raw(start) ?? prepared.labels[start] ?? start;
+      to = prepared.raw(end) ?? prepared.labels[end] ?? end;
+    }
+    props.onBrush?.({ from, to, startIndex: toIndex(start), endIndex: toIndex(end) });
+    root.store.setState({ announcement: root.messages.selectedRange(title(start), title(end)) });
+    if (zoomOpts && !continuous) {
+      fraction.current = null;
+      setRange(categoryWindow([start, end + 1], count, minCount));
+    }
+  };
+  const gestures = useZoomGestures({
     root,
-    limits,
-    domain,
-    setXDomain,
-    zoomOpts,
-    continuous,
-  );
+    plot: frame.plot,
+    axes,
+    zoom: zoomOpts,
+    brush: props.brush && axes.length ? brushAxis : null,
+    onBrush: onBrushRect,
+    brushZooms: continuous,
+    describe: ([d]) => {
+      if (!d) return '';
+      if (continuous)
+        return root.messages.visibleRange(
+          title(nearestIndex(prepared.values, d[0])),
+          title(nearestIndex(prepared.values, d[1])),
+        );
+      const w = categoryWindow(d, count, minCount) ?? [0, count - 1];
+      return root.messages.visibleRange(title(w[0]), title(w[1]));
+    },
+  });
 
   const onEvent = (item: ActiveItem | null): ChartItemEvent<T> | null => {
     if (!item) return null;
@@ -526,13 +620,13 @@ export function CartesianChart<T extends object>({
         const e = onEvent(item);
         if (e) props.onClick?.(e);
       }}
-      surfaceHandlers={handlers.handlers}
+      {...(gestures.handlers ? { surfaceHandlers: gestures.handlers } : {})}
       legendForSingle={Boolean(props.legend)}
       {...(props.syncId ? { syncId: props.syncId } : {})}
       {...(props.highlightedSeries !== undefined
         ? { highlightedSeries: props.highlightedSeries }
         : {})}
-      controls={handlers.controls}
+      controls={gestures.controls}
       background={
         <>
           {gridOpts ? (
@@ -781,150 +875,23 @@ function useCartesianAdapter(
   ]);
 }
 
-function useZoomBrush<T extends object>(
-  model: CartesianModel,
-  prepared: Prepared,
-  props: InternalCartesianProps<T>,
-  root: ChartRoot,
-  limits: { bounds: [number, number]; minSpan: number } | null,
-  domain: [number, number] | null,
-  setDomain: (d: readonly [number, number] | null) => void,
-  zoomOpts: { wheel?: boolean | 'ctrl' } | null,
-  continuous: boolean,
-): { handlers: SurfaceHandlers | undefined; controls: React.ReactNode } {
-  const drag = useRef<{ mode: 'pan' | 'brush'; startX: number; domain: [number, number] } | null>(
-    null,
-  );
-  const pointers = useRef(new Map<number, number>());
-  const pinch = useRef<{ distance: number; domain: [number, number] } | null>(null);
-  const zoomEnabled = Boolean(zoomOpts) && continuous && limits !== null;
-  const brushEnabled = Boolean(props.brush) && continuous && limits !== null;
-  if (!zoomEnabled && !brushEnabled) return { handlers: undefined, controls: null };
-
-  const plot = model.frame.plot;
-  const xScale = model.frame.x as LinearScale;
-  const current = domain ?? limits!.bounds;
-  const zoomed = domain !== null && !isFullDomain(domain, limits!.bounds);
-  const clampX = (x: number) => Math.min(plot.x + plot.width, Math.max(plot.x, x));
-  const setOrReset = (d: [number, number]) =>
-    setDomain(isFullDomain(d, limits!.bounds, 1e-6) ? null : d);
-
-  const finishBrush = (a: number, b: number) => {
-    root.store.setState({ brush: null });
-    if (Math.abs(b - a) < 4) return;
-    const from = xScale.invert(Math.min(a, b));
-    const to = xScale.invert(Math.max(a, b));
-    const startIndex = nearestIndex(prepared.values, from);
-    const endIndex = nearestIndex(prepared.values, to);
-    const index = (p: number) => (prepared.order ? (prepared.order[p] as number) : p);
-    props.onBrush?.({
-      from: prepared.raw(startIndex) ?? from,
-      to: prepared.raw(endIndex) ?? to,
-      startIndex: index(startIndex),
-      endIndex: index(endIndex),
-    });
-    if (zoomEnabled) setOrReset(clampDomain([from, to], limits!));
-  };
-
-  const handlers: SurfaceHandlers = {
-    zoomable: zoomEnabled,
-    onPointerDown: (e, x) => {
-      pointers.current.set(e.pointerId, e.clientX);
-      if (pointers.current.size === 2 && zoomEnabled) {
-        const [a, b] = [...pointers.current.values()] as [number, number];
-        pinch.current = { distance: Math.abs(a - b) || 1, domain: current };
-        drag.current = null;
-        root.store.setState({ brush: null });
-        return true;
-      }
-      if (e.pointerType === 'mouse' && e.button !== 0) return false;
-      if (x < plot.x || x > plot.x + plot.width) return false;
-      const mode =
-        brushEnabled && !(zoomEnabled && e.shiftKey)
-          ? 'brush'
-          : zoomEnabled && zoomed
-            ? 'pan'
-            : null;
-      if (!mode || (mode === 'brush' && e.pointerType === 'touch')) return false;
-      drag.current = { mode, startX: x, domain: current };
-      (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
-      if (mode === 'brush')
-        root.store.setState({ brush: { from: clampX(x), to: clampX(x) }, active: null });
-      return true;
-    },
-    onPointerMove: (e, x) => {
-      if (pointers.current.has(e.pointerId)) pointers.current.set(e.pointerId, e.clientX);
-      if (pinch.current && pointers.current.size === 2) {
-        const [a, b] = [...pointers.current.values()] as [number, number];
-        const factor = pinch.current.distance / (Math.abs(a - b) || 1);
-        const r = (e.currentTarget as Element).getBoundingClientRect();
-        const anchor = xScale.invert((a + b) / 2 - r.left);
-        setOrReset(zoomDomain(pinch.current.domain, anchor, factor, limits!));
-        return true;
-      }
-      const d = drag.current;
-      if (!d) return false;
-      if (d.mode === 'brush') {
-        root.store.setState({ brush: { from: clampX(d.startX), to: clampX(x) } });
-      } else {
-        const span = d.domain[1] - d.domain[0];
-        const delta = -((x - d.startX) / Math.max(1, plot.width)) * span;
-        setOrReset(panDomain(d.domain, delta, limits!));
-      }
-      return true;
-    },
-    onPointerUp: (e, x) => {
-      pointers.current.delete(e.pointerId);
-      if (pointers.current.size < 2) pinch.current = null;
-      const d = drag.current;
-      drag.current = null;
-      if (d?.mode === 'brush') finishBrush(clampX(d.startX), clampX(x));
-    },
-    ...(zoomEnabled
-      ? {
-          onWheel: (e: WheelEvent, x: number) => {
-            const wheel = zoomOpts?.wheel ?? 'ctrl';
-            const pinchGesture = e.ctrlKey || e.metaKey;
-            if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && zoomed) {
-              e.preventDefault();
-              const span = current[1] - current[0];
-              setOrReset(panDomain(current, (e.deltaX / Math.max(1, plot.width)) * span, limits!));
-              return;
-            }
-            if (wheel === false || (wheel === 'ctrl' && !pinchGesture)) return;
-            e.preventDefault();
-            setOrReset(
-              zoomDomain(
-                current,
-                xScale.invert(clampX(x)),
-                wheelZoomFactor(e.deltaY, e.deltaMode),
-                limits!,
-              ),
-            );
-          },
-          onDoubleClick: () => setDomain(null),
-          onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
-            const centre = (current[0] + current[1]) / 2;
-            if (e.key === '+' || e.key === '=')
-              setOrReset(zoomDomain(current, centre, 0.8, limits!));
-            else if (e.key === '-' || e.key === '_')
-              setOrReset(zoomDomain(current, centre, 1.25, limits!));
-            else if (e.key === '0') setDomain(null);
-            else return false;
-            e.preventDefault();
-            return true;
-          },
-        }
-      : {}),
-  };
-
-  const controls =
-    zoomEnabled && zoomed ? (
-      <button type="button" className="jc-button jc-reset-zoom" onClick={() => setDomain(null)}>
-        {root.messages.resetZoom}
-      </button>
-    ) : null;
-  return { handlers, controls };
+/**
+ * Whole-category window `[start, end]` (inclusive positions) for a domain in category units
+ * (band i spans [i, i + 1]), clamped and at least `minCount` wide; `null` = every category.
+ */
+export function categoryWindow(
+  domain: readonly [number, number],
+  count: number,
+  minCount: number,
+): [number, number] | null {
+  const [a, b] = clampDomain(domain, { bounds: [0, count], minSpan: minCount });
+  let start = Math.min(count - 1, Math.max(0, Math.round(a)));
+  let end = Math.min(count - 1, Math.max(start, Math.round(b) - 1));
+  while (end - start + 1 < minCount && (start > 0 || end < count - 1)) {
+    if (end < count - 1) end++;
+    else start--;
+  }
+  return start <= 0 && end >= count - 1 ? null : [start, end];
 }
 
 /** Builds rule marks connecting consecutive bars (waterfall). */

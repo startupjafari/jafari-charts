@@ -1,16 +1,19 @@
 import { formatNumber, type CurveType, type Renderer, type ThemeMode } from '@jafari/charts';
 import { useId, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useLang, useT, useText, type L } from '../i18n';
+import { Link } from '../lib/router';
 import {
   BASE_COLORS,
   DEFAULT_CONFIG,
+  DEMO_TEXT,
   effectiveSeries,
   generateCode,
   kindInfo,
   KINDS,
   makeData,
   PALETTES,
-  SERIES_LABELS,
   type ChartKind,
+  type KindInfo,
   type PaletteName,
   type PlaygroundConfig,
 } from '../playground/model';
@@ -22,13 +25,236 @@ import { ErrorBoundary } from '../ui/ErrorBoundary';
 import { Segmented } from '../ui/Segmented';
 
 const CURVES: CurveType[] = ['monotone', 'linear', 'step', 'stepBefore', 'stepAfter'];
-const PALETTE_OPTIONS: { value: PaletteName; label: string }[] = [
-  { value: 'default', label: 'Theme' },
-  { value: 'ocean', label: 'Ocean' },
-  { value: 'sunset', label: 'Sunset' },
-  { value: 'forest', label: 'Forest' },
-  { value: 'custom', label: 'Custom' },
-];
+const PALETTE_NAMES: readonly PaletteName[] = ['default', 'ocean', 'sunset', 'forest', 'custom'];
+
+interface PlaygroundText {
+  lead: string;
+  form: string;
+  chartType: string;
+  kindLabel: (info: KindInfo) => string;
+  dataPoints: string;
+  rings: string;
+  categories: string;
+  downsampleHint: string;
+  scatterHint: string;
+  value: (v: number) => string;
+  series: string;
+  colours: string;
+  palettes: Record<PaletteName, string>;
+  seriesColours: string;
+  colour: (n: number) => string;
+  themePaletteHint: string;
+  theme: string;
+  auto: string;
+  light: string;
+  dark: string;
+  renderer: string;
+  fillWidth: string;
+  width: (px: number) => string;
+  height: (px: number) => string;
+  animation: string;
+  tooltip: string;
+  legend: string;
+  zoom: string;
+  tooltipMode: string;
+  shared: string;
+  item: string;
+  legendPosition: string;
+  bottom: string;
+  top: string;
+  curve: string;
+  reset: string;
+  preview: string;
+  metricsTitle: string;
+  renderPaint: string;
+  changeToMeasure: string;
+  afterLastChange: string;
+  domNodes: string;
+  insideChart: string;
+  hoverFps: string;
+  measuring: (worst: string) => string;
+  movePointer: string;
+  lastHover: (worst: string) => string;
+  chosenByAuto: string;
+  asConfigured: string;
+  ms: string;
+  measuredNote: (dev: boolean) => ReactNode;
+  code: string;
+  dataNote: ReactNode;
+}
+
+const RU_KINDS: Record<ChartKind, string> = {
+  line: 'Линейная',
+  area: 'С областями',
+  'stacked-area': 'С областями и накоплением',
+  bar: 'Столбчатая',
+  'grouped-bar': 'Сгруппированная столбчатая',
+  'stacked-bar': 'Столбчатая с накоплением',
+  'horizontal-bar': 'Горизонтальная столбчатая',
+  combo: 'Комбинированная',
+  sparkline: 'Спарклайн',
+  pie: 'Круговая',
+  donut: 'Кольцевая',
+  radial: 'Радиальный прогресс',
+  gauge: 'Шкала-индикатор',
+  scatter: 'Точечная',
+};
+
+const TEXT: L<PlaygroundText> = {
+  en: {
+    lead: 'Configure a chart, watch it update, copy the code — and see how fast it renders on your device.',
+    form: 'Chart configuration',
+    chartType: 'Chart type',
+    kindLabel: (k) => `${k.label} (${k.component})`,
+    dataPoints: 'Data points',
+    rings: 'Rings',
+    categories: 'Categories',
+    downsampleHint: 'Lines and areas are downsampled to about 2 points per pixel.',
+    scatterHint: 'renderer="auto" switches scatter plots to Canvas above 75 000 points.',
+    value: (v) => `Value: ${v}`,
+    series: 'Series',
+    colours: 'Colours',
+    palettes: {
+      default: 'Theme',
+      ocean: 'Ocean',
+      sunset: 'Sunset',
+      forest: 'Forest',
+      custom: 'Custom',
+    },
+    seriesColours: 'Series colours',
+    colour: (n) => `Colour ${n}`,
+    themePaletteHint: 'Theme palette (adapts to dark mode)',
+    theme: 'Theme',
+    auto: 'Auto',
+    light: 'Light',
+    dark: 'Dark',
+    renderer: 'Renderer',
+    fillWidth: 'Fill container width',
+    width: (px) => `Width: ${px} px`,
+    height: (px) => `Height: ${px} px`,
+    animation: 'Animation',
+    tooltip: 'Tooltip',
+    legend: 'Legend',
+    zoom: 'Zoom & pan (Ctrl/⌘ + wheel, drag)',
+    tooltipMode: 'Tooltip mode',
+    shared: 'Shared',
+    item: 'Item',
+    legendPosition: 'Legend position',
+    bottom: 'Bottom',
+    top: 'Top',
+    curve: 'Curve',
+    reset: 'Reset',
+    preview: 'Preview',
+    metricsTitle: 'Performance in your browser',
+    renderPaint: 'Render + paint',
+    changeToMeasure: 'change any option to measure',
+    afterLastChange: 'after the last change',
+    domNodes: 'DOM nodes',
+    insideChart: 'inside the chart',
+    hoverFps: 'Hover FPS',
+    measuring: (worst) => `measuring · longest frame ${worst}`,
+    movePointer: 'move the pointer over the chart',
+    lastHover: (worst) => `last hover · longest frame ${worst}`,
+    chosenByAuto: 'chosen by renderer="auto"',
+    asConfigured: 'as configured',
+    ms: 'ms',
+    measuredNote: (dev) => (
+      <>
+        Measured live with <code>performance.now()</code> and <code>requestAnimationFrame</code> in{' '}
+        <strong>your</strong> browser, on this device,
+        {dev ? ' in a development build (slower than production),' : ''} including generating the
+        demo data. Numbers vary with hardware, browser, extensions and other tabs; FPS is capped by
+        your display’s refresh rate. See <Link to="/performance">Performance</Link> for the
+        controlled benchmark.
+      </>
+    ),
+    code: 'Code',
+    dataNote: (
+      <>
+        Data is generated deterministically by the formula in the code, so the copied code renders
+        exactly this chart. Replace <code>data</code> with your own rows; keys are type-checked.
+      </>
+    ),
+  },
+  ru: {
+    lead: 'Настройте диаграмму, посмотрите, как она обновляется, скопируйте код — и узнайте, как быстро она отрисовывается на вашем устройстве.',
+    form: 'Настройки диаграммы',
+    chartType: 'Тип диаграммы',
+    kindLabel: (k) => `${RU_KINDS[k.kind]} (${k.component})`,
+    dataPoints: 'Точки данных',
+    rings: 'Кольца',
+    categories: 'Категории',
+    downsampleHint: 'Линии и области прореживаются примерно до 2 точек на пиксель.',
+    scatterHint:
+      'renderer="auto" переводит точечные диаграммы на Canvas, если точек больше 75 000.',
+    value: (v) => `Значение: ${v}`,
+    series: 'Ряды',
+    colours: 'Цвета',
+    palettes: {
+      default: 'Тема',
+      ocean: 'Океан',
+      sunset: 'Закат',
+      forest: 'Лес',
+      custom: 'Свои',
+    },
+    seriesColours: 'Цвета рядов',
+    colour: (n) => `Цвет ${n}`,
+    themePaletteHint: 'Палитра темы (подстраивается под тёмный режим)',
+    theme: 'Тема',
+    auto: 'Авто',
+    light: 'Светлая',
+    dark: 'Тёмная',
+    renderer: 'Рендерер',
+    fillWidth: 'На всю ширину контейнера',
+    width: (px) => `Ширина: ${px} px`,
+    height: (px) => `Высота: ${px} px`,
+    animation: 'Анимация',
+    tooltip: 'Подсказка',
+    legend: 'Легенда',
+    zoom: 'Масштабирование и панорамирование (Ctrl/⌘ + колесо, перетаскивание)',
+    tooltipMode: 'Режим подсказки',
+    shared: 'Общая',
+    item: 'Элемент',
+    legendPosition: 'Положение легенды',
+    bottom: 'Снизу',
+    top: 'Сверху',
+    curve: 'Кривая',
+    reset: 'Сбросить',
+    preview: 'Превью',
+    metricsTitle: 'Производительность в вашем браузере',
+    renderPaint: 'Рендер и отрисовка',
+    changeToMeasure: 'измените любой параметр, чтобы измерить',
+    afterLastChange: 'после последнего изменения',
+    domNodes: 'DOM-узлы',
+    insideChart: 'внутри диаграммы',
+    hoverFps: 'FPS при наведении',
+    measuring: (worst) => `идёт замер · самый долгий кадр ${worst}`,
+    movePointer: 'наведите указатель на диаграмму',
+    lastHover: (worst) => `последнее наведение · самый долгий кадр ${worst}`,
+    chosenByAuto: 'выбран через renderer="auto"',
+    asConfigured: 'как настроено',
+    ms: 'мс',
+    measuredNote: (dev) => (
+      <>
+        Измеряется в реальном времени через <code>performance.now()</code> и{' '}
+        <code>requestAnimationFrame</code> в <strong>вашем</strong> браузере, на этом устройстве
+        {dev ? ', в сборке для разработки (она медленнее продакшен-сборки)' : ''}, включая генерацию
+        демонстрационных данных. Результаты зависят от железа, браузера, расширений и других
+        вкладок; FPS ограничен частотой обновления дисплея. Контролируемый бенчмарк — на странице{' '}
+        <Link to="/performance">Производительность</Link>.
+      </>
+    ),
+    code: 'Код',
+    dataNote: (
+      <>
+        Данные генерируются детерминированно по формуле из кода, поэтому скопированный код отрисует
+        ровно эту диаграмму. Замените <code>data</code> своими строками — ключи проверяются по
+        типам. На русской версии сайта превью использует русскую локаль, поэтому код содержит{' '}
+        <code>locale="ru"</code>.
+      </>
+    ),
+  },
+};
 
 function Field({
   label,
@@ -85,14 +311,18 @@ function Metric({ label, value, note }: { label: string; value: string; note?: s
   );
 }
 
-const fmtMs = (v: number | null) =>
-  v === null ? '—' : `${formatNumber(v, { maximumFractionDigits: v < 10 ? 1 : 0 })} ms`;
-
 export function Playground() {
+  const lang = useLang();
+  const ui = useT();
+  const t = useText(TEXT);
+  const fmtMs = (v: number | null) =>
+    v === null
+      ? '—'
+      : `${formatNumber(v, { locale: lang, maximumFractionDigits: v < 10 ? 1 : 0 })} ${t.ms}`;
   const [config, setConfigState] = useState<PlaygroundConfig>(DEFAULT_CONFIG);
   const previewRef = useRef<HTMLDivElement>(null);
-  const data = useMemo(() => makeData(config), [config]);
-  const code = useMemo(() => generateCode(config), [config]);
+  const data = useMemo(() => makeData(config, lang), [config, lang]);
+  const code = useMemo(() => generateCode(config, lang), [config, lang]);
   const { metrics, start } = useRenderMetrics(previewRef, config);
   const { fps, onPointerEnter, onPointerLeave } = useHoverFps();
   const info = kindInfo(config.kind);
@@ -127,18 +357,10 @@ export function Playground() {
 
   return (
     <article className="playground">
-      <PageHeader
-        eyebrow="Tools"
-        title="Playground"
-        lead="Configure a chart, watch it update, copy the code — and see how fast it renders on your device."
-      />
+      <PageHeader eyebrow={ui.nav.tools} title={ui.pages.playground} lead={t.lead} />
       <div className="pg-layout">
-        <form
-          className="pg-controls"
-          aria-label="Chart configuration"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <Field label="Chart type">
+        <form className="pg-controls" aria-label={t.form} onSubmit={(e) => e.preventDefault()}>
+          <Field label={t.chartType}>
             {(id) => (
               <select
                 id={id}
@@ -147,7 +369,7 @@ export function Playground() {
               >
                 {KINDS.map((k) => (
                   <option key={k.kind} value={k.kind}>
-                    {k.label} ({k.component})
+                    {t.kindLabel(k)}
                   </option>
                 ))}
               </select>
@@ -158,17 +380,15 @@ export function Playground() {
             <Field
               label={
                 info.x === 'time' || info.x === 'number'
-                  ? 'Data points'
+                  ? t.dataPoints
                   : info.kind === 'radial'
-                    ? 'Rings'
-                    : 'Categories'
+                    ? t.rings
+                    : t.categories
               }
               {...(info.x === 'time' && config.points >= 10000
-                ? { hint: 'Lines and areas are downsampled to about 2 points per pixel.' }
+                ? { hint: t.downsampleHint }
                 : info.x === 'number' && config.points >= 10000
-                  ? {
-                      hint: 'renderer="auto" switches scatter plots to Canvas above 75 000 points.',
-                    }
+                  ? { hint: t.scatterHint }
                   : {})}
             >
               {(id) => (
@@ -179,7 +399,7 @@ export function Playground() {
                 >
                   {info.points.map((p) => (
                     <option key={p} value={p}>
-                      {formatNumber(p)}
+                      {formatNumber(p, { locale: lang })}
                     </option>
                   ))}
                 </select>
@@ -188,7 +408,7 @@ export function Playground() {
           ) : null}
 
           {info.kind === 'gauge' ? (
-            <Field label={`Value: ${config.gaugeValue}`}>
+            <Field label={t.value(config.gaugeValue)}>
               {(id) => (
                 <input
                   id={id}
@@ -204,7 +424,7 @@ export function Playground() {
 
           {info.maxSeries > 1 ? (
             <Segmented
-              label="Series"
+              label={t.series}
               options={[1, 2, 3, 4]
                 .filter((n) => n <= info.maxSeries)
                 .map((n) => ({ value: n, label: String(n) }))}
@@ -214,44 +434,48 @@ export function Playground() {
           ) : null}
 
           <Segmented
-            label="Colours"
-            options={PALETTE_OPTIONS}
+            label={t.colours}
+            options={PALETTE_NAMES.map((value) => ({ value, label: t.palettes[value] }))}
             value={config.palette}
             onChange={(palette) => update({ palette })}
           />
-          <div className="color-row" role="group" aria-label="Series colours">
+          <div className="color-row" role="group" aria-label={t.seriesColours}>
             {Array.from({ length: colorSlots }, (_, i) => (
-              <label key={i} className="color-input" title={SERIES_LABELS[i] ?? `Colour ${i + 1}`}>
+              <label
+                key={i}
+                className="color-input"
+                title={DEMO_TEXT[lang].series[i] ?? t.colour(i + 1)}
+              >
                 <input
                   type="color"
                   value={shownColors[i] ?? BASE_COLORS[i % BASE_COLORS.length]}
                   onChange={(e) => setColor(i, e.target.value)}
-                  aria-label={`Colour ${i + 1}`}
+                  aria-label={t.colour(i + 1)}
                 />
               </label>
             ))}
             {config.palette === 'default' ? (
-              <span className="field-hint">Theme palette (adapts to dark mode)</span>
+              <span className="field-hint">{t.themePaletteHint}</span>
             ) : null}
           </div>
 
           <Segmented
-            label="Theme"
+            label={t.theme}
             options={[
-              { value: 'auto', label: 'Auto' },
-              { value: 'light', label: 'Light' },
-              { value: 'dark', label: 'Dark' },
+              { value: 'auto', label: t.auto },
+              { value: 'light', label: t.light },
+              { value: 'dark', label: t.dark },
             ]}
             value={config.theme}
             onChange={(theme: ThemeMode) => update({ theme })}
           />
 
           <Segmented
-            label="Renderer"
+            label={t.renderer}
             options={[
               { value: 'svg', label: 'SVG' },
               { value: 'canvas', label: 'Canvas' },
-              { value: 'auto', label: 'Auto' },
+              { value: 'auto', label: t.auto },
             ]}
             value={config.renderer}
             onChange={(renderer: Renderer) => update({ renderer })}
@@ -259,13 +483,13 @@ export function Playground() {
 
           <div className="field">
             <Check
-              label="Fill container width"
+              label={t.fillWidth}
               checked={config.fillWidth}
               onChange={(fillWidth) => update({ fillWidth })}
             />
             {!config.fillWidth ? (
               <label className="range">
-                <span>Width: {config.width} px</span>
+                <span>{t.width(config.width)}</span>
                 <input
                   type="range"
                   min={240}
@@ -277,7 +501,7 @@ export function Playground() {
               </label>
             ) : null}
             <label className="range">
-              <span>Height: {config.height} px</span>
+              <span>{t.height(config.height)}</span>
               <input
                 type="range"
                 min={info.kind === 'sparkline' ? 24 : 120}
@@ -291,39 +515,35 @@ export function Playground() {
 
           <div className="field">
             <Check
-              label="Animation"
+              label={t.animation}
               checked={config.animation}
               onChange={(animation) => update({ animation })}
             />
             {info.tooltip ? (
               <Check
-                label="Tooltip"
+                label={t.tooltip}
                 checked={config.tooltip}
                 onChange={(tooltip) => update({ tooltip })}
               />
             ) : null}
             {info.legend ? (
               <Check
-                label="Legend"
+                label={t.legend}
                 checked={config.legend}
                 onChange={(legend) => update({ legend })}
               />
             ) : null}
             {info.zoom ? (
-              <Check
-                label="Zoom & pan (Ctrl/⌘ + wheel, drag)"
-                checked={config.zoom}
-                onChange={(zoom) => update({ zoom })}
-              />
+              <Check label={t.zoom} checked={config.zoom} onChange={(zoom) => update({ zoom })} />
             ) : null}
           </div>
 
           {info.tooltip && info.axes && info.x === 'time' && config.tooltip ? (
             <Segmented
-              label="Tooltip mode"
+              label={t.tooltipMode}
               options={[
-                { value: 'shared', label: 'Shared' },
-                { value: 'item', label: 'Item' },
+                { value: 'shared', label: t.shared },
+                { value: 'item', label: t.item },
               ]}
               value={config.tooltipMode}
               onChange={(tooltipMode) => update({ tooltipMode })}
@@ -332,10 +552,10 @@ export function Playground() {
 
           {info.legend && config.legend ? (
             <Segmented
-              label="Legend position"
+              label={t.legendPosition}
               options={[
-                { value: 'bottom', label: 'Bottom' },
-                { value: 'top', label: 'Top' },
+                { value: 'bottom', label: t.bottom },
+                { value: 'top', label: t.top },
               ]}
               value={config.legendPosition}
               onChange={(legendPosition) => update({ legendPosition })}
@@ -343,7 +563,7 @@ export function Playground() {
           ) : null}
 
           {info.curve ? (
-            <Field label="Curve">
+            <Field label={t.curve}>
               {(id) => (
                 <select
                   id={id}
@@ -361,82 +581,74 @@ export function Playground() {
           ) : null}
 
           <button type="button" className="btn btn-sm" onClick={() => update(DEFAULT_CONFIG)}>
-            Reset
+            {t.reset}
           </button>
         </form>
 
         <div className="pg-main">
-          <section className="pg-preview-frame" aria-label="Preview">
+          <section className="pg-preview-frame" aria-label={t.preview}>
             <div
               className={`pg-preview${previewClass}`}
               ref={previewRef}
               onPointerEnter={onPointerEnter}
               onPointerLeave={onPointerLeave}
             >
-              <ErrorBoundary resetKey={JSON.stringify(config)} label="The chart">
-                <Preview config={config} data={data} />
+              <ErrorBoundary resetKey={JSON.stringify(config)} label={ui.errors.chart}>
+                <Preview config={config} data={data} lang={lang} />
               </ErrorBoundary>
             </div>
           </section>
 
           <section className="pg-metrics" aria-labelledby="pg-metrics-title">
             <h2 id="pg-metrics-title" className="pg-subtitle">
-              Performance in your browser
+              {t.metricsTitle}
             </h2>
             <div className="metric-grid" aria-live="polite">
               <Metric
-                label="Render + paint"
+                label={t.renderPaint}
                 value={fmtMs(metrics.renderMs)}
-                note={
-                  metrics.renderMs === null
-                    ? 'change any option to measure'
-                    : 'after the last change'
+                note={metrics.renderMs === null ? t.changeToMeasure : t.afterLastChange}
+              />
+              <Metric
+                label={t.domNodes}
+                value={
+                  metrics.domNodes === null ? '—' : formatNumber(metrics.domNodes, { locale: lang })
                 }
+                note={t.insideChart}
               />
               <Metric
-                label="DOM nodes"
-                value={metrics.domNodes === null ? '—' : formatNumber(metrics.domNodes)}
-                note="inside the chart"
-              />
-              <Metric
-                label="Hover FPS"
-                value={fps.fps === null ? '—' : formatNumber(fps.fps, { maximumFractionDigits: 0 })}
+                label={t.hoverFps}
+                value={
+                  fps.fps === null
+                    ? '—'
+                    : formatNumber(fps.fps, { locale: lang, maximumFractionDigits: 0 })
+                }
                 note={
                   fps.active
-                    ? `measuring · longest frame ${fmtMs(fps.worstFrameMs)}`
+                    ? t.measuring(fmtMs(fps.worstFrameMs))
                     : fps.fps === null
-                      ? 'move the pointer over the chart'
-                      : `last hover · longest frame ${fmtMs(fps.worstFrameMs)}`
+                      ? t.movePointer
+                      : t.lastHover(fmtMs(fps.worstFrameMs))
                 }
               />
               <Metric
-                label="Renderer"
+                label={t.renderer}
                 value={metrics.renderer ?? '—'}
-                note={config.renderer === 'auto' ? 'chosen by renderer="auto"' : 'as configured'}
+                note={config.renderer === 'auto' ? t.chosenByAuto : t.asConfigured}
               />
             </div>
-            <p className="field-hint">
-              Measured live with <code>performance.now()</code> and{' '}
-              <code>requestAnimationFrame</code> in <strong>your</strong> browser, on this device,
-              {import.meta.env.DEV ? ' in a development build (slower than production),' : ''}{' '}
-              including generating the demo data. Numbers vary with hardware, browser, extensions
-              and other tabs; FPS is capped by your display’s refresh rate. See{' '}
-              <a href="#/performance">Performance</a> for the controlled benchmark.
-            </p>
+            <p className="field-hint">{t.measuredNote(import.meta.env.DEV)}</p>
           </section>
 
           <section aria-labelledby="pg-code-title">
             <h2 id="pg-code-title" className="pg-subtitle">
-              Code
+              {t.code}
             </h2>
             <CodeBlock code={code} title="Chart.tsx" />
           </section>
         </div>
       </div>
-      <Callout>
-        Data is generated deterministically by the formula in the code, so the copied code renders
-        exactly this chart. Replace <code>data</code> with your own rows; keys are type-checked.
-      </Callout>
+      <Callout>{t.dataNote}</Callout>
     </article>
   );
 }

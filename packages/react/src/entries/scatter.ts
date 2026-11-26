@@ -4,4 +4,5 @@ export type {
   ScatterChartAxisOptions,
   ScatterSeriesConfig,
   ScatterPointEvent,
+  ScatterBrushEvent,
 } from '../charts/scatter/ScatterChart';

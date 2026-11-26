@@ -16,6 +16,15 @@
     "typescript"
   ],
   "description": "Jafari Charts — engineered for performance. Beautiful charts. Zero compromise.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehmanaseventhills/jafari-charts.git",
+    "directory": "packages/charts"
+  },
+  "homepage": "https://github.com/mehmanaseventhills/jafari-charts#readme",
+  "bugs": {
+    "url": "https://github.com/mehmanaseventhills/jafari-charts/issues"
+  },
   "exports": {
     ".": {
       "@jafari/source": "./src/index.ts",

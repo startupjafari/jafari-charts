@@ -27,8 +27,13 @@ export interface InteractionState {
   pointer: { x: number; y: number } | null;
   /** Series emphasised from the legend. */
   highlight: number | null;
-  /** In-progress brush selection in pixels along x. */
-  brush: { from: number; to: number } | null;
+  /**
+   * In-progress brush selection in pixels: `from`/`to` along x; `y0`/`y1` along y for
+   * rectangular or vertical selections (the full plot height when absent).
+   */
+  brush: { from: number; to: number; y0?: number; y1?: number } | null;
+  /** Text for the live region (zoom range, selection); replaces the keyboard readout. */
+  announcement: string | null;
 }
 
 export type SwatchKind = 'line' | 'area' | 'bar' | 'point' | 'slice';

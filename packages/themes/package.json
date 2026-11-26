@@ -16,6 +16,15 @@
     "typescript"
   ],
   "description": "Design tokens, light/dark themes and CSS variables for Jafari Charts.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehmanaseventhills/jafari-charts.git",
+    "directory": "packages/themes"
+  },
+  "homepage": "https://github.com/mehmanaseventhills/jafari-charts#readme",
+  "bugs": {
+    "url": "https://github.com/mehmanaseventhills/jafari-charts/issues"
+  },
   "exports": {
     ".": {
       "@jafari/source": "./src/index.ts",

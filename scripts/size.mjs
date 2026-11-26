@@ -18,6 +18,7 @@ const CORE_EXTERNAL = ['@jafari/charts-core', '@jafari/charts-themes', '@jafari/
  * name → [entry source, gzip budget in KB, extra externals]. Each entry is built like a consumer
  * app (full minification, tree shaking) and keeps only what it references.
  */
+// +1 KB (Nov 2026): localised chart-type names (ru/kk) for accessible descriptions.
 const scenarios = {
   'core: scales + ticks + format': [
     use('createLinearScale, createTimeScale, linearTicks, formatNumber', '@jafari/charts-core'),
@@ -31,18 +32,22 @@ const scenarios = {
     15,
   ],
   // 20 chart models; apps only pay for the models they import (see the app rows).
-  'core: everything (incl. chart models)': [all('@jafari/charts-core'), 38],
+  'core: everything (incl. chart models)': [all('@jafari/charts-core'), 39],
   'react layer: LineChart (core external)': [
     use('LineChart', '@jafari/charts-react'),
     25,
     CORE_EXTERNAL,
   ],
-  'react layer: all components (core external)': [all('@jafari/charts-react'), 30, CORE_EXTERNAL],
+  // 30 → 32 KB: 2D scatter zoom/brush, calendar range selection, controlled drill-down.
+  'react layer: all components (core external)': [all('@jafari/charts-react'), 32, CORE_EXTERNAL],
   // Includes the stylesheet (~2.6 KB) and the Kazakh ICU fallback (~1.2 KB).
-  'app: LineChart (React layer + core it needs)': [use('LineChart', '@jafari/charts'), 34],
+  // 34 → 36 KB: every chart's strings (funnel/treemap/heatmap, zoom announcements) live in the
+  // shared en/ru/kk messages (~0.5 KB), and the cartesian engine gained the shared zoom/brush
+  // gestures with category windows, keyboard pan and live-region announcements (~1.8 KB).
+  'app: LineChart (React layer + core it needs)': [use('LineChart', '@jafari/charts'), 37],
   'app: AreaChart + BarChart + Sparkline': [
     use('AreaChart, BarChart, Sparkline', '@jafari/charts'),
-    34,
+    37,
   ],
   'app: everything from @jafari/charts': [all('@jafari/charts'), 70],
   'canvas renderer (lazy chunk, core external)': [

@@ -2,27 +2,39 @@ import {
   aggregateCalendarDays,
   buildCalendarModel,
   calendarDate,
+  createStore,
   formatAuto,
   formatDate,
+  fromCalendarDay,
   timeColumn,
   numericColumn,
   toTime,
   type CalendarModel,
   type DimensionKey,
+  type Mark,
   type NumericKey,
+  type Store,
 } from '@jafari/charts-core';
-import { useMemo, type ReactElement, type ReactNode } from 'react';
+import {
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import type { DataTable } from '../../components/ChartA11y';
 import type { LegendOptions } from '../../components/ChartLegend';
 import type { TooltipOptions } from '../../components/ChartTooltip';
-import { ChartView } from '../../components/ChartView';
+import { ChartView, type SurfaceHandlers } from '../../components/ChartView';
+import { useStoreSelector } from '../../hooks/useStoreSelector';
 import { useChartRoot, type BaseChartProps } from '../../internal/useChartRoot';
+import { SeriesLayer } from '../../primitives/SeriesLayer';
 import type { ActiveItem, ChartAdapter } from '../../providers/ChartContext';
 import {
   bucketLabels,
   cellCssColor,
   emptyItem,
-  heatmapStrings,
   ScaleLegend,
   scaleSeries,
   useSingleSeriesMessages,
@@ -40,6 +52,12 @@ export interface CalendarDayEvent<T> {
   datum: T | null;
   /** Index of that datum in `data` (-1 without data). */
   index: number;
+}
+
+/** Payload of `onBrush`: the selected days (local midnight), `from` ≤ `to`. */
+export interface CalendarBrushEvent {
+  from: Date;
+  to: Date;
 }
 
 export interface CalendarLegendOptions extends Omit<LegendOptions, 'render' | 'interactive'> {
@@ -88,7 +106,71 @@ export interface CalendarHeatmapProps<T extends object> extends BaseChartProps {
   legend?: boolean | CalendarLegendOptions;
   onHover?: (event: CalendarDayEvent<T> | null) => void;
   onClick?: (event: CalendarDayEvent<T>) => void;
+  /** Controlled active (highlighted) day: Date, timestamp or ISO string; `null` = none. */
+  activeDate?: DateInput | null;
+  onActiveDateChange?: (date: Date | null) => void;
+  /**
+   * Range selection: drag across days, or Shift + arrows from the focused day. The selected
+   * days stay highlighted until Escape, a click or a new selection.
+   */
+  brush?: boolean;
+  onBrush?: (range: CalendarBrushEvent) => void;
   children?: ReactNode;
+}
+
+/** Selected days as calendar day numbers `[anchor, focus]` (either order). */
+type Selection = { range: readonly [number, number] | null };
+
+const SHIFT_KEYS: Record<string, 'next' | 'prev' | 'up' | 'down'> = {
+  ArrowRight: 'next',
+  ArrowLeft: 'prev',
+  ArrowUp: 'up',
+  ArrowDown: 'down',
+};
+
+const selectRange = (s: Selection) => s.range;
+
+/** Rings around the selected days (one batched path). */
+function SelectionOverlay({
+  selection,
+  model,
+  chartId,
+}: {
+  selection: Store<Selection>;
+  model: CalendarModel;
+  chartId: string;
+}) {
+  const range = useStoreSelector(selection, selectRange);
+  const marks = useMemo(() => {
+    if (!range) return [];
+    const a = Math.max(model.visible[0], Math.min(range[0], range[1]) - model.first);
+    const b = Math.min(model.visible[1], Math.max(range[0], range[1]) - model.first);
+    const out: Mark[] = [];
+    for (let i = a; i <= b; i++) {
+      const r = model.cellRect(i);
+      if (!r) continue;
+      out.push({
+        type: 'rect',
+        key: `sel|${i}`,
+        x: r.x - 1,
+        y: r.y - 1,
+        width: r.width + 2,
+        height: r.height + 2,
+        radius: Math.min(3, r.width / 4 + 1),
+        fill: 'transparent',
+        stroke: 'var(--jc-focus)',
+        strokeWidth: 1.5,
+        series: -1,
+      });
+    }
+    return out;
+  }, [range, model]);
+  if (!marks.length) return null;
+  return (
+    <g className="jc-selection" aria-hidden="true">
+      <SeriesLayer marks={marks} chartId={`${chartId}-sel`} />
+    </g>
+  );
 }
 
 const EMPTY_HEIGHT = 140;
@@ -166,7 +248,6 @@ export function CalendarHeatmap<T extends object>(props: CalendarHeatmapProps<T>
   );
 
   const messages = useSingleSeriesMessages(root.messages);
-  const strings = heatmapStrings(locale);
   const valueLabel = props.valueLabel ?? messages.value;
   const fmtValue = useMemo(
     () => (v: number) =>
@@ -304,8 +385,71 @@ export function CalendarHeatmap<T extends object>(props: CalendarHeatmapProps<T>
       }
     }
     flush();
-    return { columns: [strings.month, messages.total, messages.maximum], rows };
-  }, [model, days, fmtValue, locale, strings.month, messages.total, messages.maximum]);
+    return { columns: [messages.month, messages.total, messages.maximum], rows };
+  }, [model, days, fmtValue, locale, messages.month, messages.total, messages.maximum]);
+
+  // ---- Range selection (brush) ---------------------------------------------------------------
+  const [selection] = useState(() => createStore<Selection>({ range: null }));
+  const dragAnchor = useRef<number | null>(null);
+  const selectDays = (range: readonly [number, number]) => {
+    selection.setState({ range });
+    const from = Math.min(range[0], range[1]);
+    const to = Math.max(range[0], range[1]);
+    props.onBrush?.({ from: new Date(fromCalendarDay(from)), to: new Date(fromCalendarDay(to)) });
+    root.store.setState({
+      announcement: messages.selectedRange(
+        fmtDate(fromCalendarDay(from)),
+        fmtDate(fromCalendarDay(to)),
+      ),
+    });
+  };
+  const surfaceHandlers: SurfaceHandlers | undefined =
+    props.brush && model
+      ? {
+          onPointerDown: (e, x, y) => {
+            if (e.pointerType === 'touch' || (e.pointerType === 'mouse' && e.button !== 0))
+              return false;
+            const i = model.hitTest(x, y);
+            if (i < 0) return false;
+            dragAnchor.current = model.first + i;
+            selection.setState({ range: [model.first + i, model.first + i] });
+            (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+            return true;
+          },
+          // The tooltip keeps following the pointer while the selection grows.
+          onPointerMove: (_e, x, y) => {
+            const anchor = dragAnchor.current;
+            if (anchor === null) return false;
+            const i = model.hitTest(x, y);
+            if (i >= 0 && selection.getState().range?.[1] !== model.first + i)
+              selection.setState({ range: [anchor, model.first + i] });
+            return false;
+          },
+          onPointerUp: () => {
+            if (dragAnchor.current === null) return;
+            dragAnchor.current = null;
+            const range = selection.getState().range;
+            // A click without dragging clears the selection.
+            if (!range || range[0] === range[1]) selection.setState({ range: null });
+            else selectDays(range);
+          },
+          onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
+            const dir = SHIFT_KEYS[e.key];
+            if (e.key === 'Escape' || (dir && !e.shiftKey)) {
+              selection.setState({ range: null });
+              return false;
+            }
+            if (!dir) return false;
+            const a = root.store.getState().active;
+            const next = adapter.move(a, dir);
+            if (!next) return false;
+            const current = selection.getState().range;
+            const anchor = current ? current[0] : model.first + (a ?? next).position;
+            selectDays([anchor, model.first + next.position]);
+            return false; // the shell moves the active day
+          },
+        }
+      : undefined;
 
   const event = (a: ActiveItem | null): CalendarDayEvent<T> | null => {
     if (!a || !model || !days || a.position < 0 || a.position >= model.count) return null;
@@ -339,8 +483,8 @@ export function CalendarHeatmap<T extends object>(props: CalendarHeatmapProps<T>
           render: () => (
             <ScaleLegend
               items={legendItems}
-              start={legendBase.lessLabel ?? strings.less}
-              end={legendBase.moreLabel ?? strings.more}
+              start={legendBase.lessLabel ?? messages.less}
+              end={legendBase.moreLabel ?? messages.more}
               align={legendBase.align ?? 'end'}
               {...(legendBase.position ? { position: legendBase.position } : {})}
             />
@@ -350,6 +494,14 @@ export function CalendarHeatmap<T extends object>(props: CalendarHeatmapProps<T>
 
   const height = props.height ?? model?.height ?? EMPTY_HEIGHT;
   const plot = model?.plot ?? { x: 0, y: 0, width: root.width, height };
+  const activeTime =
+    props.activeDate === undefined ? undefined : toMs(props.activeDate ?? undefined);
+  const activePosition =
+    props.activeDate === undefined
+      ? undefined
+      : model && activeTime !== undefined && model.indexOf(activeTime) >= 0
+        ? model.indexOf(activeTime)
+        : null;
 
   return (
     <ChartView
@@ -368,7 +520,15 @@ export function CalendarHeatmap<T extends object>(props: CalendarHeatmapProps<T>
       {...(table ? { table } : {})}
       dimOnActive
       clip={false}
-      onActiveChange={(a) => props.onHover?.(event(a))}
+      {...(activePosition !== undefined ? { activePosition } : {})}
+      {...(surfaceHandlers ? { surfaceHandlers } : {})}
+      {...(props.brush && model
+        ? { overlay: <SelectionOverlay selection={selection} model={model} chartId={root.id} /> }
+        : {})}
+      onActiveChange={(a) => {
+        props.onHover?.(event(a));
+        props.onActiveDateChange?.(a && model ? new Date(model.timeOf(a.position)) : null);
+      }}
       onItemClick={(a) => {
         const e = event(a);
         if (e) props.onClick?.(e);

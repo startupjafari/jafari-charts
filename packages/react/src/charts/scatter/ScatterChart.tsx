@@ -5,7 +5,10 @@ import {
   numericColumn,
   SYMBOL_SHAPES,
   toLabel,
+  type Extent,
   type KeysMatching,
+  type LinearScale,
+  type LogScale,
   type Mark,
   type NumericKey,
   type ScatterGroupSpec,
@@ -23,6 +26,12 @@ import { ChartView } from '../../components/ChartView';
 import { useControllableState } from '../../hooks/useControllableState';
 import { devWarn } from '../../internal/env';
 import { useChartRoot, type BaseChartProps } from '../../internal/useChartRoot';
+import {
+  BrushOverlay,
+  useZoomGestures,
+  type BrushRect,
+  type ZoomAxis,
+} from '../../internal/useZoomGestures';
 import type {
   ActiveItem,
   ChartAdapter,
@@ -30,7 +39,7 @@ import type {
   TooltipData,
   TooltipRow,
 } from '../../providers/ChartContext';
-import type { GridOptions, YAxisOptions } from '../cartesian/types';
+import type { GridOptions, YAxisOptions, ZoomOptions } from '../cartesian/types';
 import { resolveOption } from '../../internal/options';
 
 /** Axis options of a scatter chart (both axes are continuous). */
@@ -60,6 +69,14 @@ export interface ScatterPointEvent<T> {
   y: number;
   /** Size value (bubble charts), null without `sizeKey` or when missing. */
   size: number | null;
+}
+
+/** Payload of `onBrush`: the selected rectangle in data values and the points inside it. */
+export interface ScatterBrushEvent {
+  x: [number, number];
+  y: [number, number];
+  /** Indices into `data` of the visible points inside the rectangle, ascending. */
+  indices: number[];
 }
 
 export interface ScatterChartProps<T extends object> extends BaseChartProps {
@@ -115,6 +132,20 @@ export interface ScatterChartProps<T extends object> extends BaseChartProps {
   onActiveIndexChange?: (index: number | null) => void;
   onHover?: (event: ScatterPointEvent<T> | null) => void;
   onClick?: (event: ScatterPointEvent<T>) => void;
+  /**
+   * Zoom & pan both axes: Ctrl/⌘ + wheel or pinch around the pointer, drag to pan,
+   * `+` / `-` / `0` and Shift + arrows on the focused chart. Points outside are not drawn.
+   */
+  zoom?: boolean | ZoomOptions;
+  /** Controlled visible x domain (`null` = the full range). */
+  xDomain?: readonly [number, number] | null;
+  onXDomainChange?: (domain: readonly [number, number] | null) => void;
+  /** Controlled visible y domain (`null` = the full range). */
+  yDomain?: readonly [number, number] | null;
+  onYDomainChange?: (domain: readonly [number, number] | null) => void;
+  /** Drag a rectangle to select points. With `zoom`, the selection zooms in. */
+  brush?: boolean;
+  onBrush?: (selection: ScatterBrushEvent) => void;
   /** Reference lines and other primitives (`<ChartReferenceLine x={…} />`). */
   children?: ReactNode;
 }
@@ -247,7 +278,18 @@ export function ScatterChart<T extends object>(props: ScatterChartProps<T>): Rea
   const gridOpts = resolveOption<GridOptions>(props.grid, true);
   const tooltipOpts = resolveOption<TooltipOptions>(props.tooltip, true);
   const legendOpts = resolveOption<LegendOptions>(props.legend, true);
+  const zoomOpts = resolveOption<ZoomOptions>(props.zoom, false);
   const prepared = usePreparedGroups(props);
+  const [xDomain, setXDomain] = useControllableState<readonly [number, number] | null>(
+    props.xDomain,
+    null,
+    props.onXDomainChange,
+  );
+  const [yDomain, setYDomain] = useControllableState<readonly [number, number] | null>(
+    props.yDomain,
+    null,
+    props.onYDomainChange,
+  );
 
   const [hiddenList, setHidden] = useControllableState<readonly string[]>(
     props.hiddenSeries,
@@ -293,14 +335,16 @@ export function ScatterChart<T extends object>(props: ScatterChartProps<T>): Rea
 
   const xDeps = JSON.stringify(xOpts);
   const yDeps = JSON.stringify(yOpts);
+  const [xLo, xHi] = xDomain ?? [];
+  const [yLo, yHi] = yDomain ?? [];
   const model = useMemo<ScatterModel>(
     () =>
       buildScatterModel({
         width: root.width,
         height: root.height,
         groups,
-        x: axisSpec(xOpts),
-        y: axisSpec(yOpts),
+        x: { ...axisSpec(xOpts), ...(xDomain ? { domain: xDomain } : {}) },
+        y: { ...axisSpec(yOpts), ...(yDomain ? { domain: yDomain } : {}) },
         ...(props.pointSize !== undefined ? { pointSize: props.pointSize } : {}),
         ...(props.minRadius !== undefined ? { minRadius: props.minRadius } : {}),
         ...(props.maxRadius !== undefined ? { maxRadius: props.maxRadius } : {}),
@@ -318,6 +362,10 @@ export function ScatterChart<T extends object>(props: ScatterChartProps<T>): Rea
       groups,
       xDeps,
       yDeps,
+      xLo,
+      xHi,
+      yLo,
+      yHi,
       yTitle,
       props.pointSize,
       props.minRadius,
@@ -509,6 +557,63 @@ export function ScatterChart<T extends object>(props: ScatterChartProps<T>): Rea
   const frame = model.frame;
   const plot = frame.plot;
 
+  // Zoom & brush on both axes (log axes zoom in decades).
+  const xLog = xOpts?.scale === 'log';
+  const yLog = yOpts?.scale === 'log';
+  const xScale = frame.x as LinearScale | LogScale;
+  const yScale = frame.y as LinearScale | LogScale;
+  const minFraction = zoomOpts?.minSpan ?? 0.01;
+  const spanOf = (d: Extent, log: boolean) =>
+    log ? Math.log10(d[1]) - Math.log10(d[0]) : d[1] - d[0];
+  const axes: ZoomAxis[] = empty
+    ? []
+    : [
+        {
+          dim: 'x',
+          bounds: model.bounds.x,
+          minSpan: spanOf(model.bounds.x, xLog) * minFraction,
+          domain: xDomain ? xScale.domain : null,
+          pixels: [plot.x, plot.x + plot.width],
+          log: xLog,
+          set: setXDomain,
+        },
+        {
+          dim: 'y',
+          bounds: model.bounds.y,
+          minSpan: spanOf(model.bounds.y, yLog) * minFraction,
+          domain: yDomain ? yScale.domain : null,
+          pixels: [plot.y + plot.height, plot.y],
+          log: yLog,
+          set: setYDomain,
+        },
+      ];
+  /** "x 1 – 2; y 3 – 4" through a range message (visible / selected). */
+  const ranges = (message: (from: string, to: string) => string, x: Extent, y: Extent) =>
+    message(`${xName} ${fmtX(x[0])}`, `${fmtX(x[1])}; ${yName} ${fmtY(y[0])} – ${fmtY(y[1])}`);
+  const onBrushRect = (rect: BrushRect) => {
+    const x: [number, number] = [xScale.invert(rect.x0), xScale.invert(rect.x1)];
+    const y: [number, number] = [yScale.invert(rect.y1), yScale.invert(rect.y0)];
+    const indices = [
+      ...new Set(
+        model.inRect(rect.x0, rect.y0, rect.x1, rect.y1).map((f) => model.point(f)?.index ?? -1),
+      ),
+    ]
+      .filter((i) => i >= 0)
+      .sort((a, b) => a - b);
+    props.onBrush?.({ x, y, indices });
+    root.store.setState({ announcement: ranges(root.messages.selectedRange, x, y) });
+  };
+  const gestures = useZoomGestures({
+    root,
+    plot,
+    axes,
+    zoom: zoomOpts,
+    brush: props.brush && axes.length ? 'xy' : null,
+    onBrush: onBrushRect,
+    describe: ([x, y]) =>
+      x && y ? ranges(root.messages.visibleRange, [x[0], x[1]], [y[0], y[1]]) : '',
+  });
+
   return (
     <ChartView
       root={root}
@@ -535,6 +640,9 @@ export function ScatterChart<T extends object>(props: ScatterChartProps<T>): Rea
         const e = event(a);
         if (e) props.onClick?.(e);
       }}
+      {...(gestures.handlers ? { surfaceHandlers: gestures.handlers } : {})}
+      controls={gestures.controls}
+      overlay={<BrushOverlay plot={plot} />}
       background={
         <>
           {gridOpts ? (

@@ -389,6 +389,8 @@ export function ChartView(props: ChartViewProps) {
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    // A message from an earlier key (zoom range, selection) gives way to the next readout.
+    if (store.getState().announcement !== null) store.setState({ announcement: null });
     if (handlers?.onKeyDown?.(e)) return;
     const dir = KEYS[e.key];
     if (dir) {
@@ -419,7 +421,11 @@ export function ChartView(props: ChartViewProps) {
       props.table.rows.length <= tableLimit);
   const visibleSeries = series.filter((s) => s.visible).length;
   const summary = [
-    root.messages.describe({ type: props.kind, series: visibleSeries, points: adapter.pointCount }),
+    root.messages.describe({
+      type: root.messages.chartNames[props.kind] ?? props.kind,
+      series: visibleSeries,
+      points: adapter.pointCount,
+    }),
     base.description,
   ]
     .filter(Boolean)

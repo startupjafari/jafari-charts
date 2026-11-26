@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useT } from '../i18n';
 
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -29,12 +30,13 @@ async function copyText(text: string): Promise<boolean> {
 export function CopyButton({
   text,
   floating = false,
-  label = 'Copy',
+  label,
 }: {
   text: string;
   floating?: boolean;
   label?: string;
 }) {
+  const t = useT().code;
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
@@ -77,7 +79,7 @@ export function CopyButton({
         )}
       </svg>
       <span aria-live="polite">
-        {state === 'copied' ? 'Copied' : state === 'failed' ? 'Copy failed' : label}
+        {state === 'copied' ? t.copied : state === 'failed' ? t.copyFailed : (label ?? t.copy)}
       </span>
     </button>
   );

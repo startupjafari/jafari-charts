@@ -8,67 +8,122 @@ import type { ChartDoc } from '../types';
 export const donutChart: ChartDoc = {
   slug: 'donut-chart',
   component: 'DonutChart',
-  title: 'Donut chart',
+  title: { en: 'Donut chart', ru: 'Кольцевая диаграмма' },
   group: 'Core',
-  summary: 'A ring with a centre readout: the total, or the hovered slice.',
-  description: (
-    <p>
-      The donut replaces the tooltip with its centre: it shows the total at rest and the hovered or
-      focused slice otherwise. All PieChart props apply; slice labels are off by default.
-    </p>
-  ),
+  summary: {
+    en: 'A ring with a centre readout: the total, or the hovered slice.',
+    ru: 'Кольцо со значением в центре: общая сумма или сектор под указателем.',
+  },
+  description: {
+    en: (
+      <p>
+        The donut replaces the tooltip with its centre: it shows the total at rest and the hovered
+        or focused slice otherwise. All PieChart props apply; slice labels are off by default.
+      </p>
+    ),
+    ru: (
+      <p>
+        Вместо подсказки кольцевая диаграмма использует свой центр: в покое там показана общая
+        сумма, а при наведении или фокусе — активный сектор. Работают все пропсы PieChart; подписи
+        секторов по умолчанию выключены.
+      </p>
+    ),
+  },
   thumbnail: () => (
     <DonutChart data={roles} labelKey="role" valueKey="count" {...THUMB_POLAR} centerValue={null} />
   ),
   sections: {
     usage: [
-      { id: 'donut-chart/Basic', title: 'Basic' },
+      { id: 'donut-chart/Basic', title: { en: 'Basic', ru: 'Базовый пример' } },
       {
         id: 'donut-chart/Center',
-        title: 'Custom centre content',
-        description: (
-          <p>
-            <code>centerValue</code> and <code>centerLabel</code> accept nodes or functions of the
-            active slice.
-          </p>
-        ),
+        title: { en: 'Custom centre content', ru: 'Своё содержимое в центре' },
+        description: {
+          en: (
+            <p>
+              <code>centerValue</code> and <code>centerLabel</code> accept nodes or functions of the
+              active slice.
+            </p>
+          ),
+          ru: (
+            <p>
+              <code>centerValue</code> и <code>centerLabel</code> принимают React-узлы или функции
+              от активного сектора.
+            </p>
+          ),
+        },
       },
     ],
     styling: [
-      { id: 'donut-chart/Styling', title: 'Thin ring, colours from data' },
-      { id: 'donut-chart/HalfDonut', title: 'Half donut' },
+      {
+        id: 'donut-chart/Styling',
+        title: { en: 'Thin ring, colours from data', ru: 'Тонкое кольцо, цвета из данных' },
+      },
+      { id: 'donut-chart/HalfDonut', title: { en: 'Half donut', ru: 'Полукольцо' } },
     ],
-    interaction: [{ id: 'donut-chart/Interaction', title: 'Controlled active slice' }],
-    responsive: [{ id: 'donut-chart/Responsive', title: 'Narrow container', width: 320 }],
-    empty: [{ id: 'donut-chart/States', title: 'Loading placeholder' }],
+    interaction: [
+      {
+        id: 'donut-chart/Interaction',
+        title: { en: 'Controlled active slice', ru: 'Контролируемый активный сектор' },
+      },
+    ],
+    responsive: [
+      {
+        id: 'donut-chart/Responsive',
+        title: { en: 'Narrow container', ru: 'Узкий контейнер' },
+        width: 320,
+      },
+    ],
+    empty: [
+      {
+        id: 'donut-chart/States',
+        title: { en: 'Loading placeholder', ru: 'Заглушка при загрузке' },
+      },
+    ],
   },
   keyboard: ITEM_KEYS,
   props: [
     {
-      title: 'DonutChart props',
-      note: 'Everything from PieChart (below), plus:',
+      title: { en: 'DonutChart props', ru: 'Пропсы DonutChart' },
+      note: {
+        en: 'Everything from PieChart (below), plus:',
+        ru: 'Всё из PieChart (см. ниже), а также:',
+      },
       props: [
         {
           name: 'thickness',
           type: 'number',
           default: '0.32',
-          description: 'Ring thickness as a fraction of the radius (0.05–0.9).',
+          description: {
+            en: 'Ring thickness as a fraction of the radius (0.05–0.9).',
+            ru: 'Толщина кольца как доля радиуса (0.05–0.9).',
+          },
         },
         {
           name: 'centerValue',
           type: 'ReactNode | ((active: SliceEvent<T> | null) => ReactNode)',
-          default: 'total / hovered value',
-          description: 'Centre content. `null` hides the centre.',
+          default: { en: 'total / hovered value', ru: 'сумма / значение под указателем' },
+          description: {
+            en: 'Centre content. `null` hides the centre.',
+            ru: 'Содержимое центра. `null` скрывает центр.',
+          },
         },
         {
           name: 'centerLabel',
           type: 'ReactNode | ((active: SliceEvent<T> | null) => ReactNode)',
-          default: "'Total' / slice label",
-          description: 'Caption under the centre value.',
+          default: { en: "'Total' / slice label", ru: "'Итого' (для ru) / название сектора" },
+          description: {
+            en: 'Caption under the centre value.',
+            ru: 'Подпись под значением в центре.',
+          },
         },
       ],
     },
-    { title: 'PieChart props', props: PIE_PROPS, collapsed: true },
+    {
+      title: { en: 'PieChart props', ru: 'Пропсы PieChart' },
+      props: PIE_PROPS,
+      collapsed: true,
+    },
     baseGroup,
   ],
 };

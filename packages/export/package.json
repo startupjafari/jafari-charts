@@ -14,6 +14,15 @@
     "typescript"
   ],
   "description": "SVG, PNG, WebP and CSV export for Jafari Charts.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehmanaseventhills/jafari-charts.git",
+    "directory": "packages/export"
+  },
+  "homepage": "https://github.com/mehmanaseventhills/jafari-charts#readme",
+  "bugs": {
+    "url": "https://github.com/mehmanaseventhills/jafari-charts/issues"
+  },
   "exports": {
     ".": {
       "@jafari/source": "./src/index.ts",

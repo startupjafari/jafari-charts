@@ -8,16 +8,28 @@ import type { ChartDoc } from '../types';
 export const groupedBarChart: ChartDoc = {
   slug: 'grouped-bar-chart',
   component: 'GroupedBarChart',
-  title: 'Grouped bar chart',
+  title: { en: 'Grouped bar chart', ru: 'Сгруппированная столбчатая диаграмма' },
   group: 'Core',
-  summary: 'Several series side by side within each category.',
-  description: (
-    <p>
-      Bars of one category touch with a small <code>barGap</code>; categories are separated by{' '}
-      <code>categoryGap</code>. The legend toggles series and the remaining bars widen to fill the
-      group.
-    </p>
-  ),
+  summary: {
+    en: 'Several series side by side within each category.',
+    ru: 'Несколько рядов бок о бок внутри каждой категории.',
+  },
+  description: {
+    en: (
+      <p>
+        Bars of one category touch with a small <code>barGap</code>; categories are separated by{' '}
+        <code>categoryGap</code>. The legend toggles series and the remaining bars widen to fill the
+        group.
+      </p>
+    ),
+    ru: (
+      <p>
+        Столбцы одной категории стоят почти вплотную, с небольшим зазором <code>barGap</code>;
+        категории разделены промежутком <code>categoryGap</code>. Легенда скрывает и показывает
+        ряды, а оставшиеся столбцы расширяются и заполняют группу.
+      </p>
+    ),
+  },
   thumbnail: () => (
     <GroupedBarChart
       data={complaints}
@@ -28,39 +40,76 @@ export const groupedBarChart: ChartDoc = {
   ),
   sections: {
     usage: [
-      { id: 'grouped-bar-chart/Basic', title: 'Basic' },
-      { id: 'grouped-bar-chart/Horizontal', title: 'Horizontal layout' },
+      { id: 'grouped-bar-chart/Basic', title: { en: 'Basic', ru: 'Базовый пример' } },
+      {
+        id: 'grouped-bar-chart/Horizontal',
+        title: { en: 'Horizontal layout', ru: 'Горизонтальная ориентация' },
+      },
     ],
     styling: [
-      { id: 'grouped-bar-chart/Styling', title: 'Gaps, sizes and colours' },
-      { id: 'grouped-bar-chart/Labels', title: 'Labels instead of an axis' },
+      {
+        id: 'grouped-bar-chart/Styling',
+        title: { en: 'Gaps, sizes and colours', ru: 'Промежутки, размеры и цвета' },
+      },
+      {
+        id: 'grouped-bar-chart/Labels',
+        title: { en: 'Labels instead of an axis', ru: 'Подписи вместо оси' },
+      },
     ],
     interaction: [
       {
         id: 'grouped-bar-chart/Legend',
-        title: 'Legend toggling and item tooltips',
-        description: (
-          <p>
-            <code>defaultHiddenSeries</code> starts with a series hidden;{' '}
-            <code>tooltip={'{{ mode: "item" }}'}</code> shows only the bar under the pointer.
-          </p>
-        ),
+        title: {
+          en: 'Legend toggling and item tooltips',
+          ru: 'Переключение рядов в легенде и подсказки для отдельных столбцов',
+        },
+        description: {
+          en: (
+            <p>
+              <code>defaultHiddenSeries</code> starts with a series hidden;{' '}
+              <code>tooltip={'{{ mode: "item" }}'}</code> shows only the bar under the pointer.
+            </p>
+          ),
+          ru: (
+            <p>
+              <code>defaultHiddenSeries</code> изначально скрывает ряд;{' '}
+              <code>tooltip={'{{ mode: "item" }}'}</code> показывает только столбец под указателем.
+            </p>
+          ),
+        },
       },
     ],
-    responsive: [{ id: 'grouped-bar-chart/Responsive', title: 'Narrow container', width: 320 }],
-    empty: [{ id: 'grouped-bar-chart/States', title: 'Error with retry' }],
+    responsive: [
+      {
+        id: 'grouped-bar-chart/Responsive',
+        title: { en: 'Narrow container', ru: 'Узкий контейнер' },
+        width: 320,
+      },
+    ],
+    empty: [
+      {
+        id: 'grouped-bar-chart/States',
+        title: { en: 'Error with retry', ru: 'Ошибка и повторная попытка' },
+      },
+    ],
   },
   keyboard: CARTESIAN_KEYS,
   props: [
     {
-      title: 'GroupedBarChart props',
-      note: 'All BarChart props except `stacked`.',
+      title: { en: 'GroupedBarChart props', ru: 'Пропсы GroupedBarChart' },
+      note: {
+        en: 'All BarChart props except `stacked`.',
+        ru: 'Все пропсы BarChart, кроме `stacked`.',
+      },
       props: [
         {
           name: 'layout',
           type: "'vertical' | 'horizontal'",
           default: "'vertical'",
-          description: '`horizontal` draws categories on the y axis.',
+          description: {
+            en: '`horizontal` draws categories on the y axis.',
+            ru: '`horizontal` размещает категории на оси Y.',
+          },
         },
       ],
     },

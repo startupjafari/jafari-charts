@@ -1,9 +1,14 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { useT } from '../i18n';
 
 interface Props {
   children: ReactNode;
   /** Changing this resets the boundary (e.g. the route path). */
   resetKey?: string;
+  /**
+   * What failed, in the current language, as it reads in the sentence
+   * (`t.errors.page`, `t.errors.example(title)`…). Defaults to “this example”.
+   */
   label?: string;
 }
 
@@ -30,13 +35,18 @@ export class ErrorBoundary extends Component<Props, State> {
 
   override render(): ReactNode {
     if (this.state.error) {
-      return (
-        <div className="error-box" role="alert">
-          <strong>{this.props.label ?? 'This example'} could not be rendered.</strong>
-          <span>{this.state.error.message}</span>
-        </div>
-      );
+      return <ErrorMessage label={this.props.label} message={this.state.error.message} />;
     }
     return this.props.children;
   }
+}
+
+function ErrorMessage({ label, message }: { label: string | undefined; message: string }) {
+  const t = useT().errors;
+  return (
+    <div className="error-box" role="alert">
+      <strong>{t.failed(label ?? t.thisExample)}</strong>
+      <span>{message}</span>
+    </div>
+  );
 }

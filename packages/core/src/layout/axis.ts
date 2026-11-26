@@ -104,11 +104,31 @@ export function anchorEdges(
   ticks: AxisTick[],
   bounds: readonly [number, number],
   fontSize = 11,
+  minGap = 8,
 ): void {
   for (const t of ticks) {
     const half = estimateTextWidth(t.label, fontSize) / 2;
     if (t.position - half < bounds[0]) t.anchor = 'start';
     else if (t.position + half > bounds[1]) t.anchor = 'end';
+  }
+  // An edge label shifted inwards can now collide with its neighbour (spacing was
+  // checked for centred labels): drop the neighbour rather than overlap.
+  const span = (t: AxisTick): [number, number] => {
+    const w = estimateTextWidth(t.label, fontSize);
+    if (t.anchor === 'start') return [t.position, t.position + w];
+    if (t.anchor === 'end') return [t.position - w, t.position];
+    return [t.position - w / 2, t.position + w / 2];
+  };
+  if (ticks.length > 2) {
+    const last = ticks[ticks.length - 1] as AxisTick;
+    const prev = ticks[ticks.length - 2] as AxisTick;
+    if (last.anchor === 'end' && span(prev)[1] + minGap > span(last)[0])
+      ticks.splice(ticks.length - 2, 1);
+  }
+  if (ticks.length > 2) {
+    const first = ticks[0] as AxisTick;
+    const next = ticks[1] as AxisTick;
+    if (first.anchor === 'start' && span(first)[1] + minGap > span(next)[0]) ticks.splice(1, 1);
   }
 }
 

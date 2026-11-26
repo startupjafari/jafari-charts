@@ -8,50 +8,50 @@
   },
   {
     "scenario": "core: base (scales, ticks, geometry, curves, data, formatting)",
-    "min KB": "24.8",
-    "gzip KB": "9.9",
+    "min KB": "28.6",
+    "gzip KB": "11.1",
     "budget KB": 15,
     "status": "ok"
   },
   {
     "scenario": "core: everything (incl. chart models)",
-    "min KB": "95.0",
-    "gzip KB": "36.3",
-    "budget KB": 38,
+    "min KB": "100.4",
+    "gzip KB": "38.2",
+    "budget KB": 39,
     "status": "ok"
   },
   {
     "scenario": "react layer: LineChart (core external)",
-    "min KB": "36.7",
-    "gzip KB": "13.8",
+    "min KB": "41.0",
+    "gzip KB": "15.5",
     "budget KB": 25,
     "status": "ok"
   },
   {
     "scenario": "react layer: all components (core external)",
-    "min KB": "86.4",
-    "gzip KB": "29.0",
-    "budget KB": 30,
+    "min KB": "93.1",
+    "gzip KB": "31.3",
+    "budget KB": 32,
     "status": "ok"
   },
   {
     "scenario": "app: LineChart (React layer + core it needs)",
-    "min KB": "91.1",
-    "gzip KB": "33.3",
-    "budget KB": 34,
+    "min KB": "100.0",
+    "gzip KB": "36.5",
+    "budget KB": 37,
     "status": "ok"
   },
   {
     "scenario": "app: AreaChart + BarChart + Sparkline",
-    "min KB": "91.9",
-    "gzip KB": "33.6",
-    "budget KB": 34,
+    "min KB": "100.8",
+    "gzip KB": "36.8",
+    "budget KB": 37,
     "status": "ok"
   },
   {
     "scenario": "app: everything from @jafari/charts",
-    "min KB": "186.2",
-    "gzip KB": "65.8",
+    "min KB": "198.4",
+    "gzip KB": "69.9",
     "budget KB": 70,
     "status": "ok"
   },

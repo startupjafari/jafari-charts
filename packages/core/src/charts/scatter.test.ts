@@ -270,3 +270,68 @@ describe('scatter keyboard navigation', () => {
     expect(m.point(m.step(other, 'down'))!.group).toBe(0); // wraps around
   });
 });
+
+describe('scatter model: zoom domains', () => {
+  const xs = f(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
+  const ys = f(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
+
+  it('keeps the full domains as bounds and draws only points inside the zoom domain', () => {
+    const full = buildScatterModel(spec([group('a', xs, ys)]));
+    const m = buildScatterModel(
+      spec([group('a', xs, ys)], { x: { domain: [15, 55] }, y: { domain: [25, 75] } }),
+    );
+    expect(m.bounds).toEqual(full.bounds);
+    expect(m.zoomed).toBe(true);
+    expect(full.zoomed).toBe(false);
+    expect((m.frame.x as { domain: readonly number[] }).domain).toEqual([15, 55]);
+    // Points 30, 40, 50 lie in both windows.
+    expect(m.count).toBe(3);
+    expect(Array.from(symbols(m.marks)[0]!.indices ?? [])).toEqual([3, 4, 5]);
+    // Marker size follows the whole data set, not the visible subset.
+    expect(symbols(m.marks)[0]!.size).toBe(symbols(full.marks)[0]!.size);
+  });
+
+  it('hit tests and navigates visible points only', () => {
+    const m = buildScatterModel(spec([group('a', xs, ys)], { x: { domain: [15, 55] } }));
+    // x = 10 exists in the data but is not drawn when zoomed: not found, not hit.
+    expect(m.find(0, 1)).toBe(-1);
+    expect(m.px).toHaveLength(m.count);
+    const xScale = m.frame.x as { map(v: number): number };
+    const yScale = m.frame.y as { map(v: number): number };
+    expect(m.hitTest(xScale.map(10), yScale.map(10))).toBe(-1);
+    expect(m.point(m.hitTest(xScale.map(20), yScale.map(20)))!.index).toBe(2);
+    expect(m.point(m.step(-1, 'first'))!.index).toBe(2);
+    expect(m.point(m.step(-1, 'last'))!.index).toBe(5);
+  });
+
+  it('clamps a domain to the bounds and keeps its span', () => {
+    const m = buildScatterModel(spec([group('a', xs, ys)], { x: { domain: [-500, -400] } }));
+    const [b0] = m.bounds.x;
+    expect((m.frame.x as { domain: readonly number[] }).domain).toEqual([b0, b0 + 100]);
+    // Degenerate domains are ignored.
+    expect(buildScatterModel(spec([group('a', xs, ys)], { x: { domain: [5, 5] } })).zoomed).toBe(
+      false,
+    );
+  });
+
+  it('zooms log axes in decades', () => {
+    const lx = f(1, 10, 100, 1000);
+    const m = buildScatterModel(
+      spec([group('a', lx, f(1, 2, 3, 4))], { x: { scale: 'log', domain: [5, 200] } }),
+    );
+    expect(m.count).toBe(2);
+    const d = (m.frame.x as { domain: readonly number[] }).domain;
+    expect(d[0]).toBeCloseTo(5);
+    expect(d[1]).toBeCloseTo(200);
+  });
+
+  it('selects drawn points inside a pixel rectangle', () => {
+    const m = buildScatterModel(spec([group('a', xs, ys)]));
+    const a = m.point(m.find(0, 2))!;
+    const b = m.point(m.find(0, 4))!;
+    const inner = m.inRect(b.x - 1, b.y + 1, a.x + 1, a.y - 1).map((k) => m.point(k)!.index);
+    expect(inner).toEqual([3]);
+    const all = m.inRect(a.x - 1, b.y - 1, b.x + 1, a.y + 1).map((k) => m.point(k)!.index);
+    expect(all).toEqual([2, 3, 4]);
+  });
+});

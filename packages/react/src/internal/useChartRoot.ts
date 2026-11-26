@@ -91,6 +91,7 @@ export function createInteractionStore(): Store<InteractionState> {
     pointer: null,
     highlight: null,
     brush: null,
+    announcement: null,
   });
 }
 

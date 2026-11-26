@@ -15,8 +15,10 @@ import {
   StackedBarChart,
 } from '@jafari/charts';
 import { memo } from 'react';
+import type { Lang } from '../i18n/lang';
 import {
   activeColors,
+  DEMO_TEXT,
   kindInfo,
   legendValue,
   seriesSpec,
@@ -32,9 +34,12 @@ import {
 export const Preview = memo(function Preview({
   config,
   data,
+  lang,
 }: {
   config: PlaygroundConfig;
   data: PlaygroundData;
+  /** Labels follow the site language (the chart locale comes from the site's ChartProvider). */
+  lang: Lang;
 }) {
   const info = kindInfo(config.kind);
   const colors = activeColors(config);
@@ -55,7 +60,7 @@ export const Preview = memo(function Preview({
       <GaugeChart
         {...base}
         value={data.value}
-        label="Score"
+        label={DEMO_TEXT[lang].gauge}
         {...(colors?.[0] ? { color: colors[0] } : {})}
       />
     );
@@ -90,7 +95,7 @@ export const Preview = memo(function Preview({
     );
   }
 
-  const spec = seriesSpec(config);
+  const spec = seriesSpec(config, lang);
   if (data.type === 'points') {
     const points =
       spec.mode === 'single'
