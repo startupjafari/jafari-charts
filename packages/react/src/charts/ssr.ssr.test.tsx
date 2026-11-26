@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import {
@@ -37,8 +38,10 @@ describe('server rendering (no DOM)', () => {
     }
   });
 
-  it('emits the stylesheet once per chart tree for hoisting', () => {
+  it('emits the stylesheet for hoisting on React 19 (React 18 injects it on the client)', () => {
     const html = renderToString(<LineChart data={data} xKey="day" yKey="a" />);
-    expect(html).toMatch(/jc-root\{/);
+    const react19 = typeof (React as { use?: unknown }).use === 'function';
+    if (react19) expect(html).toMatch(/jc-root\{/);
+    else expect(html).not.toMatch(/jc-root\{/); // documented: import styles.css for SSR on React 18
   });
 });

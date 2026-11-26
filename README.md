@@ -140,6 +140,11 @@ family is also available as a subpath (`@jafari/charts-react/cartesian`, `/pie`,
 
 ## Server rendering
 
+With React 19, the stylesheet is emitted during server rendering (hoisted
+`<style precedence>`). React 18 has no style hoisting, so styles are injected on
+the client — server-rendered React 18 apps should import
+`@jafari/charts/styles.css` to avoid unstyled HTML before hydration.
+
 Charts render on the server at `initialWidth` (default 640 px) and hydrate
 without mismatches, then adapt to the real width. React components ship with the
 `"use client"` directive for the Next.js App Router.
