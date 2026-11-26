@@ -251,7 +251,7 @@ export function GaugeChart(props: GaugeChartProps): ReactElement {
             text: fmt(min),
             anchor: 'middle' as const,
             baseline: 'hanging' as const,
-            tone: 'muted' as const,
+            tone: 'secondary' as const,
           },
           {
             key: 'max',
@@ -260,7 +260,7 @@ export function GaugeChart(props: GaugeChartProps): ReactElement {
             text: fmt(max),
             anchor: 'middle' as const,
             baseline: 'hanging' as const,
-            tone: 'muted' as const,
+            tone: 'secondary' as const,
           },
         ];
       })()

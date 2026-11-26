@@ -92,7 +92,7 @@ const COMPONENT_CSS = `
 .jc-legend-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .jc-legend-value{color:var(--jc-text);font-weight:600;font-variant-numeric:tabular-nums}
 .jc-key{display:block;flex:none}
-.jc-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;text-align:center;color:var(--jc-text-muted);font-size:13px;pointer-events:none}
+.jc-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;text-align:center;color:var(--jc-text-secondary);font-size:13px;pointer-events:none}
 .jc-state button{pointer-events:auto}
 .jc-state-error{color:var(--jc-text-secondary)}
 .jc-placeholder{fill:var(--jc-track)}

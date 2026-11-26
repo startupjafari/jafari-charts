@@ -16,3 +16,4 @@ benchmarks/results/*.raw.json
 !.env.example
 *.log
 benchmarks/.size-tmp/
+packages/charts/README.md

@@ -133,7 +133,34 @@ The categorical palette order was validated for colour-vision deficiency
 (adjacent-pair OKLab ΔE ≥ 8 under protan/deutan simulation) in both modes; dark
 mode uses darker steps of the same hues.
 
-## 6. Decisions log
+## 6. Localisation
+
+Numbers and dates go through `Intl` with cached formatters. Some browsers ship a
+trimmed ICU: Chromium builds report `kk` as supported but print dates as
+"M09 3" and English separators. `lacksIntlData()` detects such locales once and
+switches Kazakh to built-in CLDR data (`formatting/locale-data.ts`); its output is
+tested against Node's full-ICU `kk` output for every month, weekday and option
+set charts use. Other unsupported locales fall back to English.
+
+## 7. Renderer choice
+
+Measured (benchmarks/results): with mark batching, SVG is as fast or faster than
+Canvas for bar charts up to 10 000 bars and for line/area charts at any input
+size (downsampling keeps the drawn points at ~2 per pixel). `renderer="auto"`
+therefore keeps those on SVG; chart types whose marks cannot be reduced (large
+scatter plots) set a per-chart `canvasThreshold` from their own benchmarks.
+Canvas batches are flushed every 64 subpaths: Chromium's `closePath()` slows
+down with the number of closed subpaths already in the path (10 000 bars: 1 s →
+70 ms; 20 000 points: 172 → 107 ms).
+
+## 8. Synchronised charts
+
+`syncId` connects charts through a tiny in-memory channel per group: the active
+x value (timestamp or category label) is published by the chart under the
+pointer/keyboard and resolved by the others with a binary search; a chart whose
+range does not contain the value shows nothing.
+
+## 9. Decisions log
 
 | Decision                                             | Reason                                                                                                                   |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |

@@ -1,5 +1,6 @@
 import {
   drawMark,
+  drawSymbol,
   isStrokeMark,
   parseColor,
   styleKey,
@@ -14,6 +15,9 @@ type Context2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 type Canvas = HTMLCanvasElement | OffscreenCanvas;
 
 export type ColorResolver = (color: string) => string;
+
+/** Maximum closed subpaths per fill() call. */
+const MAX_BATCH = 64;
 
 export interface CanvasRendererOptions {
   /** Upper bound for the device pixel ratio (default 2: sharper than 2× is invisible, 4× the memory). */
@@ -97,16 +101,19 @@ export class CanvasRenderer {
     while (i < marks.length) {
       const first = marks[i] as Mark;
       const stroked = isStrokeMark(first);
-      const mergeable =
-        first.type === 'rect' ||
-        first.type === 'arc' ||
-        first.type === 'symbol' ||
-        first.type === 'rule';
+      if (first.type === 'symbol') {
+        this.drawSymbols(first, resolve);
+        i++;
+        continue;
+      }
+      const mergeable = first.type === 'rect' || first.type === 'arc' || first.type === 'rule';
       const key = styleKey(first);
       ctx.beginPath();
       drawMark(ctx, first);
       let j = i + 1;
-      while (mergeable && j < marks.length) {
+      // Chromium's closePath() slows down as one path accumulates closed subpaths
+      // (measured ~1 s for 10 000 bars), so batches are flushed every MAX_BATCH marks.
+      while (mergeable && j < marks.length && j - i < MAX_BATCH) {
         const m = marks[j] as Mark;
         if (m.type !== first.type || isStrokeMark(m) !== stroked || styleKey(m) !== key) break;
         drawMark(ctx, m);
@@ -116,6 +123,24 @@ export class CanvasRenderer {
       i = j;
     }
     ctx.restore();
+  }
+
+  /** Point batches are drawn in chunks for the same closePath() reason. */
+  private drawSymbols(mark: Extract<Mark, { type: 'symbol' }>, resolve: ColorResolver): void {
+    const { ctx } = this;
+    const { xs, ys, size, shape } = mark;
+    const n = Math.min(xs.length, ys.length);
+    for (let start = 0; start < n; start += MAX_BATCH) {
+      ctx.beginPath();
+      const end = Math.min(n, start + MAX_BATCH);
+      for (let k = start; k < end; k++) {
+        const x = xs[k] as number;
+        const y = ys[k] as number;
+        const s = typeof size === 'number' ? size : (size[k] as number);
+        if (Number.isFinite(x) && Number.isFinite(y) && s > 0) drawSymbol(ctx, shape, x, y, s);
+      }
+      this.paint(mark, false, resolve);
+    }
   }
 
   private paint(style: MarkStyle, stroked: boolean, resolve: ColorResolver): void {

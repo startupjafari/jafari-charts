@@ -1,3 +1,4 @@
+import { ChartProvider } from '@jafari/charts';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
@@ -7,6 +8,8 @@ if (params.get('theme') === 'dark') document.documentElement.classList.add('dark
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
-    <App />
+    <ChartProvider locale={params.get('locale') ?? 'en'}>
+      <App />
+    </ChartProvider>
   </StrictMode>,
 );

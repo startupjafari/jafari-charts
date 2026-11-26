@@ -22,7 +22,7 @@ export interface ActiveItem {
 export interface InteractionState {
   active: ActiveItem | null;
   /** How `active` was set: keyboard focus announces values to screen readers. */
-  source: 'pointer' | 'keyboard' | 'touch' | 'controlled' | null;
+  source: 'pointer' | 'keyboard' | 'touch' | 'controlled' | 'sync' | null;
   /** Pointer position in chart pixels (for crosshair labels). */
   pointer: { x: number; y: number } | null;
   /** Series emphasised from the legend. */
@@ -79,6 +79,10 @@ export interface ChartAdapter {
   itemAt(position: number, series?: number): ActiveItem | null;
   /** Total number of data points (for the accessible description). */
   pointCount: number;
+  /** Value shared with synchronised charts (`syncId`), e.g. the x value. */
+  syncKey?(active: ActiveItem): string | number | null;
+  /** Item matching a value published by a synchronised chart. */
+  fromSyncKey?(key: string | number): ActiveItem | null;
 }
 
 export interface ChartInstance {

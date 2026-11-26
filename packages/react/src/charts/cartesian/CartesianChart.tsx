@@ -58,6 +58,7 @@ import type {
   XAxisOptions,
   YAxisOptions,
 } from './types';
+import { resolveOption } from '../../internal/options';
 
 const DASHES = ['', '6 4', '2 3', '8 3 2 3', '1 3', '10 4'];
 
@@ -106,12 +107,6 @@ interface Prepared {
   raw: (position: number) => AxisValue | null;
   columns: Float64Array[];
   configs: SeriesConfig<object>[];
-}
-
-function opt<T extends object>(v: boolean | T | undefined, fallback: boolean): T | null {
-  if (v === undefined) return fallback ? ({} as T) : null;
-  if (v === false) return null;
-  return v === true ? ({} as T) : v;
 }
 
 /** A stable string identity for series configs, so inline arrays don't invalidate memoised layouts. */
@@ -305,17 +300,20 @@ export function CartesianChart<T extends object>({
 }: InternalCartesianProps<T> & { preset: CartesianPreset }) {
   const root = useChartRoot(props, { height: preset.defaultHeight ?? 280 });
   const minimal = preset.minimal ?? false;
-  const xOpts = opt<XAxisOptions>(props.xAxis, !minimal);
-  const yOpts = opt<YAxisOptions>(props.yAxis, !minimal);
-  const y2Opts = opt<YAxisOptions>(props.y2Axis, !minimal);
-  const gridOpts = opt<{ horizontal?: boolean; vertical?: boolean }>(props.grid, !minimal);
-  const tooltipOpts = opt<TooltipOptions>(props.tooltip, !minimal);
-  const legendOpts = opt<LegendOptions>(props.legend, !minimal);
-  const crosshairOpts = opt<{ horizontal?: boolean }>(
+  const xOpts = resolveOption<XAxisOptions>(props.xAxis, !minimal);
+  const yOpts = resolveOption<YAxisOptions>(props.yAxis, !minimal);
+  const y2Opts = resolveOption<YAxisOptions>(props.y2Axis, !minimal);
+  const gridOpts = resolveOption<{ horizontal?: boolean; vertical?: boolean }>(
+    props.grid,
+    !minimal,
+  );
+  const tooltipOpts = resolveOption<TooltipOptions>(props.tooltip, !minimal);
+  const legendOpts = resolveOption<LegendOptions>(props.legend, !minimal);
+  const crosshairOpts = resolveOption<{ horizontal?: boolean }>(
     props.crosshair,
     !minimal && preset.type !== 'bar',
   );
-  const zoomOpts = opt<{ wheel?: boolean | 'ctrl'; minSpan?: number }>(props.zoom, false);
+  const zoomOpts = resolveOption<{ wheel?: boolean | 'ctrl'; minSpan?: number }>(props.zoom, false);
 
   const prepared = usePrepared(props, xOpts);
   const [hiddenList, setHidden] = useControllableState<readonly string[]>(
@@ -529,6 +527,10 @@ export function CartesianChart<T extends object>({
         if (e) props.onClick?.(e);
       }}
       surfaceHandlers={handlers.handlers}
+      {...(props.syncId ? { syncId: props.syncId } : {})}
+      {...(props.highlightedSeries !== undefined
+        ? { highlightedSeries: props.highlightedSeries }
+        : {})}
       controls={handlers.controls}
       background={
         <>
@@ -745,6 +747,22 @@ function useCartesianAdapter(
       move,
       itemAt: (p, si = -1) => (p >= 0 && p < model.length ? anchor(p, si) : null),
       pointCount: model.length * Math.max(1, visible.length),
+      syncKey: (a) =>
+        prepared.type === 'category'
+          ? (prepared.labels[a.position] ?? null)
+          : (prepared.values[a.position] ?? null),
+      fromSyncKey: (key) => {
+        let p = -1;
+        if (prepared.type === 'category') p = prepared.labels.indexOf(String(key));
+        else if (typeof key === 'number') {
+          const n = prepared.values.length;
+          const lo = prepared.values[0] as number;
+          const hi = prepared.values[n - 1] as number;
+          // Only match values inside this chart's own x range.
+          if (n && key >= lo && key <= hi) p = nearestIndex(prepared.values, key);
+        }
+        return p >= model.visible[0] && p <= model.visible[1] ? anchor(p, -1) : null;
+      },
     };
   }, [
     model,

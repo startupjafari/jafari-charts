@@ -63,6 +63,8 @@ See [ROADMAP.md](ROADMAP.md) for implementation status.
 | `hiddenSeries` / `onHiddenSeriesChange`                     | Controlled legend toggling.                                                       |
 | `activeIndex` / `onActiveIndexChange`, `onHover`, `onClick` | Controlled interaction and events.                                                |
 | `zoom`, `brush`, `xDomain`                                  | Zoom/pan and range selection on continuous x axes.                                |
+| `syncId`                                                    | Charts with the same id share crosshair and tooltip.                              |
+| `highlightedSeries`                                         | Controlled emphasis of one series.                                                |
 | `loading`, `error`, `onRetry`, `emptyMessage`               | Data states without layout jumps.                                                 |
 | `title`, `description`                                      | Accessible name and description.                                                  |
 

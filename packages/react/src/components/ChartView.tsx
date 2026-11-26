@@ -17,6 +17,7 @@ import {
 } from 'react';
 import { useEvent } from '../hooks/useControllableState';
 import { useMarkTransition } from '../hooks/useMarkTransition';
+import { publishSync, readSync, subscribeSync } from '../internal/sync';
 import { useStoreSelector } from '../hooks/useStoreSelector';
 import type { BaseChartProps, ChartRoot } from '../internal/useChartRoot';
 import { CanvasMarks } from '../primitives/CanvasMarks';
@@ -76,6 +77,10 @@ export interface ChartViewProps {
   surfaceHandlers?: SurfaceHandlers;
   /** HTML controls over the chart (e.g. reset zoom). */
   controls?: ReactNode;
+  /** Charts with the same id share the active x value (crosshair + tooltip). */
+  syncId?: string;
+  /** Controlled emphasis: the series with this id stays, others fade (`null` = none). */
+  highlightedSeries?: string | null;
 }
 
 export interface SurfaceHandlers {
@@ -120,6 +125,8 @@ function ConnectedSeries(props: {
     />
   );
 }
+
+const selectTouchOpen = (s: InteractionState) => s.source === 'touch' && s.active !== null;
 
 const selectActiveKey = (s: InteractionState) =>
   s.active ? `${s.active.position}:${s.active.series}` : '';
@@ -212,9 +219,40 @@ export function ChartView(props: ChartViewProps) {
       if (controlled) store.setState({ pointer });
       else store.setState({ active: next, source: next ? source : null, pointer });
       if (!same) onActiveChange(next);
+      const sync = props.syncId;
+      if (sync && source !== 'sync' && source !== 'controlled') {
+        const a = adapterRef.current;
+        publishSync(sync, id, next && a.syncKey ? a.syncKey(next) : null);
+      }
     },
-    [store, controlled, onActiveChange],
+    [store, controlled, onActiveChange, props.syncId, id],
   );
+
+  // Controlled series emphasis.
+  const highlighted = props.highlightedSeries;
+  useEffect(() => {
+    if (highlighted === undefined) return;
+    const index = highlighted === null ? -1 : series.findIndex((x) => x.id === highlighted);
+    store.setState({ highlight: index >= 0 ? index : null });
+  }, [highlighted, series, store]);
+
+  // Follow the active value of synchronised charts.
+  const syncId = props.syncId;
+  useEffect(() => {
+    if (!syncId) return;
+    const apply = () => {
+      const { source, key } = readSync(syncId);
+      if (source === id) return;
+      const a = adapterRef.current;
+      const item = key === null || !a.fromSyncKey ? null : a.fromSyncKey(key);
+      const prev = store.getState();
+      // A local pointer interaction wins over the remote one.
+      if (prev.source === 'pointer' || prev.source === 'keyboard' || prev.source === 'touch')
+        return;
+      store.setState({ active: item, source: item ? 'sync' : null, pointer: null });
+    };
+    return subscribeSync(syncId, apply);
+  }, [syncId, id, store]);
 
   // Controlled active item.
   useEffect(() => {
@@ -252,16 +290,18 @@ export function ChartView(props: ChartViewProps) {
   useEffect(() => () => hover.cancel(), [hover]);
 
   // Touch: keep the tooltip after lifting the finger; a tap outside dismisses it.
+  // The document listener exists only while a touch tooltip is open.
+  const touchOpen = useStoreSelector(store, selectTouchOpen);
   useEffect(() => {
+    if (!touchOpen) return;
     const dismiss = (e: Event) => {
-      if (store.getState().source !== 'touch') return;
       if (root.ref.current && e.target instanceof Node && root.ref.current.contains(e.target))
         return;
       setActive(null, null, null);
     };
     document.addEventListener('pointerdown', dismiss);
     return () => document.removeEventListener('pointerdown', dismiss);
-  }, [store, setActive, root.ref]);
+  }, [touchOpen, setActive, root.ref]);
 
   // Wheel needs a non-passive native listener to prevent page zoom on pinch.
   const onWheel = handlers?.onWheel;
@@ -385,69 +425,75 @@ export function ChartView(props: ChartViewProps) {
         {legendOpts && legendOpts.position === 'top' && series.length > 1 ? (
           <ChartLegend {...legendOpts} />
         ) : null}
-        <div
-          className="jc-layers"
-          style={{ position: 'relative', height }}
-          tabIndex={showContent ? 0 : -1}
-          role="img"
-          aria-label={`${base.title ?? root.messages.chart}. ${root.messages.keyboardHint}`}
-          aria-describedby={descId}
-          onKeyDown={onKeyDown}
-          onBlur={onBlur}
-        >
-          {showContent ? (
-            rendererChoice === 'canvas' ? (
-              <>
-                <svg
-                  className="jc-surface"
-                  width={width}
-                  height={height}
-                  aria-hidden="true"
-                  style={{ position: 'absolute', left: 0, top: 0 }}
-                >
+        {/* The frame holds the focusable chart image plus siblings that must stay
+            exposed to assistive technology (controls, states): children of
+            role="img" are presentational. */}
+        <div className="jc-frame" style={{ position: 'relative', height }}>
+          <div
+            className="jc-layers"
+            style={{ position: 'absolute', inset: 0 }}
+            tabIndex={showContent ? 0 : -1}
+            role="img"
+            aria-label={`${base.title ?? root.messages.chart}. ${root.messages.keyboardHint}`}
+            aria-describedby={descId}
+            onKeyDown={onKeyDown}
+            onBlur={onBlur}
+          >
+            {showContent ? (
+              rendererChoice === 'canvas' ? (
+                <>
+                  <svg
+                    className="jc-surface"
+                    width={width}
+                    height={height}
+                    aria-hidden="true"
+                    style={{ position: 'absolute', left: 0, top: 0 }}
+                  >
+                    {props.background}
+                  </svg>
+                  <CanvasMarks
+                    marks={marks}
+                    width={width}
+                    height={height}
+                    clip={props.clip === false ? undefined : inflate(plot, pad)}
+                    themeKey={root.themeMode}
+                  />
+                  <svg {...svgProps} style={{ position: 'absolute', left: 0, top: 0 }}>
+                    <ActiveLayer chartId={id} />
+                    <TextLabels labels={props.labels ?? []} />
+                    {props.foreground}
+                    {props.children}
+                    {props.overlay}
+                  </svg>
+                </>
+              ) : (
+                <svg {...svgProps}>
+                  {props.clip === false ? null : (
+                    <defs>
+                      <clipPath id={clipId}>
+                        <rect {...inflate(plot, pad)} />
+                      </clipPath>
+                    </defs>
+                  )}
                   {props.background}
-                </svg>
-                <CanvasMarks
-                  marks={marks}
-                  width={width}
-                  height={height}
-                  clip={props.clip === false ? undefined : inflate(plot, pad)}
-                  themeKey={root.themeMode}
-                />
-                <svg {...svgProps} style={{ position: 'absolute', left: 0, top: 0 }}>
+                  <ConnectedSeries
+                    marks={marks}
+                    chartId={id}
+                    dimOnActive={props.dimOnActive ?? false}
+                    {...(props.clip === false ? {} : { clipPath: `url(#${clipId})` })}
+                  />
+                  {/* Highlighted marks sit under the labels so values stay readable. */}
+                  <ActiveLayer chartId={id} />
                   <TextLabels labels={props.labels ?? []} />
                   {props.foreground}
                   {props.children}
-                  <ActiveLayer chartId={id} />
                   {props.overlay}
                 </svg>
-              </>
-            ) : (
-              <svg {...svgProps}>
-                {props.clip === false ? null : (
-                  <defs>
-                    <clipPath id={clipId}>
-                      <rect {...inflate(plot, pad)} />
-                    </clipPath>
-                  </defs>
-                )}
-                {props.background}
-                <ConnectedSeries
-                  marks={marks}
-                  chartId={id}
-                  dimOnActive={props.dimOnActive ?? false}
-                  {...(props.clip === false ? {} : { clipPath: `url(#${clipId})` })}
-                />
-                <TextLabels labels={props.labels ?? []} />
-                {props.foreground}
-                {props.children}
-                <ActiveLayer chartId={id} />
-                {props.overlay}
-              </svg>
-            )
-          ) : null}
-          {showContent ? props.html : null}
-          {showContent && tooltip ? <ChartTooltip {...tooltip} /> : null}
+              )
+            ) : null}
+            {showContent ? props.html : null}
+            {showContent && tooltip ? <ChartTooltip {...tooltip} /> : null}
+          </div>
           {showContent ? props.controls : null}
           {base.error ? (
             <ChartErrorState

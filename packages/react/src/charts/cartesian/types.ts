@@ -142,6 +142,10 @@ export interface CartesianChartProps<T extends object> extends BaseChartProps {
     startIndex: number;
     endIndex: number;
   }) => void;
+  /** Charts with the same `syncId` show the crosshair and tooltip together. */
+  syncId?: string;
+  /** Controlled emphasis of one series (others fade); `null` clears it. */
+  highlightedSeries?: string | null;
   children?: ReactNode;
 }
 

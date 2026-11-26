@@ -29,7 +29,9 @@ describe('LineChart', () => {
     );
     expect(container.querySelectorAll('.jc-series')).toHaveLength(2);
     expect(container.querySelectorAll('.jc-axis text').length).toBeGreaterThan(3);
-    expect(screen.getByRole('button', { name: /Hide Students/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Students' }).getAttribute('aria-pressed')).toBe(
+      'true',
+    );
     const img = screen.getByRole('img', { name: /Activity/ });
     const description = document.getElementById(img.getAttribute('aria-describedby') ?? '');
     expect(description?.textContent).toMatch(/Line chart with 2 series and 8 data points/);
@@ -59,16 +61,16 @@ describe('LineChart', () => {
         onHiddenSeriesChange={onChange}
       />,
     );
-    fireEvent.click(screen.getByRole('button', { name: /Hide Teachers/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Teachers' }));
     expect(onChange).toHaveBeenCalledWith(['teachers']);
     expect(container.querySelectorAll('.jc-series')).toHaveLength(1);
-    expect(screen.getByRole('button', { name: /Show Teachers/ }).getAttribute('aria-pressed')).toBe(
+    expect(screen.getByRole('button', { name: 'Teachers' }).getAttribute('aria-pressed')).toBe(
       'false',
     );
     // The last visible series cannot be hidden.
-    expect(
-      (screen.getByRole('button', { name: /Hide Students/ }) as HTMLButtonElement).disabled,
-    ).toBe(true);
+    expect((screen.getByRole('button', { name: 'Students' }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
 
     const controlled = render(
       <LineChart
@@ -154,7 +156,7 @@ describe('states', () => {
   it('renders empty, loading and error states without changing the height', () => {
     const empty = render(<LineChart data={[]} xKey={'day' as never} height={200} />);
     expect(screen.getByRole('status').textContent).toBe('No data');
-    expect((empty.container.querySelector('.jc-layers') as HTMLElement).style.height).toBe('200px');
+    expect((empty.container.querySelector('.jc-frame') as HTMLElement).style.height).toBe('200px');
     empty.unmount();
 
     render(<LineChart data={[]} xKey={'day' as never} loading />);
@@ -282,5 +284,80 @@ describe('lifecycle', () => {
     expect(container.querySelectorAll('.jc-legend-item')).toHaveLength(12);
     for (const t of container.querySelectorAll('.jc-axis text'))
       expect((t.textContent ?? '').length).toBeLessThan(40);
+  });
+});
+
+describe('syncId', () => {
+  it('mirrors the active x value across charts in the same group', () => {
+    const other = data.map((d) => ({ ...d, students: d.students * 2 }));
+    const { container } = render(
+      <>
+        <LineChart data={data} xKey="day" yKey="students" syncId="g" animation={false} title="A" />
+        <BarChart data={other} xKey="day" yKey="students" syncId="g" animation={false} title="B" />
+        <LineChart
+          data={data.slice(0, 2)}
+          xKey="day"
+          yKey="students"
+          syncId="g"
+          animation={false}
+          title="C"
+        />
+        <LineChart data={data} xKey="day" yKey="students" animation={false} title="Unsynced" />
+      </>,
+    );
+    const [a] = screen.getAllByRole('img');
+    fireEvent.keyDown(a!, { key: 'End' });
+    const tips = Array.from(container.querySelectorAll('.jc-tooltip')) as HTMLElement[];
+    expect(tips.map((t) => t.dataset.visible)).toEqual(['true', 'true', 'false', 'false']);
+    expect(tips[1]!.textContent).toContain('36'); // same date in the bar chart (2 × 18)
+    fireEvent.keyDown(a!, { key: 'Escape' });
+    expect(tips.map((t) => t.dataset.visible)).toEqual(['false', 'false', 'false', 'false']);
+  });
+});
+
+describe('highlightedSeries', () => {
+  it('fades every series except the highlighted one', () => {
+    const { container, rerender } = render(
+      <LineChart
+        data={data}
+        xKey="day"
+        series={series}
+        animation={false}
+        highlightedSeries="teachers"
+      />,
+    );
+    const dimmed = () =>
+      Array.from(container.querySelectorAll('.jc-series')).map((g) =>
+        g.hasAttribute('data-jc-dim'),
+      );
+    expect(dimmed()).toEqual([true, false]);
+    rerender(
+      <LineChart
+        data={data}
+        xKey="day"
+        series={series}
+        animation={false}
+        highlightedSeries={null}
+      />,
+    );
+    expect(dimmed()).toEqual([false, false]);
+  });
+});
+
+describe('global listeners', () => {
+  it('adds a document listener only while a touch tooltip is open', async () => {
+    const add = vi.spyOn(document, 'addEventListener');
+    const { container } = render(
+      <>
+        {Array.from({ length: 5 }, (_, i) => (
+          <LineChart key={i} data={data} xKey="day" yKey="students" animation={false} />
+        ))}
+      </>,
+    );
+    expect(add.mock.calls.filter(([type]) => type === 'pointerdown')).toHaveLength(0);
+    fireEvent.pointerDown(surface(container), { clientX: 300, clientY: 100, pointerType: 'touch' });
+    await frame();
+    expect(add.mock.calls.filter(([type]) => type === 'pointerdown')).toHaveLength(1);
+    add.mockRestore();
   });
 });

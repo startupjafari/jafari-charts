@@ -2,17 +2,23 @@ export interface DateFormatOptions extends Intl.DateTimeFormatOptions {
   locale?: string;
 }
 
-const formatters = new Map<string, Intl.DateTimeFormat>();
+import { kazakhDateFormat, resolveFormatLocale, type Formatter } from './locale-data';
+
+const formatters = new Map<string, Formatter<number | Date>>();
 
 /** Cached `Intl.DateTimeFormat`. */
 export function getDateFormat(
   locale = 'en',
   options: Intl.DateTimeFormatOptions = {},
-): Intl.DateTimeFormat {
+): Formatter<number | Date> {
   const key = `${locale}|${JSON.stringify(options)}`;
   let f = formatters.get(key);
   if (!f) {
-    f = new Intl.DateTimeFormat(locale, options);
+    const resolved = resolveFormatLocale(locale);
+    f =
+      resolved.builtin === 'kk'
+        ? kazakhDateFormat(options)
+        : new Intl.DateTimeFormat(resolved.locale, options);
     if (formatters.size > 200) formatters.clear();
     formatters.set(key, f);
   }

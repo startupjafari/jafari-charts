@@ -19,34 +19,38 @@ export const ChartDataTable = memo(function ChartDataTable({
 }) {
   if (!table.rows.length) return null;
   const rows = table.rows.slice(0, limit);
+  // Tables ignore `width: 1px`, so the visually hidden wrapper does the clipping
+  // (otherwise wide tables extend the page's scroll width).
   return (
-    <table className="jc-sr-only">
-      <caption>{caption}</caption>
-      <thead>
-        <tr>
-          {table.columns.map((c, i) => (
-            <th key={i} scope="col">
-              {c}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r, i) => (
-          <tr key={i}>
-            {r.map((cell, j) =>
-              j === 0 ? (
-                <th key={j} scope="row">
-                  {cell}
-                </th>
-              ) : (
-                <td key={j}>{cell}</td>
-              ),
-            )}
+    <div className="jc-sr-only">
+      <table>
+        <caption>{caption}</caption>
+        <thead>
+          <tr>
+            {table.columns.map((c, i) => (
+              <th key={i} scope="col">
+                {c}
+              </th>
+            ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i}>
+              {r.map((cell, j) =>
+                j === 0 ? (
+                  <th key={j} scope="row">
+                    {cell}
+                  </th>
+                ) : (
+                  <td key={j}>{cell}</td>
+                ),
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 });
 

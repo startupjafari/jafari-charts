@@ -46,7 +46,7 @@ describe('DonutChart', () => {
     const { container } = render(
       <DonutChart data={roles} labelKey="role" valueKey="count" animation={false} />,
     );
-    fireEvent.click(screen.getByRole('button', { name: /Hide Students/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Students/ }));
     expect(container.querySelector('.jc-center-value')?.textContent).toBe('100');
     expect(screen.getByRole('button', { name: /Teachers/ }).textContent).toContain('96%');
   });

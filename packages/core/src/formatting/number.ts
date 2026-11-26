@@ -1,20 +1,28 @@
 import { precisionForStep } from '../scales/ticks';
+import { kazakhNumberFormat, resolveFormatLocale, type Formatter } from './locale-data';
 
 export interface NumberFormatOptions extends Intl.NumberFormatOptions {
   locale?: string;
 }
 
-const formatters = new Map<string, Intl.NumberFormat>();
+const formatters = new Map<string, Formatter<number>>();
 
-/** Cached `Intl.NumberFormat` (constructing one costs far more than formatting). */
+/**
+ * Cached number formatter (constructing `Intl.NumberFormat` costs far more than
+ * formatting). Falls back to built-in data when the browser's ICU lacks the locale.
+ */
 export function getNumberFormat(
   locale = 'en',
   options: Intl.NumberFormatOptions = {},
-): Intl.NumberFormat {
+): Formatter<number> {
   const key = `${locale}|${JSON.stringify(options)}`;
   let f = formatters.get(key);
   if (!f) {
-    f = new Intl.NumberFormat(locale, options);
+    const resolved = resolveFormatLocale(locale);
+    f =
+      resolved.builtin === 'kk'
+        ? kazakhNumberFormat(options)
+        : new Intl.NumberFormat(resolved.locale, options);
     if (formatters.size > 200) formatters.clear();
     formatters.set(key, f);
   }

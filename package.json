@@ -16,7 +16,7 @@
     "dev:docs": "pnpm --filter @jafari/charts-docs dev",
     "dev:playground": "pnpm --filter @jafari/charts-playground dev",
     "typecheck": "pnpm -r run typecheck",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -28,7 +28,10 @@
     "pack:check": "node scripts/pack-check.mjs",
     "bench": "node benchmarks/run.mjs",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm size && pnpm pack:check",
-    "clean": "pnpm -r exec rm -rf dist .turbo && rm -rf coverage test-results playwright-report"
+    "clean": "pnpm -r exec rm -rf dist .turbo && rm -rf coverage test-results playwright-report",
+    "test:visual": "playwright test --project desktop --grep @visual",
+    "test:visual:update": "playwright test --project desktop --grep @visual --update-snapshots",
+    "storybook": "pnpm --filter @jafari/charts-storybook storybook"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.1",

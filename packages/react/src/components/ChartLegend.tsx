@@ -40,7 +40,8 @@ export function ChartLegend({
               type="button"
               className="jc-legend-item"
               aria-pressed={s.visible}
-              aria-label={interactive ? messages.toggleSeries(s.label, s.visible) : s.label}
+              // Name = visible text (WCAG 2.5.3); the on/off state is conveyed by aria-pressed.
+              title={interactive && !locked ? messages.toggleSeries(s.label, s.visible) : undefined}
               disabled={!interactive || locked}
               onClick={() => toggleSeries(s.id)}
               onPointerEnter={() => s.visible && highlight(i)}

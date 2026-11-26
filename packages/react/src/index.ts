@@ -109,3 +109,37 @@ export type {
   GaugeChartProps,
   ProgressItem,
 } from './charts/polar/RadialCharts';
+
+export { ScatterChart } from './charts/scatter/ScatterChart';
+export type {
+  ScatterChartProps,
+  ScatterChartAxisOptions,
+  ScatterSeriesConfig,
+  ScatterPointEvent,
+} from './charts/scatter/ScatterChart';
+export { RadarChart } from './charts/radar/RadarChart';
+export type { RadarChartProps, RadarSeriesConfig, RadarEvent } from './charts/radar/RadarChart';
+export { HeatmapChart } from './charts/heatmap/HeatmapChart';
+export type {
+  HeatmapChartProps,
+  HeatmapCellEvent,
+  HeatmapAxisOptions,
+} from './charts/heatmap/HeatmapChart';
+export { CalendarHeatmap } from './charts/heatmap/CalendarHeatmap';
+export type {
+  CalendarHeatmapProps,
+  CalendarDayEvent,
+  CalendarLegendOptions,
+} from './charts/heatmap/CalendarHeatmap';
+export { FunnelChart } from './charts/funnel/FunnelChart';
+export type { FunnelChartProps, FunnelStageEvent } from './charts/funnel/FunnelChart';
+export type { FunnelTexts } from './charts/funnel/texts';
+export { TreemapChart } from './charts/treemap/TreemapChart';
+export type {
+  TreemapChartProps,
+  TreemapHierarchyProps,
+  TreemapRowsProps,
+  TreemapItemEvent,
+  TreemapDatum,
+} from './charts/treemap/TreemapChart';
+export type { TreemapTexts } from './charts/treemap/texts';

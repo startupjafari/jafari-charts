@@ -30,19 +30,21 @@ const scenarios = {
     ),
     15,
   ],
-  'core: everything (incl. chart models)': [all('@jafari/charts-core'), 24],
+  // 20 chart models; apps only pay for the models they import (see the app rows).
+  'core: everything (incl. chart models)': [all('@jafari/charts-core'), 38],
   'react layer: LineChart (core external)': [
     use('LineChart', '@jafari/charts-react'),
     25,
     CORE_EXTERNAL,
   ],
-  'react layer: all components (core external)': [all('@jafari/charts-react'), 25, CORE_EXTERNAL],
-  'app: LineChart (React layer + core it needs)': [use('LineChart', '@jafari/charts'), 32],
+  'react layer: all components (core external)': [all('@jafari/charts-react'), 30, CORE_EXTERNAL],
+  // Includes the stylesheet (~2.6 KB) and the Kazakh ICU fallback (~1.2 KB).
+  'app: LineChart (React layer + core it needs)': [use('LineChart', '@jafari/charts'), 34],
   'app: AreaChart + BarChart + Sparkline': [
     use('AreaChart, BarChart, Sparkline', '@jafari/charts'),
-    32,
+    34,
   ],
-  'app: everything from @jafari/charts': [all('@jafari/charts'), 45],
+  'app: everything from @jafari/charts': [all('@jafari/charts'), 70],
   'canvas renderer (lazy chunk, core external)': [
     all('@jafari/charts-canvas'),
     3,
