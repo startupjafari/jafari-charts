@@ -7,6 +7,7 @@ import {
   inferDateFormat,
   isSortedAscending,
   labelColumn,
+  mapPositions,
   nearestIndex,
   numericColumn,
   permute,
@@ -57,7 +58,7 @@ import type {
   YAxisOptions,
   ZoomOptions,
 } from './types';
-import { resolveOption } from '../../internal/options';
+import { resolveOption, valueAxisSpec } from '../../internal/options';
 
 const DASHES = ['', '6 4', '2 3', '8 3 2 3', '1 3', '10 4'];
 
@@ -206,11 +207,39 @@ function usePrepared<T extends object>(
   }, [data, xKey, signature, forcedType, utc]);
 }
 
+type DatumColors = readonly ((string | undefined)[] | undefined)[] | null;
+
+/**
+ * Per-position bar colours from each series' `colorBy` (sorted positions are mapped back to
+ * data indices). Read from the live `series` prop, so a new callback takes effect; the result
+ * keeps its identity while the colours are unchanged.
+ */
+function useDatumColors(
+  props: InternalCartesianProps<object>,
+  prepared: Prepared,
+  defaultType: CartesianPreset['type'],
+): DatumColors {
+  const { series, data } = props;
+  const colors = useMemo<DatumColors>(() => {
+    if (!series?.some((s) => s.colorBy)) return null;
+    const count = Math.max(prepared.values.length, prepared.labels.length);
+    return series.map((s) =>
+      s.colorBy && (s.type ?? defaultType) === 'bar'
+        ? mapPositions(data, prepared.order, count, s.colorBy)
+        : undefined,
+    );
+  }, [series, data, prepared, defaultType]);
+  const signature = colors?.map((c) => c?.join('\u0001') ?? '').join('\u0002') ?? '';
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => colors, [signature]);
+}
+
 function useResolvedSeries(
   prepared: Prepared,
   preset: CartesianPreset,
   props: InternalCartesianProps<object>,
   hidden: ReadonlySet<string>,
+  datumColors: DatumColors,
 ) {
   const { configs, columns } = prepared;
   return useMemo(() => {
@@ -241,7 +270,9 @@ function useResolvedSeries(
       if (c.axis === 'right') spec.axis = 'y2';
       if (c.stackId) spec.stack = c.stackId;
       else if (preset.stack) spec.stack = 'stack';
-      if (preset.colors && i === 0) spec.colors = preset.colors;
+      // Waterfall colours its own bars.
+      const colors = preset.colors && i === 0 ? preset.colors : datumColors?.[i];
+      if (colors) spec.colors = colors;
       if (preset.base && i === 0) spec.base = preset.base;
       if (preset.display && i === 0) spec.display = preset.display;
       return spec;
@@ -256,20 +287,7 @@ function useResolvedSeries(
       visible: s.visible !== false,
     }));
     return { specs, info };
-  }, [configs, columns, hidden, preset, props.curve, props.dots, props.differentiate]);
-}
-
-function axisSpec(o: YAxisOptions | null) {
-  return {
-    ...(o?.hidden || !o ? { hidden: true } : {}),
-    ...(o?.tickCount !== undefined ? { tickCount: o.tickCount } : {}),
-    ...(o?.format ? { format: o.format } : {}),
-    ...(o?.min !== undefined ? { min: o.min } : {}),
-    ...(o?.max !== undefined ? { max: o.max } : {}),
-    ...(o?.includeZero !== undefined ? { includeZero: o.includeZero } : {}),
-    ...(o?.scale ? { scale: o.scale } : {}),
-    ...(o?.nice !== undefined ? { nice: o.nice } : {}),
-  };
+  }, [configs, columns, hidden, preset, props.curve, props.dots, props.differentiate, datumColors]);
 }
 
 /**
@@ -304,11 +322,17 @@ export function CartesianChart<T extends object>({
     props.onHiddenSeriesChange as ((h: readonly string[]) => void) | undefined,
   );
   const hidden = useMemo(() => new Set(hiddenList), [hiddenList]);
+  const datumColors = useDatumColors(
+    props as unknown as InternalCartesianProps<object>,
+    prepared,
+    preset.type,
+  );
   const { specs, info } = useResolvedSeries(
     prepared,
     preset,
     props as unknown as InternalCartesianProps<object>,
     hidden,
+    datumColors,
   );
   const toggleSeries = useCallback(
     (id: string) =>
@@ -374,11 +398,13 @@ export function CartesianChart<T extends object>({
           : {}),
         ...(xOpts?.hidden || !xOpts ? { hidden: true } : {}),
         ...(xOpts?.tickCount !== undefined ? { tickCount: xOpts.tickCount } : {}),
+        ...(xOpts?.maxLabelWidth !== undefined ? { maxLabelWidth: xOpts.maxLabelWidth } : {}),
+        ...(xOpts?.maxLines !== undefined ? { maxLines: xOpts.maxLines } : {}),
         ...(domain ? { domain } : {}),
         ...(range ? { range } : {}),
       },
-      y: axisSpec(yOpts),
-      y2: axisSpec(y2Opts),
+      y: valueAxisSpec(yOpts),
+      y2: valueAxisSpec(y2Opts),
       series: specs,
       ...(preset.stackOffset ? { stackOffset: preset.stackOffset } : {}),
       bar: {
@@ -426,6 +452,8 @@ export function CartesianChart<T extends object>({
     xOpts?.hidden,
     xOpts?.tickCount,
     xOpts?.utc,
+    xOpts?.maxLabelWidth,
+    xOpts?.maxLines,
   ]);
 
   const adapter = useCartesianAdapter(
@@ -591,6 +619,12 @@ export function CartesianChart<T extends object>({
       : specs.every((s) => s.values.every((v) => !Number.isFinite(v)));
   const isBar = preset.type === 'bar';
   const plot = frame.plot;
+  // `xAxis` configures the category/x dimension and `yAxis` the values, whichever side they
+  // are drawn on: horizontal charts draw categories on the left and values at the bottom.
+  const bottomOpts = horizontal ? yOpts : xOpts;
+  const leftOpts = horizontal ? xOpts : yOpts;
+  const categoryLine = xOpts?.line ?? isBar;
+  const valueLine = yOpts?.line ?? false;
 
   return (
     <ChartView
@@ -650,18 +684,18 @@ export function CartesianChart<T extends object>({
       foreground={
         minimal ? null : (
           <>
-            {xOpts && !xOpts.hidden ? (
+            {bottomOpts && !bottomOpts.hidden ? (
               <ChartAxis
                 position="bottom"
-                line={xOpts.line ?? (isBar && !horizontal)}
-                {...(xOpts.title ? { title: xOpts.title } : {})}
+                line={horizontal ? valueLine : categoryLine}
+                {...(bottomOpts.title ? { title: bottomOpts.title } : {})}
               />
             ) : null}
-            {yOpts && !yOpts.hidden ? (
+            {leftOpts && !leftOpts.hidden ? (
               <ChartAxis
                 position="left"
-                line={horizontal && (yOpts as { line?: boolean }).line !== false}
-                {...(yOpts.title ? { title: yOpts.title } : {})}
+                line={horizontal ? categoryLine : valueLine}
+                {...(leftOpts.title ? { title: leftOpts.title } : {})}
               />
             ) : null}
             {frame.y2Ticks.length ? <ChartAxis position="right" /> : null}

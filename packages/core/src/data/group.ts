@@ -44,3 +44,22 @@ export function permute(values: ArrayLike<number>, order: ArrayLike<number>): Fl
   for (let i = 0; i < order.length; i++) out[i] = values[order[i] as number] as number;
   return out;
 }
+
+/**
+ * Per-position values from a per-datum callback (e.g. bar colours): `order` maps sorted
+ * positions to indices into `data` (`null` = data order); `fn` receives the datum and its
+ * index in `data`.
+ */
+export function mapPositions<T, R>(
+  data: readonly T[],
+  order: ArrayLike<number> | null,
+  count: number,
+  fn: (datum: T, index: number) => R,
+): R[] {
+  const out = new Array<R>(count);
+  for (let p = 0; p < count; p++) {
+    const i = order ? (order[p] as number) : p;
+    out[p] = fn(data[i] as T, i);
+  }
+  return out;
+}

@@ -40,7 +40,7 @@ import type {
   TooltipRow,
 } from '../../providers/ChartContext';
 import type { GridOptions, YAxisOptions, ZoomOptions } from '../cartesian/types';
-import { resolveOption } from '../../internal/options';
+import { resolveOption, valueAxisSpec } from '../../internal/options';
 
 /** Axis options of a scatter chart (both axes are continuous). */
 export interface ScatterChartAxisOptions extends YAxisOptions {
@@ -343,8 +343,8 @@ export function ScatterChart<T extends object>(props: ScatterChartProps<T>): Rea
         width: root.width,
         height: root.height,
         groups,
-        x: { ...axisSpec(xOpts), ...(xDomain ? { domain: xDomain } : {}) },
-        y: { ...axisSpec(yOpts), ...(yDomain ? { domain: yDomain } : {}) },
+        x: { ...valueAxisSpec(xOpts), ...(xDomain ? { domain: xDomain } : {}) },
+        y: { ...valueAxisSpec(yOpts), ...(yDomain ? { domain: yDomain } : {}) },
         ...(props.pointSize !== undefined ? { pointSize: props.pointSize } : {}),
         ...(props.minRadius !== undefined ? { minRadius: props.minRadius } : {}),
         ...(props.maxRadius !== undefined ? { maxRadius: props.maxRadius } : {}),
@@ -688,17 +688,4 @@ export function ScatterChart<T extends object>(props: ScatterChartProps<T>): Rea
       {props.children}
     </ChartView>
   );
-}
-
-function axisSpec(o: YAxisOptions | null) {
-  return {
-    ...(o?.hidden || !o ? { hidden: true } : {}),
-    ...(o?.tickCount !== undefined ? { tickCount: o.tickCount } : {}),
-    ...(o?.format ? { format: o.format } : {}),
-    ...(o?.min !== undefined ? { min: o.min } : {}),
-    ...(o?.max !== undefined ? { max: o.max } : {}),
-    ...(o?.includeZero !== undefined ? { includeZero: o.includeZero } : {}),
-    ...(o?.scale ? { scale: o.scale } : {}),
-    ...(o?.nice !== undefined ? { nice: o.nice } : {}),
-  };
 }

@@ -4,7 +4,13 @@ import { createLinearScale, type LinearScale } from '../scales/linear';
 import { createLogScale, type LogScale } from '../scales/log';
 import { createTimeScale, type TimeScale } from '../scales/time';
 import type { Extent, Margins, Rect } from '../types';
-import { bandTicks, continuousTicks, maxLabelWidth, type AxisTick } from './axis';
+import {
+  bandTicks,
+  continuousTicks,
+  LABEL_LINE_HEIGHT,
+  maxLabelWidth,
+  type AxisTick,
+} from './axis';
 
 export interface ValueDomainOptions {
   /**
@@ -20,6 +26,8 @@ export interface ValueDomainOptions {
   max?: number;
   /** Logarithmic domains never include zero and are padded to powers of ten. */
   log?: boolean;
+  /** Whole-number axis (counts): a nice domain is also rounded out to whole numbers. */
+  integer?: boolean;
 }
 
 /**
@@ -64,6 +72,10 @@ export function resolveValueDomain(
     const [nLo, nHi] = niceDomain([lo, hi], 5);
     lo = options.min !== undefined ? lo : nLo;
     hi = options.max !== undefined ? hi : nHi;
+    if (options.integer) {
+      if (options.min === undefined) lo = Math.floor(lo);
+      if (options.max === undefined) hi = Math.ceil(hi);
+    }
   }
   return [lo, hi];
 }
@@ -75,6 +87,8 @@ export type AxisSpec =
       format?: (value: number) => string;
       tickCount?: number;
       hidden?: boolean;
+      /** Whole-number ticks only. */
+      integer?: boolean;
     }
   | {
       kind: 'time';
@@ -92,6 +106,8 @@ export type AxisSpec =
       format?: (label: string, index: number) => string;
       hidden?: boolean;
       maxLabelWidth?: number;
+      /** Wrap long labels onto up to this many lines (default 1: truncate). */
+      maxLines?: number;
       /** Index of the first label in the full category list (zoomed window). */
       offset?: number;
     };
@@ -171,6 +187,7 @@ function ticksFor(
       fontSize,
       ...(s.format ? { format: s.format } : {}),
       maxLabelWidth: s.maxLabelWidth ?? maxBandLabel,
+      ...(s.maxLines ? { maxLines: s.maxLines } : {}),
       ...(bounds ? { bounds } : {}),
     });
   }
@@ -183,63 +200,80 @@ function ticksFor(
     ...(s.format ? { format: s.format } : {}),
     ...(s.tickCount !== undefined ? { count: s.tickCount } : {}),
     ...(bounds ? { bounds } : {}),
+    ...(s.kind !== 'time' && s.integer ? { integer: true } : {}),
   });
 }
 
 /**
  * Computes the plot rectangle, scales and axis ticks of a cartesian chart.
- * Order: x label band → y ticks (needs plot height) → left margin from the widest
- * y label → x ticks (needs plot width). No step depends on a later one, so the
- * layout is computed in a single pass and is fully deterministic.
+ * Order: x label height → y ticks (need the plot height) → left margin from the widest
+ * y label → x ticks (need the plot width). No step depends on a later one, so the layout
+ * is computed in one deterministic pass. The only look-ahead is for category x labels that
+ * may wrap: they are measured once at the one-line layout, and the axis keeps that many
+ * lines (wrapping never adds lines the layout did not reserve).
  */
 export function computeCartesianFrame(options: FrameOptions): CartesianFrame {
   const { width, height, fontSize = 11, locale = 'en', tickPadding = 8 } = options;
   const pad = { ...DEFAULT_PADDING, ...options.padding };
   const yIsBand = options.y.kind === 'band' || options.y.kind === 'point';
-
-  const bottom = pad.bottom + (options.x.hidden ? 0 : Math.ceil(fontSize * 1.2) + tickPadding);
   const top = pad.top;
-  const plotBottom = Math.max(top, height - bottom);
 
-  // Value axes run bottom→top; category axes run top→bottom (first category first).
-  const yRange: Extent = yIsBand ? [top, plotBottom] : [plotBottom, top];
-  const y = makeScale(options.y, yRange);
-  const yTicks = options.y.hidden
-    ? []
-    : ticksFor(options.y, y, 'y', fontSize, locale, undefined, Math.max(40, width * 0.32));
-  const yHiddenTicks = options.y.hidden
-    ? ticksFor({ ...options.y, hidden: false }, y, 'y', fontSize, locale, undefined, 0)
-    : yTicks;
+  // Everything except the x ticks, for x labels of `lines` lines.
+  const layout = (lines: number) => {
+    const bottom =
+      pad.bottom +
+      (options.x.hidden ? 0 : Math.ceil(fontSize * LABEL_LINE_HEIGHT * lines) + tickPadding);
+    const plotBottom = Math.max(top, height - bottom);
+    // Value axes run bottom→top; category axes run top→bottom (first category first).
+    const y = makeScale(options.y, yIsBand ? [top, plotBottom] : [plotBottom, top]);
+    // Hidden axes still expose tick positions for gridlines.
+    const yTicks = options.y.hidden
+      ? ticksFor({ ...options.y, hidden: false }, y, 'y', fontSize, locale, undefined, 0)
+      : ticksFor(options.y, y, 'y', fontSize, locale, undefined, Math.max(40, width * 0.32));
 
-  let y2: LinearScale | LogScale | null = null;
-  let y2Ticks: AxisTick[] = [];
-  if (options.y2 && (options.y2.kind === 'linear' || options.y2.kind === 'log')) {
-    y2 = makeScale(options.y2, [plotBottom, top]) as LinearScale | LogScale;
-    y2Ticks = options.y2.hidden
-      ? []
-      : ticksFor(options.y2, y2, 'y', fontSize, locale, undefined, 0);
+    let y2: LinearScale | LogScale | null = null;
+    let y2Ticks: AxisTick[] = [];
+    if (options.y2 && (options.y2.kind === 'linear' || options.y2.kind === 'log')) {
+      y2 = makeScale(options.y2, [plotBottom, top]) as LinearScale | LogScale;
+      y2Ticks = options.y2.hidden
+        ? []
+        : ticksFor(options.y2, y2, 'y', fontSize, locale, undefined, 0);
+    }
+
+    const left =
+      pad.left + (options.y.hidden ? 0 : Math.ceil(maxLabelWidth(yTicks, fontSize)) + tickPadding);
+    const right =
+      pad.right + (y2Ticks.length ? Math.ceil(maxLabelWidth(y2Ticks, fontSize)) + tickPadding : 0);
+    return { plotBottom, y, yTicks, y2, y2Ticks, left, plotRight: Math.max(left, width - right) };
+  };
+  const xTicksFor = (lines: number, l: ReturnType<typeof layout>) => {
+    const spec =
+      options.x.kind === 'band' || options.x.kind === 'point'
+        ? { ...options.x, maxLines: lines }
+        : options.x;
+    const x = makeScale(spec, [l.left, l.plotRight]);
+    return { x, xTicks: ticksFor(spec, x, 'x', fontSize, locale, [0, width], 140) };
+  };
+
+  let lines = 1;
+  let l = layout(1);
+  const maxLines = 'maxLines' in options.x ? (options.x.maxLines ?? 1) : 1;
+  if (maxLines > 1 && !options.x.hidden) {
+    for (const t of xTicksFor(maxLines, l).xTicks) lines = Math.max(lines, t.lines?.length ?? 1);
+    if (lines > 1) l = layout(lines);
   }
-
-  const left =
-    pad.left + (options.y.hidden ? 0 : Math.ceil(maxLabelWidth(yTicks, fontSize)) + tickPadding);
-  const right =
-    pad.right + (y2Ticks.length ? Math.ceil(maxLabelWidth(y2Ticks, fontSize)) + tickPadding : 0);
-  const plotRight = Math.max(left, width - right);
-
-  const x = makeScale(options.x, [left, plotRight]);
-  const xTicks = ticksFor(options.x, x, 'x', fontSize, locale, [0, width], 140);
+  const { x, xTicks } = xTicksFor(lines, l);
 
   return {
     width,
     height,
-    plot: { x: left, y: top, width: plotRight - left, height: plotBottom - top },
+    plot: { x: l.left, y: top, width: l.plotRight - l.left, height: l.plotBottom - top },
     x,
-    y,
-    y2,
+    y: l.y,
+    y2: l.y2,
     xTicks,
-    // Hidden axes still expose tick positions for gridlines.
-    yTicks: options.y.hidden ? yHiddenTicks : yTicks,
-    y2Ticks,
+    yTicks: l.yTicks,
+    y2Ticks: l.y2Ticks,
   };
 }
 

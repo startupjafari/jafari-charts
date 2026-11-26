@@ -85,6 +85,13 @@ export interface CartesianSpec {
     range?: readonly [number, number];
     /** Force a band scale (bars always use one). */
     band?: boolean;
+    /** Longest a category label line may be, px. */
+    maxLabelWidth?: number;
+    /**
+     * Wrap long category labels onto up to this many lines. Default: 2 for category
+     * (string) data, 1 (truncate) for dates and numbers drawn as categories.
+     */
+    maxLines?: number;
   };
   y?: CartesianAxisOptions;
   y2?: CartesianAxisOptions;
@@ -257,6 +264,7 @@ export function buildCartesianModel(spec: CartesianSpec): CartesianModel {
       includeZero: opts?.includeZero ?? (anyFill ? true : 'auto'),
       nice: opts?.nice ?? !expand,
       log,
+      ...(opts?.integer ? { integer: true } : {}),
       ...(opts?.min !== undefined ? { min: opts.min } : expand ? { min: Math.min(0, min) } : {}),
       ...(opts?.max !== undefined ? { max: opts.max } : expand ? { max: 1 } : {}),
     });
@@ -273,6 +281,7 @@ export function buildCartesianModel(spec: CartesianSpec): CartesianModel {
       ...(format ? { format } : {}),
       ...(opts?.hidden ? { hidden: true } : {}),
       ...(opts?.tickCount !== undefined ? { tickCount: opts.tickCount } : {}),
+      ...(opts?.integer ? { integer: true } : {}),
     };
   };
 
@@ -293,6 +302,8 @@ export function buildCartesianModel(spec: CartesianSpec): CartesianModel {
       paddingOuter: hasBars ? 0.15 : 0.5,
       ...(bandOffset ? { offset: bandOffset } : {}),
       ...(spec.x.hidden ? { hidden: true } : {}),
+      ...(spec.x.maxLabelWidth !== undefined ? { maxLabelWidth: spec.x.maxLabelWidth } : {}),
+      maxLines: spec.x.maxLines ?? (spec.x.type === 'category' ? 2 : 1),
     };
   } else {
     const [e0, e1] = n > 0 ? [xs[0] as number, xs[n - 1] as number] : [Number.NaN, Number.NaN];

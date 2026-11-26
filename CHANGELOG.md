@@ -41,6 +41,19 @@ All notable changes to this project are documented here. The format follows
 - `TreemapChart`: controlled drill-down `drilldownPath`/`onDrilldownPathChange`.
 - Zoom, pan and selection announce the visible/selected range in the live region
   (`visibleRange`, `selectedRange` messages); Shift + arrows pan a zoomed view.
+- Wrapped category labels: long labels wrap at word boundaries (and after hyphens) onto
+  balanced lines instead of being cut to the same prefix ("Казахская национальная ака…").
+  Left axes of horizontal bars wrap when the category is tall enough (font size × 1.2 per
+  line); bottom axes wrap instead of skipping labels when the first word of every label
+  fits its category (otherwise they are thinned as before) and get a taller label row. New `xAxis` options `maxLines` (default 2 for text
+  categories, 1 for dates/numbers) and `maxLabelWidth`. Core: `wrapText`, `AxisTick.lines`,
+  `LABEL_LINE_HEIGHT`, `tickLabelWidth`, band `AxisSpec.maxLines`, `bandTicks({ maxLines })`.
+- `SeriesConfig.colorBy(datum, index)`: per-bar colours for bar series (index into `data`,
+  also for sorted time data); tooltips show the bar's colour. Core: `mapPositions`.
+- `integer` option for value axes (`yAxis`, `y2Axis`, `ScatterChart` axes): whole-number
+  ticks only (0–2 → 0, 1, 2) and a domain rounded out to whole numbers. Core:
+  `ValueDomainOptions.integer`, `ContinuousTickOptions.integer`, linear/log `AxisSpec.integer`.
+- `yAxis.line` draws the value axis baseline.
 
 ### Changed
 
@@ -49,6 +62,7 @@ All notable changes to this project are documented here. The format follows
   props keep working as per-chart overrides.
 - Zoom/pan/brush gestures are one shared implementation (`useZoomGestures`) used by
   cartesian and scatter charts.
+- Bundle budgets for apps +1 KB (wrapping, integer ticks, `colorBy`; see `scripts/size.mjs`).
 
 - Cross-browser test runs (Chromium, Firefox, WebKit, mobile Chrome/Safari) and
   visual baselines in the official Playwright Docker image (`pnpm test:e2e:all`).
@@ -60,6 +74,10 @@ All notable changes to this project are documented here. The format follows
 ### Fixed
 
 - Edge axis labels no longer overlap their neighbour after being shifted inwards.
+- Horizontal bar charts: `xAxis` and `yAxis` now configure the category and value axes
+  regardless of side. `yAxis={{ hidden: true }}` used to hide the left axis — the category
+  labels — while keeping the empty value-axis row; `xAxis` options (`hidden`, `line`,
+  `title`) now apply to the left category axis and `yAxis` options to the bottom value axis.
 
 - Hover on large SVG scenes repainted every data mark (scatter 10k points: 48 ms
   per frame); static and interactive layers are now separate (16.6 ms).

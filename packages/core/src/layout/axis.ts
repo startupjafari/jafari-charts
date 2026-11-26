@@ -1,5 +1,5 @@
 import { createTickFormat } from '../formatting/number';
-import { estimateTextWidth, truncateText } from '../formatting/text';
+import { estimateTextWidth, wrapText } from '../formatting/text';
 import type { BandScale } from '../scales/band';
 import type { LinearScale } from '../scales/linear';
 import type { LogScale } from '../scales/log';
@@ -14,6 +14,16 @@ export interface AxisTick {
   anchor: 'start' | 'middle' | 'end';
   /** Category index for band/point axes. */
   index?: number;
+  /** A label wrapped onto several lines (`label` holds them joined by spaces). */
+  lines?: string[];
+}
+
+/** Line height of wrapped tick labels, em. */
+export const LABEL_LINE_HEIGHT = 1.2;
+
+/** Estimated width of a tick label (its widest line when wrapped). */
+export function tickLabelWidth(tick: AxisTick, fontSize = 11): number {
+  return Math.max(...(tick.lines ?? [tick.label]).map((l) => estimateTextWidth(l, fontSize)));
 }
 
 export type ContinuousScale = LinearScale | LogScale | TimeScale;
@@ -31,6 +41,20 @@ export interface ContinuousTickOptions {
   minGap?: number;
   /** Horizontal extent the labels must stay within (x axes), e.g. [0, svgWidth]. */
   bounds?: readonly [number, number];
+  /** Whole-number ticks only (counts); log axes keep their whole powers. Ignored for time. */
+  integer?: boolean;
+}
+
+/**
+ * Tick values; whole numbers only for `integer` axes: a linear axis asks for at most one
+ * tick per unit, so its nice step is never below 1 (0–2 → 0, 1, 2).
+ */
+function tickValues(scale: ContinuousScale, count: number, integer: boolean): number[] {
+  if (!integer || scale.kind === 'time') return scale.ticks(count);
+  const span = Math.floor(Math.abs(scale.domain[1] - scale.domain[0]));
+  return scale
+    .ticks(scale.kind === 'linear' ? Math.max(1, Math.min(count, span)) : count)
+    .filter(Number.isInteger);
 }
 
 function formatterFor(
@@ -65,7 +89,7 @@ export function continuousTicks(options: ContinuousTickOptions): AxisTick[] {
 
   let best: AxisTick[] = [];
   for (let attempt = 0; attempt < 6; attempt++) {
-    const values = scale.ticks(count);
+    const values = tickValues(scale, count, options.integer ?? false);
     const fmt = options.format ?? formatterFor(scale, values, count, locale);
     const ticks: AxisTick[] = values
       .map((value) => ({
@@ -107,14 +131,14 @@ export function anchorEdges(
   minGap = 8,
 ): void {
   for (const t of ticks) {
-    const half = estimateTextWidth(t.label, fontSize) / 2;
+    const half = tickLabelWidth(t, fontSize) / 2;
     if (t.position - half < bounds[0]) t.anchor = 'start';
     else if (t.position + half > bounds[1]) t.anchor = 'end';
   }
   // An edge label shifted inwards can now collide with its neighbour (spacing was
   // checked for centred labels): drop the neighbour rather than overlap.
   const span = (t: AxisTick): [number, number] => {
-    const w = estimateTextWidth(t.label, fontSize);
+    const w = tickLabelWidth(t, fontSize);
     if (t.anchor === 'start') return [t.position, t.position + w];
     if (t.anchor === 'end') return [t.position - w, t.position];
     return [t.position - w / 2, t.position + w / 2];
@@ -138,14 +162,20 @@ export interface BandTickOptions {
   format?: (label: string, index: number) => string;
   fontSize?: number;
   minGap?: number;
-  /** Longest a label may be before it is truncated with an ellipsis, px. */
+  /** Longest a label (line) may be before it is wrapped or truncated with an ellipsis, px. */
   maxLabelWidth?: number;
+  /**
+   * Wrap long labels at word boundaries onto up to this many lines (default 1: truncate).
+   * y axes wrap when the band step fits the lines; x axes when every category can keep its
+   * label (no thinning), i.e. when the first word of every label fits a category.
+   */
+  maxLines?: number;
   bounds?: readonly [number, number];
 }
 
 /**
  * Category ticks: every band is labelled when there is room, otherwise every k-th
- * band, and labels are truncated to the space available.
+ * band, and labels are wrapped or truncated to the space available.
  */
 export function bandTicks(options: BandTickOptions): AxisTick[] {
   const { scale, direction, fontSize = 11, minGap = direction === 'x' ? 8 : 2 } = options;
@@ -153,26 +183,51 @@ export function bandTicks(options: BandTickOptions): AxisTick[] {
   if (n === 0) return [];
   const labels = scale.domain.map((l, i) => (options.format ? options.format(l, i) : l));
   const step = Math.max(1e-6, scale.step);
+  const maxLines = Math.max(1, Math.floor(options.maxLines ?? 1));
   let every: number;
+  let lines = 1;
   let maxWidth = options.maxLabelWidth ?? (direction === 'x' ? 140 : 120);
   if (direction === 'x') {
     let widest = 0;
     for (const l of labels) widest = Math.max(widest, estimateTextWidth(l, fontSize));
     widest = Math.min(maxWidth, widest);
     every = Math.max(1, Math.ceil((widest + minGap) / step));
-    maxWidth = Math.min(maxWidth, every * step - minGap);
+    const lineWidth = Math.min(maxWidth, step - minGap);
+    // Wrapping keeps a label under every category: always when none is skipped anyway,
+    // otherwise when every label starts with whole words (its first word fits; the end of a
+    // long label may still be dropped). Single words that do not fit are thinned instead.
+    if (
+      maxLines > 1 &&
+      (every === 1 ||
+        (lineWidth > 0 &&
+          labels.every((l) => wrapText(l, lineWidth, maxLines, fontSize).cut !== 0)))
+    ) {
+      every = 1;
+      lines = maxLines;
+      maxWidth = lineWidth;
+    } else maxWidth = Math.min(maxWidth, every * step - minGap);
   } else {
     every = Math.max(1, Math.ceil((fontSize * 1.25 + minGap) / step));
+    if (every === 1)
+      lines = Math.max(
+        1,
+        Math.min(maxLines, Math.floor((step - minGap) / (fontSize * LABEL_LINE_HEIGHT))),
+      );
   }
+  maxWidth = Math.max(0, maxWidth);
+  // Shortened lines fill their whole width: on wrapped x labels they stop `minGap` short to
+  // keep neighbouring labels apart.
+  const cutWidth = direction === 'x' && lines > 1 ? maxWidth - minGap : maxWidth;
   const ticks: AxisTick[] = [];
   for (let i = 0; i < n; i += every) {
-    const position = scale.center(i);
+    const wrapped = wrapText(labels[i] as string, maxWidth, lines, fontSize, cutWidth).lines;
     ticks.push({
       value: i,
       index: i,
-      position,
-      label: truncateText(labels[i] as string, Math.max(0, maxWidth), fontSize),
+      position: scale.center(i),
+      label: wrapped.join(' '),
       anchor: 'middle',
+      ...(wrapped.length > 1 ? { lines: wrapped } : {}),
     });
   }
   if (direction === 'x' && options.bounds) anchorEdges(ticks, options.bounds, fontSize);
@@ -182,6 +237,6 @@ export function bandTicks(options: BandTickOptions): AxisTick[] {
 /** Widest estimated label among ticks (for margin computation). */
 export function maxLabelWidth(ticks: readonly AxisTick[], fontSize = 11): number {
   let w = 0;
-  for (const t of ticks) w = Math.max(w, estimateTextWidth(t.label, fontSize));
+  for (const t of ticks) w = Math.max(w, tickLabelWidth(t, fontSize));
   return w;
 }

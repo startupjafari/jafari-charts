@@ -29,8 +29,19 @@ export interface SeriesConfig<T> {
   symbol?: SymbolShape;
   /** Formats this series' values in tooltips and labels. */
   format?: (value: number) => string;
+  /**
+   * Bar series: colour of each bar from its datum (`index` = index in `data`); return
+   * `undefined` to keep the series colour. Tooltips show the bar's colour. Ignored for
+   * lines and areas and by the Waterfall Chart, which colours its own bars.
+   */
+  colorBy?: (datum: T, index: number) => string | undefined;
 }
 
+/**
+ * Options of the category/x dimension. In horizontal bar charts this axis is drawn on the
+ * left: `xAxis` always configures the categories and `yAxis` the values, whichever side
+ * they are drawn on.
+ */
 export interface XAxisOptions {
   hidden?: boolean;
   tickCount?: number;
@@ -43,8 +54,21 @@ export interface XAxisOptions {
   /** Draw the axis baseline. */
   line?: boolean;
   title?: string;
+  /** Category axes: longest a label line may be before it wraps or is truncated, px. */
+  maxLabelWidth?: number;
+  /**
+   * Category axes: long labels wrap at word boundaries onto up to this many lines (default
+   * 2 for text categories, 1 for dates and numbers); the last line ends with an ellipsis if
+   * the label still does not fit. Left (horizontal) axes wrap when a category is tall
+   * enough for the lines; bottom axes wrap instead of skipping labels when the first word of
+   * every label fits its category (otherwise labels are thinned). `1` truncates.
+   */
+  maxLines?: number;
 }
 
+/**
+ * Options of the value dimension (bottom axis in horizontal bar charts, see `XAxisOptions`).
+ */
 export interface YAxisOptions {
   hidden?: boolean;
   tickCount?: number;
@@ -56,6 +80,13 @@ export interface YAxisOptions {
   scale?: 'linear' | 'log';
   nice?: boolean;
   title?: string;
+  /** Draw the axis baseline. */
+  line?: boolean;
+  /**
+   * Whole-number ticks only, for counts (users, complaints): a tiny domain such as 0–2
+   * gets 0, 1, 2 instead of 0, 0.5, 1 …; the domain is rounded out to whole numbers.
+   */
+  integer?: boolean;
 }
 
 export interface GridOptions {
@@ -108,7 +139,9 @@ export interface CartesianChartProps<T extends object> extends BaseChartProps {
   /** Label for the single-series shortcut. */
   label?: string;
   curve?: CurveType;
+  /** Category/x dimension, whichever side it is drawn on (left in horizontal bar charts). */
   xAxis?: boolean | XAxisOptions;
+  /** Value dimension, whichever side it is drawn on (bottom in horizontal bar charts). */
   yAxis?: boolean | YAxisOptions;
   /** Secondary value axis for series with `axis: 'right'`. */
   y2Axis?: boolean | YAxisOptions;

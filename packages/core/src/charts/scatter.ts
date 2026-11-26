@@ -211,6 +211,7 @@ export function buildScatterModel(spec: ScatterSpec): ScatterModel {
       includeZero: o?.includeZero ?? 'auto',
       nice: o?.nice ?? true,
       log,
+      ...(o?.integer ? { integer: true } : {}),
       ...(o?.min !== undefined ? { min: o.min } : {}),
       ...(o?.max !== undefined ? { max: o.max } : {}),
     });
@@ -220,6 +221,7 @@ export function buildScatterModel(spec: ScatterSpec): ScatterModel {
     ...(o?.format ? { format: o.format } : {}),
     ...(o?.hidden ? { hidden: true } : {}),
     ...(o?.tickCount !== undefined ? { tickCount: o.tickCount } : {}),
+    ...(o?.integer ? { integer: true } : {}),
   });
   const frameFor = (xd: Extent, yd: Extent) =>
     computeCartesianFrame({

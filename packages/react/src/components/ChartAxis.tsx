@@ -1,4 +1,4 @@
-import type { AxisTick, Rect } from '@jafari/charts-core';
+import { LABEL_LINE_HEIGHT, type AxisTick, type Rect } from '@jafari/charts-core';
 import { memo } from 'react';
 import { useOptionalChart } from '../providers/ChartContext';
 
@@ -15,6 +15,25 @@ export interface ChartAxisProps {
   /** Optional axis title. */
   title?: string;
   className?: string;
+}
+
+/**
+ * A tick label: plain text, or one `<tspan>` per line of a wrapped label. `shift` is the
+ * offset of the first line in lines (vertical centring); every tspan repeats the anchor
+ * position and baseline so the lines align in every browser.
+ */
+function tickText(t: AxisTick, x: number, shift: number, baseline?: 'hanging' | 'central') {
+  if (!t.lines || t.lines.length < 2) return t.label;
+  return t.lines.map((line, i) => (
+    <tspan
+      key={i}
+      x={x}
+      dy={`${(i ? 1 : shift) * LABEL_LINE_HEIGHT}em`}
+      dominantBaseline={baseline}
+    >
+      {line}
+    </tspan>
+  ));
 }
 
 /** Generic axis: tick labels along one edge of the plot, optional baseline. */
@@ -49,6 +68,8 @@ export const ChartAxis = memo(function ChartAxis({
         : position === 'left'
           ? plot.x
           : plot.x + plot.width;
+  // Label x of vertical axes.
+  const x = position === 'left' ? edge - tickPadding : edge + tickPadding;
   return (
     <g
       className={`jc-axis${className ? ` ${className}` : ''}`}
@@ -74,8 +95,9 @@ export const ChartAxis = memo(function ChartAxis({
           />
         )
       ) : null}
-      {ticks.map((t) =>
-        horizontal ? (
+      {ticks.map((t) => {
+        const lines = t.lines?.length ?? 1;
+        return horizontal ? (
           <text
             key={`${t.value}:${t.label}`}
             x={t.position}
@@ -83,20 +105,22 @@ export const ChartAxis = memo(function ChartAxis({
             textAnchor={t.anchor}
             dominantBaseline={position === 'bottom' ? 'hanging' : undefined}
           >
-            {t.label}
+            {position === 'bottom'
+              ? tickText(t, t.position, 0, 'hanging')
+              : tickText(t, t.position, 1 - lines)}
           </text>
         ) : (
           <text
             key={`${t.value}:${t.label}`}
-            x={position === 'left' ? edge - tickPadding : edge + tickPadding}
+            x={x}
             y={t.position}
             textAnchor={position === 'left' ? 'end' : 'start'}
             dominantBaseline="central"
           >
-            {t.label}
+            {tickText(t, x, (1 - lines) / 2, 'central')}
           </text>
-        ),
-      )}
+        );
+      })}
       {title ? (
         <text
           className="jc-axis-title"

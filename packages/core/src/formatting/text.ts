@@ -41,3 +41,80 @@ export function truncateText(text: string, maxWidth: number, fontSize = 12): str
   }
   return out.trimEnd() + ellipsis;
 }
+
+export interface WrappedText {
+  lines: string[];
+  /** Index of the first line shortened with an ellipsis; -1 when the text fits. */
+  cut: number;
+}
+
+const isLetter = (ch: string | undefined): boolean =>
+  ch !== undefined && ch.toLowerCase() !== ch.toUpperCase();
+
+/**
+ * Breaks `text` into at most `maxLines` lines whose estimated width fits `maxWidth`, at
+ * spaces and after hyphens inside words ("аль-Фараби"). Lines are balanced (the narrowest
+ * width that needs no extra line). Text that still does not fit ends the last line with an
+ * ellipsis; a single word wider than a line is shortened with one. Shortened lines fill
+ * their width completely: `cutWidth` lets them stop short of it (e.g. to keep neighbouring
+ * labels apart).
+ */
+export function wrapText(
+  text: string,
+  maxWidth: number,
+  maxLines = 2,
+  fontSize = 12,
+  cutWidth = maxWidth,
+): WrappedText {
+  const measure = (s: string) => estimateTextWidth(s, fontSize);
+  if (measure(text) <= maxWidth) return { lines: [text], cut: -1 };
+  if (maxLines <= 1 || maxWidth <= 0)
+    return { lines: [truncateText(text, Math.min(maxWidth, cutWidth), fontSize)], cut: 0 };
+  // Break opportunities: [part, preceded by a space].
+  const parts: [string, boolean][] = [];
+  let widest = 0;
+  for (const word of text.trim().split(/\s+/)) {
+    let start = 0;
+    for (let i = 1; i <= word.length; i++) {
+      const end = i === word.length;
+      if (end || (word[i - 1] === '-' && isLetter(word[i - 2]) && isLetter(word[i]))) {
+        const part = word.slice(start, i);
+        parts.push([part, start === 0]);
+        widest = Math.max(widest, measure(part));
+        start = i;
+      }
+    }
+  }
+  // Greedy lines at width `w`; the `limit`-th line takes the rest of the text.
+  const fill = (w: number, limit = Infinity): string[] => {
+    const lines: string[] = [];
+    let line = '';
+    for (const [part, space] of parts) {
+      const joined = line ? `${line}${space ? ' ' : ''}${part}` : part;
+      if (line && lines.length < limit - 1 && measure(joined) > w) {
+        lines.push(line);
+        line = part;
+      } else line = joined;
+    }
+    lines.push(line);
+    return lines;
+  };
+  const count = fill(maxWidth).length;
+  if (count <= maxLines && widest <= maxWidth) {
+    let lo = widest;
+    let hi = maxWidth;
+    while (hi - lo > 0.5) {
+      const mid = (lo + hi) / 2;
+      if (fill(mid).length > count) lo = mid;
+      else hi = mid;
+    }
+    return { lines: fill(hi), cut: -1 };
+  }
+  let cut = -1;
+  const lines = fill(maxWidth, maxLines).map((line, i) => {
+    if (measure(line) <= maxWidth) return line;
+    if (cut < 0) cut = i;
+    return truncateText(line, Math.min(maxWidth, cutWidth), fontSize);
+  });
+  return { lines, cut };
+}

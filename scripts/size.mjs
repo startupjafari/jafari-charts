@@ -44,12 +44,16 @@ const scenarios = {
   // 34 → 36 KB: every chart's strings (funnel/treemap/heatmap, zoom announcements) live in the
   // shared en/ru/kk messages (~0.5 KB), and the cartesian engine gained the shared zoom/brush
   // gestures with category windows, keyboard pan and live-region announcements (~1.8 KB).
-  'app: LineChart (React layer + core it needs)': [use('LineChart', '@jafari/charts'), 37],
+  // 37 → 38 KB (Nov 2026, measured +1.1 KB): wrapped category labels (balanced word wrap
+  // with hyphen breaks, multi-line axis layout and <tspan> rendering, ~0.6 KB), integer
+  // value ticks (~0.1 KB) and per-bar `colorBy` colours (~0.2 KB); the cartesian engine
+  // ships them to every cartesian chart. The same +1 KB applies to the two rows below.
+  'app: LineChart (React layer + core it needs)': [use('LineChart', '@jafari/charts'), 38],
   'app: AreaChart + BarChart + Sparkline': [
     use('AreaChart, BarChart, Sparkline', '@jafari/charts'),
-    37,
+    38,
   ],
-  'app: everything from @jafari/charts': [all('@jafari/charts'), 70],
+  'app: everything from @jafari/charts': [all('@jafari/charts'), 71],
   'canvas renderer (lazy chunk, core external)': [
     all('@jafari/charts-canvas'),
     3,

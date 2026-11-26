@@ -58,7 +58,7 @@ All 20 chart types are implemented. See [ROADMAP.md](ROADMAP.md) for project sta
 | `locale`                                                     | `'en'`, `'ru'`, `'kk'` or any BCP 47 tag (Intl number/date formatting).                                                                                                                                                                                                 |
 | `animation`                                                  | `false` to disable, or `{ duration, easing, initial }`. Respects reduced motion.                                                                                                                                                                                        |
 | `renderer`                                                   | `'svg'` (default), `'canvas'`, `'auto'`.                                                                                                                                                                                                                                |
-| `tooltip`, `legend`, `crosshair`, `grid`, `xAxis`, `yAxis`   | `false` to hide or an options object.                                                                                                                                                                                                                                   |
+| `tooltip`, `legend`, `crosshair`, `grid`, `xAxis`, `yAxis`   | `false` to hide or an options object (see [Axes](#axes)).                                                                                                                                                                                                               |
 | `valueFormatter`, `xFormatter`                               | Custom formatting.                                                                                                                                                                                                                                                      |
 | `hiddenSeries` / `onHiddenSeriesChange`                      | Controlled legend toggling.                                                                                                                                                                                                                                             |
 | `activeIndex` / `onActiveIndexChange`, `onHover`, `onClick`  | Controlled interaction and events.                                                                                                                                                                                                                                      |
@@ -70,6 +70,57 @@ All 20 chart types are implemented. See [ROADMAP.md](ROADMAP.md) for project sta
 | `loading`, `error`, `onRetry`, `emptyMessage`                | Data states without layout jumps.                                                                                                                                                                                                                                       |
 | `title`, `description`                                       | Accessible name and description.                                                                                                                                                                                                                                        |
 | `messages`                                                   | Override any built-in string (also funnel, treemap and heatmap texts) per chart or in `ChartProvider`.                                                                                                                                                                  |
+
+### Axes
+
+`xAxis` always configures the **category / x dimension** and `yAxis` the **value
+dimension**, whichever side they are drawn on. In horizontal bar charts the categories
+are drawn on the left and the values at the bottom, so `xAxis={false}` hides the
+category labels and `yAxis={false}` hides the value axis — hiding one never hides the
+other.
+
+| `xAxis` option  | Description                                                                                                                                                                                                                                                                                              |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hidden`        | Hide the axis (also `xAxis={false}`).                                                                                                                                                                                                                                                                    |
+| `tickCount`     | Desired number of ticks (continuous axes).                                                                                                                                                                                                                                                               |
+| `format`        | Formats tick labels (numbers, timestamps or category labels).                                                                                                                                                                                                                                            |
+| `type`, `utc`   | Override the detected dimension type; interpret times in UTC.                                                                                                                                                                                                                                            |
+| `line`, `title` | Axis baseline (default on for bar categories) and title.                                                                                                                                                                                                                                                 |
+| `maxLabelWidth` | Category axes: longest a label line may be, px (default 140 at the bottom, 32% of the width on the left).                                                                                                                                                                                                |
+| `maxLines`      | Category axes: long labels wrap at word boundaries (and after hyphens) onto up to this many balanced lines — default 2 for text categories, 1 for dates and numbers. The last line ends with `…` if the label still does not fit; `1` truncates. Tooltips and the data table always show the full label. |
+
+Left (horizontal) category axes wrap when a category is tall enough for the lines (font
+size × 1.2 per line — `HorizontalBarChart`'s default height leaves room for two); bottom
+axes wrap instead of skipping labels when the first word of every label fits its category,
+otherwise labels are thinned as before.
+
+| `yAxis` / `y2Axis` option                    | Description                                                                                                                                                                |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hidden`, `tickCount`, `format`, `title`     | As above.                                                                                                                                                                  |
+| `min`, `max`, `includeZero`, `scale`, `nice` | Domain: fixed bounds, zero (`true`, `false`, `'auto'`), `'linear'` or `'log'`, round bounds.                                                                               |
+| `line`                                       | Axis baseline (default off).                                                                                                                                               |
+| `integer`                                    | Whole-number ticks only, for counts (users, complaints): 0–2 gets 0, 1, 2 instead of 0, 0.5, 1 …; the domain is rounded out to whole numbers. Also on `ScatterChart` axes. |
+
+### Series
+
+`series` entries take `key`, `label`, `color`, `type`, `curve`, `dashed`, `axis`,
+`stackId`, `dots`, `symbol`, `format` and, for bar series,
+`colorBy: (datum, index) => string | undefined` — a colour per bar (`index` is the index in
+`data`, also for time data that the chart sorts; `undefined` keeps the series colour).
+Tooltips show each bar's colour; the legend keeps the series colour. `WaterfallChart`
+colours its own bars.
+
+```tsx
+<HorizontalBarChart
+  data={universities}
+  xKey="name"
+  series={[
+    { key: 'complaints', colorBy: (d) => (d.id === myId ? 'var(--jc-series-2)' : undefined) },
+  ]}
+  yAxis={{ integer: true }}
+  xAxis={{ maxLabelWidth: 160 }}
+/>
+```
 
 Chart-specific interaction props:
 
