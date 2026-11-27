@@ -5,8 +5,8 @@ import {
   type KeysMatching,
   type NumericKey,
   type TreemapModel,
-} from '@jafari/charts-core';
-import { seriesColor } from '@jafari/charts-themes';
+} from '@startupjafari/charts-core';
+import { seriesColor } from '@startupjafari/charts-themes';
 import { useCallback, useMemo, type KeyboardEvent, type ReactElement } from 'react';
 import type { DataTable } from '../../components/ChartA11y';
 import type { LegendOptions } from '../../components/ChartLegend';

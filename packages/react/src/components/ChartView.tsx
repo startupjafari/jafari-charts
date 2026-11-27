@@ -5,7 +5,7 @@ import {
   type Mark,
   type Rect,
   type TextMark,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import {
   useCallback,
   useEffect,

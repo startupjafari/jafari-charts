@@ -1,4 +1,4 @@
-import { BarChart } from '@jafari/charts';
+import { BarChart } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 export default function Styling() {

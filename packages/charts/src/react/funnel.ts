@@ -1,1 +1,1 @@
-export * from '@jafari/charts-react/funnel';
+export * from '@startupjafari/charts-react/funnel';

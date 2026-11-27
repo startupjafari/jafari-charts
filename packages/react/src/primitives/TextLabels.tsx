@@ -1,4 +1,4 @@
-import type { TextMark } from '@jafari/charts-core';
+import type { TextMark } from '@startupjafari/charts-core';
 import { memo } from 'react';
 
 const BASELINE = { auto: undefined, middle: 'central', hanging: 'hanging' } as const;

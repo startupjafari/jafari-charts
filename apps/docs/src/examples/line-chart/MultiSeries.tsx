@@ -1,4 +1,4 @@
-import { ChartReferenceLine, LineChart } from '@jafari/charts';
+import { ChartReferenceLine, LineChart } from '@startupjafari/charts';
 import { activity } from '../data';
 
 export default function MultiSeries() {

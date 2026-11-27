@@ -1,4 +1,4 @@
-import { Sparkline } from '@jafari/charts';
+import { Sparkline } from '@startupjafari/charts';
 import { dailyUsers } from '../data';
 
 const last30 = dailyUsers.slice(-30);

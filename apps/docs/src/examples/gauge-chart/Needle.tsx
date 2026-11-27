@@ -1,4 +1,4 @@
-import { GaugeChart } from '@jafari/charts';
+import { GaugeChart } from '@startupjafari/charts';
 
 /** A needle over the band scale, on a 270° arc. */
 export default function Needle() {

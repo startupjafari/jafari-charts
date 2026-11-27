@@ -1,4 +1,4 @@
-import { BarChart } from '@jafari/charts';
+import { BarChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { registrations } from '../data';
 

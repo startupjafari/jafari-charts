@@ -13,19 +13,19 @@ First public release.
 
 ### Added
 
-- `@jafari/charts`: umbrella package — every chart, primitive, theme and the core
-  helpers from one import; `@jafari/charts/core`, `/themes`, `/export` and
+- `@startupjafari/charts`: umbrella package — every chart, primitive, theme and the core
+  helpers from one import; `@startupjafari/charts/core`, `/themes`, `/export` and
   `/styles.css` subpaths. Per-family entries keep Next.js App Router bundles small
-  with `optimizePackageImports: ['@jafari/charts']`.
-- `@jafari/charts-core`: scales (linear, log, time, band, point, ordinal), nice
+  with `optimizePackageImports: ['@startupjafari/charts']`.
+- `@startupjafari/charts-core`: scales (linear, log, time, band, point, ordinal), nice
   ticks, curves, shapes, data processing, LTTB and min-max downsampling, k-d tree,
   treemap layout, number/date formatting in en/ru/kk (with a built-in Kazakh
   fallback for browsers whose ICU lacks `kk`), colour utilities, scene model,
   transitions and pure chart models for every chart type. No React, no DOM.
-- `@jafari/charts-themes`: design tokens, validated light/dark palettes, CSS
+- `@startupjafari/charts-themes`: design tokens, validated light/dark palettes, CSS
   variables stylesheet, `createTheme`; `theme="auto"` follows the app's
   `color-scheme` and `.dark` / `[data-theme=dark]` ancestors.
-- `@jafari/charts-react`: 20 chart types on one `ChartView` shell —
+- `@startupjafari/charts-react`: 20 chart types on one `ChartView` shell —
   - cartesian: Line, Area, Stacked Area, Bar, Horizontal Bar, Grouped Bar,
     Stacked Bar, Combo, Waterfall, Sparkline;
   - polar: Pie, Donut (centre readout), Radial Progress, Gauge (bands, needle);
@@ -42,9 +42,9 @@ First public release.
 - Accessibility: `role="img"` with a generated description, hidden data table,
   live-region announcements, WCAG-checked contrast, reduced motion; messages in
   en/ru/kk, overridable via `messages` or `ChartProvider`.
-- `@jafari/charts-canvas`: lazily loaded Canvas 2D renderer; `renderer="auto"`
+- `@startupjafari/charts-canvas`: lazily loaded Canvas 2D renderer; `renderer="auto"`
   switches by measured thresholds (scatter: 75 000 points).
-- `@jafari/charts-export`: SVG, PNG, WebP and CSV export (formula
+- `@startupjafari/charts-export`: SVG, PNG, WebP and CSV export (formula
   neutralisation, BOM for Excel), loaded on demand.
 - `useChartCoordinates()` for custom primitives (data values → pixels).
 - SSR and hydration support; React 18.2+ and 19.

@@ -1,4 +1,4 @@
-import { FunnelChart, formatPercent } from '@jafari/charts';
+import { FunnelChart, formatPercent } from '@startupjafari/charts';
 import { useState } from 'react';
 import { admissions } from '../data';
 

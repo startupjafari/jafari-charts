@@ -1,4 +1,4 @@
-import type { ChartMessages } from '@jafari/charts-core';
+import type { ChartMessages } from '@startupjafari/charts-core';
 
 /** Treemap-specific strings; defaults come from the chart's `ChartMessages` (en/ru/kk). */
 export type TreemapTexts = Pick<

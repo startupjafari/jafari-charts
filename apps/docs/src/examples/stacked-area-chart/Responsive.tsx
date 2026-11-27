@@ -1,4 +1,4 @@
-import { StackedAreaChart } from '@jafari/charts';
+import { StackedAreaChart } from '@startupjafari/charts';
 import { activity } from '../data';
 
 export default function Responsive() {

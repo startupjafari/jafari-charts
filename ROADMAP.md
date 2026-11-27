@@ -66,7 +66,7 @@ Docs site (all pages, live examples, props tables), Playground (code generation,
 SVG/Canvas toggle, performance panel), Storybook, export module, npm packaging.
 
 **Done criteria:** docs built only with Jafari Charts; `pnpm pack` contents verified;
-`@jafari/charts` installable from a tarball in a fresh Vite app and a Next.js app.
+`@startupjafari/charts` installable from a tarball in a fresh Vite app and a Next.js app.
 
 ## Phase 7 — StudentHub integration 🟡 done on a branch, waiting for npm 0.1.0
 
@@ -78,11 +78,11 @@ StudentHub's own build: chart chunks 124.8 → 51.6 KB gzip, long tasks while ho
 `docs/reports/jafari-charts-migration.md` in StudentHub.
 
 Remaining: once `0.1.0` is on npm, replace the temporary tarball install with
-`@jafari/charts@^0.1.0` (StudentHub's 7-day `minimumReleaseAge` needs either the wait
-or an exception for `@jafari/*`) before the branch is merged.
+`@startupjafari/charts@^0.1.0` (StudentHub's 7-day `minimumReleaseAge` needs either the wait
+or an exception for `@startupjafari/*`) before the branch is merged.
 
 ## Later
 
-- Framework-free SVG string renderer (`@jafari/charts-svg`) for server-side images.
+- Framework-free SVG string renderer (`@startupjafari/charts-svg`) for server-side images.
 - OffscreenCanvas/worker rendering — only if benchmarks show main-thread benefit.
 - Vue/Svelte adapters on top of the core models.

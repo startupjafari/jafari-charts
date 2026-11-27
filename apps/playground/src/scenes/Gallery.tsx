@@ -10,7 +10,7 @@ import {
   StackedAreaChart,
   StackedBarChart,
   WaterfallChart,
-} from '@jafari/charts';
+} from '@startupjafari/charts';
 import type { ReactNode } from 'react';
 import { cashflow, complaints, profit, registrations, timeSeries, universities } from '../data';
 

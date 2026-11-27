@@ -1,4 +1,4 @@
-import type { AxisTick, Rect } from '@jafari/charts-core';
+import type { AxisTick, Rect } from '@startupjafari/charts-core';
 import { memo } from 'react';
 import { useOptionalChart } from '../providers/ChartContext';
 

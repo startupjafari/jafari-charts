@@ -1,4 +1,10 @@
-import { ChartAnnotation, ChartLabel, ChartMarker, LineChart, useChart } from '@jafari/charts';
+import {
+  ChartAnnotation,
+  ChartLabel,
+  ChartMarker,
+  LineChart,
+  useChart,
+} from '@startupjafari/charts';
 import { dailyUsers } from '../data';
 
 /**

@@ -1,4 +1,4 @@
-import { Sparkline } from '@jafari/charts';
+import { Sparkline } from '@startupjafari/charts';
 import { dailyUsers } from '../data';
 
 /** An empty sparkline keeps its 40 px footprint. */

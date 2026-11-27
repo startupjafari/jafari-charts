@@ -1,4 +1,4 @@
-import { ComboChart } from '@jafari/charts';
+import { ComboChart } from '@startupjafari/charts';
 import { revenue } from '../../examples/data';
 import { CARTESIAN_KEYS } from '../keyboard';
 import { barGroup, baseGroup, cartesianGroup, seriesGroup } from '../props';

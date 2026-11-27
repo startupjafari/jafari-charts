@@ -1,4 +1,4 @@
-import { formatDate, LineChart } from '@jafari/charts';
+import { formatDate, LineChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { serverLoad } from '../data';
 

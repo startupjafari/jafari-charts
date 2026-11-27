@@ -1,4 +1,4 @@
-import { HorizontalBarChart } from '@jafari/charts';
+import { HorizontalBarChart } from '@startupjafari/charts';
 import { complaints } from '../data';
 
 /** Without value labels the value axis carries the scale. */

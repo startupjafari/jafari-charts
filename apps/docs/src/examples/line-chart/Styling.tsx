@@ -1,4 +1,4 @@
-import { LineChart } from '@jafari/charts';
+import { LineChart } from '@startupjafari/charts';
 import { revenue } from '../data';
 
 const money = (v: number) => `${v} M ₸`;

@@ -5,7 +5,7 @@ import type {
   Rect,
   Store,
   SymbolShape,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import { createContext, useContext, type ReactNode } from 'react';
 
 /** The item under the pointer or keyboard focus. */

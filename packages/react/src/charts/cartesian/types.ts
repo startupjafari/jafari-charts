@@ -5,7 +5,7 @@ import type {
   DownsampleMethod,
   NumericKey,
   SymbolShape,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import type { ReactNode } from 'react';
 import type { LegendOptions } from '../../components/ChartLegend';
 import type { TooltipOptions } from '../../components/ChartTooltip';

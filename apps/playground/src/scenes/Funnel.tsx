@@ -1,4 +1,4 @@
-import { FunnelChart } from '@jafari/charts';
+import { FunnelChart } from '@startupjafari/charts';
 import type { ReactNode } from 'react';
 
 const admissions = [

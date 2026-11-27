@@ -1,1 +1,1 @@
-export * from '@jafari/charts-react/radar';
+export * from '@startupjafari/charts-react/radar';

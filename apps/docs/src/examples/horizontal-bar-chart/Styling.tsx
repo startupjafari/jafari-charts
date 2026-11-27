@@ -1,4 +1,4 @@
-import { HorizontalBarChart } from '@jafari/charts';
+import { HorizontalBarChart } from '@startupjafari/charts';
 import { devices } from '../data';
 
 export default function Styling() {

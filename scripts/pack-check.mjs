@@ -36,7 +36,7 @@ for (const dir of packages) {
   );
   check(!JSON.stringify(manifest).includes('workspace:'), 'workspace: ranges not rewritten');
   check(
-    !JSON.stringify(manifest.exports).includes('@jafari/source'),
+    !JSON.stringify(manifest.exports).includes('@startupjafari/source'),
     'development export condition leaked',
   );
   for (const [sub, target] of Object.entries(manifest.exports)) {
@@ -76,9 +76,9 @@ writeFileSync(
 );
 writeFileSync(
   join(app, 'smoke.mjs'),
-  `import { createLinearScale, lttb } from '@jafari/charts-core';
-import { LineChart, DonutChart } from '@jafari/charts';
-import { toCsv } from '@jafari/charts/export';
+  `import { createLinearScale, lttb } from '@startupjafari/charts-core';
+import { LineChart, DonutChart } from '@startupjafari/charts';
+import { toCsv } from '@startupjafari/charts/export';
 import { createElement as h } from 'react';
 import { renderToString } from 'react-dom/server';
 import { existsSync } from 'node:fs';
@@ -90,7 +90,7 @@ if (!html.includes('<svg')) throw new Error('ssr');
 const donut = renderToString(h(DonutChart, { data: [{ k: 'a', v: 1 }], labelKey: 'k', valueKey: 'v' }));
 if (!donut.includes('jc-root')) throw new Error('donut');
 if (!toCsv([{ a: 1 }]).includes('a')) throw new Error('csv');
-if (!existsSync(new URL(import.meta.resolve('@jafari/charts/styles.css')))) throw new Error('styles.css');
+if (!existsSync(new URL(import.meta.resolve('@startupjafari/charts/styles.css')))) throw new Error('styles.css');
 console.log('consumer smoke test: ok');
 `,
 );

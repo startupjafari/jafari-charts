@@ -1,4 +1,4 @@
-import { GroupedBarChart } from '@jafari/charts';
+import { GroupedBarChart } from '@startupjafari/charts';
 import { complaints } from '../data';
 
 /** "Rejected" starts hidden; click legend items to toggle series (the last one stays on). */

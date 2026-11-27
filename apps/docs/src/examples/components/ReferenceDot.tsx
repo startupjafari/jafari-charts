@@ -1,4 +1,4 @@
-import { ChartReferenceDot, LineChart } from '@jafari/charts';
+import { ChartReferenceDot, LineChart } from '@startupjafari/charts';
 import { dailyUsers } from '../data';
 
 const record = dailyUsers.reduce((best, d) => (d.users > best.users ? d : best));

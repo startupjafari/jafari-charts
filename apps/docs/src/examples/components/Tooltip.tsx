@@ -1,4 +1,4 @@
-import { LineChart } from '@jafari/charts';
+import { LineChart } from '@startupjafari/charts';
 import { dailyUsers } from '../data';
 
 /** A custom tooltip that adds the change against the previous day. */

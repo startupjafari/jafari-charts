@@ -1,1 +1,1 @@
-export * from '@jafari/charts-react/primitives';
+export * from '@startupjafari/charts-react/primitives';

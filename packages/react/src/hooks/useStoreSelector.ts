@@ -1,4 +1,4 @@
-import type { Store } from '@jafari/charts-core';
+import type { Store } from '@startupjafari/charts-core';
 import { useCallback, useSyncExternalStore } from 'react';
 
 /** Subscribes to a slice of a store; re-renders only when the selected value changes. */

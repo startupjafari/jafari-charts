@@ -1,4 +1,4 @@
-import { GaugeChart } from '@jafari/charts';
+import { GaugeChart } from '@startupjafari/charts';
 
 export default function Styling() {
   return (

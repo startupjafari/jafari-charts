@@ -1,4 +1,4 @@
-import { CalendarHeatmap, HeatmapChart } from '@jafari/charts';
+import { CalendarHeatmap, HeatmapChart } from '@startupjafari/charts';
 import type { ReactNode } from 'react';
 import { rng } from '../data';
 

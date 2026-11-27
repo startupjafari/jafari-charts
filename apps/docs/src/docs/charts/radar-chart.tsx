@@ -1,4 +1,4 @@
-import { RadarChart } from '@jafari/charts';
+import { RadarChart } from '@startupjafari/charts';
 import { profiles } from '../../examples/data';
 import { baseGroup } from '../props';
 import type { ChartDoc } from '../types';

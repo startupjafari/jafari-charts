@@ -1,4 +1,4 @@
-import { DonutChart } from '@jafari/charts';
+import { DonutChart } from '@startupjafari/charts';
 import { roles } from '../data';
 
 export default function Responsive() {

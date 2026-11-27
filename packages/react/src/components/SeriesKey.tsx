@@ -1,4 +1,4 @@
-import { buildPath, drawSymbol, type SymbolShape } from '@jafari/charts-core';
+import { buildPath, drawSymbol, type SymbolShape } from '@startupjafari/charts-core';
 import type { SwatchKind } from '../providers/ChartContext';
 
 export interface SeriesKeyProps {

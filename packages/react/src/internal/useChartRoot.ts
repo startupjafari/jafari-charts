@@ -5,13 +5,13 @@ import {
   type ChartMessages,
   type EasingFunction,
   type Store,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import {
   normalizeTheme,
   themeInlineVars,
   themeScopedCss,
   type ThemeInput,
-} from '@jafari/charts-themes';
+} from '@startupjafari/charts-themes';
 import {
   useId,
   useMemo,

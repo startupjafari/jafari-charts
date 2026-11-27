@@ -1,4 +1,4 @@
-import { AreaChart } from '@jafari/charts';
+import { AreaChart } from '@startupjafari/charts';
 
 const users = [
   { date: '2025-01-01', count: 120 },

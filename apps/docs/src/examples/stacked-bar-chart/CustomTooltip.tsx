@@ -1,4 +1,4 @@
-import { StackedBarChart } from '@jafari/charts';
+import { StackedBarChart } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 /** `tooltip.render` replaces the content; rows arrive formatted, the datum gives raw numbers. */

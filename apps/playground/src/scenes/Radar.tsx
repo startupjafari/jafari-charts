@@ -1,4 +1,4 @@
-import { RadarChart } from '@jafari/charts';
+import { RadarChart } from '@startupjafari/charts';
 import type { ReactNode } from 'react';
 
 function Card({ title, children }: { title: string; children: ReactNode }) {

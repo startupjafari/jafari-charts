@@ -1,4 +1,4 @@
-import { TreemapChart } from '@jafari/charts';
+import { TreemapChart } from '@startupjafari/charts';
 import { budgetTree } from '../data';
 
 /** Hierarchical data: `{ name, value }` leaves and `{ name, children }` parents. */

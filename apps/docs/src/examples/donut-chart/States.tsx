@@ -1,4 +1,4 @@
-import { DonutChart } from '@jafari/charts';
+import { DonutChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { roles } from '../data';
 

@@ -257,7 +257,7 @@ importers:
 
   apps/docs:
     dependencies:
-      '@jafari/charts':
+      '@startupjafari/charts':
         specifier: workspace:*
         version: link:../../packages/charts
       react:
@@ -269,19 +269,19 @@ importers:
 
   apps/playground:
     dependencies:
-      '@jafari/charts':
+      '@startupjafari/charts':
         specifier: workspace:*
         version: link:../../packages/charts
-      '@jafari/charts-canvas':
+      '@startupjafari/charts-canvas':
         specifier: workspace:*
         version: link:../../packages/canvas
-      '@jafari/charts-core':
+      '@startupjafari/charts-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@jafari/charts-react':
+      '@startupjafari/charts-react':
         specifier: workspace:*
         version: link:../../packages/react
-      '@jafari/charts-themes':
+      '@startupjafari/charts-themes':
         specifier: workspace:*
         version: link:../../packages/themes
       react:
@@ -293,7 +293,7 @@ importers:
 
   apps/storybook:
     dependencies:
-      '@jafari/charts':
+      '@startupjafari/charts':
         specifier: workspace:*
         version: link:../../packages/charts
       react:
@@ -312,43 +312,43 @@ importers:
 
   benchmarks:
     dependencies:
-      '@jafari/charts':
+      '@startupjafari/charts':
         specifier: workspace:*
         version: link:../packages/charts
-      '@jafari/charts-canvas':
+      '@startupjafari/charts-canvas':
         specifier: workspace:*
         version: link:../packages/canvas
-      '@jafari/charts-core':
+      '@startupjafari/charts-core':
         specifier: workspace:*
         version: link:../packages/core
-      '@jafari/charts-export':
+      '@startupjafari/charts-export':
         specifier: workspace:*
         version: link:../packages/export
-      '@jafari/charts-react':
+      '@startupjafari/charts-react':
         specifier: workspace:*
         version: link:../packages/react
-      '@jafari/charts-themes':
+      '@startupjafari/charts-themes':
         specifier: workspace:*
         version: link:../packages/themes
 
   packages/canvas:
     dependencies:
-      '@jafari/charts-core':
+      '@startupjafari/charts-core':
         specifier: workspace:*
         version: link:../core
 
   packages/charts:
     dependencies:
-      '@jafari/charts-core':
+      '@startupjafari/charts-core':
         specifier: workspace:*
         version: link:../core
-      '@jafari/charts-export':
+      '@startupjafari/charts-export':
         specifier: workspace:*
         version: link:../export
-      '@jafari/charts-react':
+      '@startupjafari/charts-react':
         specifier: workspace:*
         version: link:../react
-      '@jafari/charts-themes':
+      '@startupjafari/charts-themes':
         specifier: workspace:*
         version: link:../themes
       react:
@@ -364,13 +364,13 @@ importers:
 
   packages/react:
     dependencies:
-      '@jafari/charts-canvas':
+      '@startupjafari/charts-canvas':
         specifier: workspace:*
         version: link:../canvas
-      '@jafari/charts-core':
+      '@startupjafari/charts-core':
         specifier: workspace:*
         version: link:../core
-      '@jafari/charts-themes':
+      '@startupjafari/charts-themes':
         specifier: workspace:*
         version: link:../themes
       react:

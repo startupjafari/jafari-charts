@@ -1,4 +1,4 @@
-import { ChartReferenceLine, ScatterChart } from '@jafari/charts';
+import { ChartReferenceLine, ScatterChart } from '@startupjafari/charts';
 import { useMemo, useState, type ReactNode } from 'react';
 import { rng } from '../data';
 

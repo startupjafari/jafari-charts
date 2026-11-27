@@ -1,4 +1,4 @@
-import { WaterfallChart } from '@jafari/charts';
+import { WaterfallChart } from '@startupjafari/charts';
 import { cashflow } from '../data';
 
 export default function Compact() {

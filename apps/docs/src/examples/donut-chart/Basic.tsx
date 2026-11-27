@@ -1,4 +1,4 @@
-import { DonutChart } from '@jafari/charts';
+import { DonutChart } from '@startupjafari/charts';
 import { roles } from '../data';
 
 /** The centre shows the total, or the hovered slice. */

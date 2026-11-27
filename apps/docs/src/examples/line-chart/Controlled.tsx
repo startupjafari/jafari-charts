@@ -1,4 +1,4 @@
-import { LineChart } from '@jafari/charts';
+import { LineChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { registrations } from '../data';
 

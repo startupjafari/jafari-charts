@@ -1,4 +1,4 @@
-import { PieChart } from '@jafari/charts';
+import { PieChart } from '@startupjafari/charts';
 import { roles } from '../data';
 
 /** No gaps, no labels, legend on top. */

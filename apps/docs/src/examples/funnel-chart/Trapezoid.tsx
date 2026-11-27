@@ -1,4 +1,4 @@
-import { FunnelChart } from '@jafari/charts';
+import { FunnelChart } from '@startupjafari/charts';
 import { admissions } from '../data';
 
 export default function Trapezoid() {

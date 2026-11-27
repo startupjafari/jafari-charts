@@ -1,4 +1,4 @@
-import { PieChart } from '@jafari/charts';
+import { PieChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { roles } from '../data';
 

@@ -1,5 +1,5 @@
-import type { ChartMessages, EasingFunction, EasingName } from '@jafari/charts-core';
-import type { ThemeInput } from '@jafari/charts-themes';
+import type { ChartMessages, EasingFunction, EasingName } from '@startupjafari/charts-core';
+import type { ThemeInput } from '@startupjafari/charts-themes';
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
 
 export type Renderer = 'svg' | 'canvas' | 'auto';

@@ -1,5 +1,5 @@
 /**
- * @jafari/charts-core — framework-independent math core of Jafari Charts.
+ * @startupjafari/charts-core — framework-independent math core of Jafari Charts.
  * No runtime dependencies; no DOM or React access.
  */
 export * from './types';

@@ -1,4 +1,4 @@
-import { TreemapChart, type TreemapDatum } from '@jafari/charts';
+import { TreemapChart, type TreemapDatum } from '@startupjafari/charts';
 import type { ReactNode } from 'react';
 
 const budget: TreemapDatum = {

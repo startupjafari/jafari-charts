@@ -1,4 +1,4 @@
-import { ScatterChart } from '@jafari/charts';
+import { ScatterChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { cohort } from '../data';
 

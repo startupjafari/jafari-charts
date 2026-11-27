@@ -1,4 +1,4 @@
-import { CalendarHeatmap } from '@jafari/charts';
+import { CalendarHeatmap } from '@startupjafari/charts';
 import { dailyLogins } from '../data';
 
 /** A different hue, explicit thresholds, month gaps, all weekday labels and larger cells. */

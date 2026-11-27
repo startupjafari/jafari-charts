@@ -1,1 +1,1 @@
-export * from '@jafari/charts-react/heatmap';
+export * from '@startupjafari/charts-react/heatmap';

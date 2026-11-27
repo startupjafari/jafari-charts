@@ -1,4 +1,4 @@
-import { RadialProgressChart } from '@jafari/charts';
+import { RadialProgressChart } from '@startupjafari/charts';
 import { completion } from '../../examples/data';
 import { ITEM_KEYS } from '../keyboard';
 import { baseGroup } from '../props';

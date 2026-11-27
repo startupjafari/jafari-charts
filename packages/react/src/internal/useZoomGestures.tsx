@@ -6,7 +6,7 @@ import {
   zoomDomain,
   type Rect,
   type ZoomLimits,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import { useRef, type KeyboardEvent, type ReactNode } from 'react';
 import type { SurfaceHandlers } from '../components/ChartView';
 import { useStoreSelector } from '../hooks/useStoreSelector';

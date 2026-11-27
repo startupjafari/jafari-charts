@@ -9,7 +9,7 @@ import {
   StackedAreaChart,
   StackedBarChart,
   WaterfallChart,
-} from '@jafari/charts';
+} from '@startupjafari/charts';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { days, months, universities } from './data';
 

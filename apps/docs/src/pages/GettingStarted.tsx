@@ -5,12 +5,12 @@ import { Link } from '../lib/router';
 import { Callout, PageHeader, Section } from '../ui/Callout';
 
 const PACKAGE_NAMES = [
-  '@jafari/charts',
-  '@jafari/charts-core',
-  '@jafari/charts-react',
-  '@jafari/charts-canvas',
-  '@jafari/charts-themes',
-  '@jafari/charts-export',
+  '@startupjafari/charts',
+  '@startupjafari/charts-core',
+  '@startupjafari/charts-react',
+  '@startupjafari/charts-canvas',
+  '@startupjafari/charts-themes',
+  '@startupjafari/charts-export',
 ] as const;
 
 type PackageName = (typeof PACKAGE_NAMES)[number];
@@ -81,17 +81,18 @@ const TEXT: L<GettingStartedText> = {
     packageCol: 'Package',
     purposeCol: 'Purpose',
     packagePurpose: {
-      '@jafari/charts':
+      '@startupjafari/charts':
         'Main package: React components and selected utilities. Most apps need only this.',
-      '@jafari/charts-core':
+      '@startupjafari/charts-core':
         'Framework-independent math core (scales, ticks, curves, layouts, formatting). Zero dependencies, no React or DOM imports.',
-      '@jafari/charts-react':
+      '@startupjafari/charts-react':
         'React adapter: the ChartView shell, primitives and chart components.',
-      '@jafari/charts-canvas':
+      '@startupjafari/charts-canvas':
         'Canvas 2D renderer, loaded lazily when a chart uses renderer="canvas".',
-      '@jafari/charts-themes':
+      '@startupjafari/charts-themes':
         'Design tokens, light/dark themes, the CSS-variables stylesheet and createTheme.',
-      '@jafari/charts-export': 'SVG, PNG, WebP and CSV export (entry @jafari/charts/export).',
+      '@startupjafari/charts-export':
+        'SVG, PNG, WebP and CSV export (entry @startupjafari/charts/export).',
     },
     next: 'Next steps',
     installation: 'Peer dependencies, entry points, CSP and server rendering.',
@@ -145,17 +146,18 @@ const TEXT: L<GettingStartedText> = {
     packageCol: 'Пакет',
     purposeCol: 'Назначение',
     packagePurpose: {
-      '@jafari/charts':
+      '@startupjafari/charts':
         'Основной пакет: React-компоненты и избранные утилиты. Большинству приложений нужен только он.',
-      '@jafari/charts-core':
+      '@startupjafari/charts-core':
         'Математическое ядро, не зависящее от фреймворка (шкалы, деления, кривые, раскладки, форматирование). Без зависимостей, без импортов React и DOM.',
-      '@jafari/charts-react': 'React-адаптер: оболочка ChartView, примитивы и компоненты диаграмм.',
-      '@jafari/charts-canvas':
+      '@startupjafari/charts-react':
+        'React-адаптер: оболочка ChartView, примитивы и компоненты диаграмм.',
+      '@startupjafari/charts-canvas':
         'Рендерер Canvas 2D; загружается лениво, когда диаграмма использует renderer="canvas".',
-      '@jafari/charts-themes':
+      '@startupjafari/charts-themes':
         'Дизайн-токены, светлая и тёмная темы, таблица стилей с CSS-переменными и createTheme.',
-      '@jafari/charts-export':
-        'Экспорт в SVG, PNG, WebP и CSV (точка входа @jafari/charts/export).',
+      '@startupjafari/charts-export':
+        'Экспорт в SVG, PNG, WebP и CSV (точка входа @startupjafari/charts/export).',
     },
     next: 'Что дальше',
     installation: 'Peer-зависимости, точки входа, CSP и серверный рендеринг.',

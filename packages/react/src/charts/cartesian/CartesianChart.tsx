@@ -24,8 +24,8 @@ import {
   type RuleMark,
   type StackOffset,
   type SymbolShape,
-} from '@jafari/charts-core';
-import { seriesColor } from '@jafari/charts-themes';
+} from '@startupjafari/charts-core';
+import { seriesColor } from '@startupjafari/charts-themes';
 import { useCallback, useMemo, useRef } from 'react';
 import type { DataTable } from '../../components/ChartA11y';
 import { ChartAxis } from '../../components/ChartAxis';

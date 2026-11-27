@@ -1,4 +1,4 @@
-import { ComboChart } from '@jafari/charts';
+import { ComboChart } from '@startupjafari/charts';
 import { revenue } from '../data';
 
 /** Bars for revenue on the left axis, a line for margin (%) on a secondary right axis. */

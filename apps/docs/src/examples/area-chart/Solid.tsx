@@ -1,4 +1,4 @@
-import { AreaChart } from '@jafari/charts';
+import { AreaChart } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 export default function Solid() {

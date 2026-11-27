@@ -1,4 +1,4 @@
-import { ComboChart } from '@jafari/charts';
+import { ComboChart } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 /** Bar series with the same `stackId` stack; the line stays on top. */

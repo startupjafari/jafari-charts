@@ -13,8 +13,8 @@
   "scripts": {
     "build": "pnpm -r --filter './packages/*' run build",
     "build:apps": "pnpm -r --filter './apps/*' run build",
-    "dev:docs": "pnpm --filter @jafari/charts-docs dev",
-    "dev:playground": "pnpm --filter @jafari/charts-playground dev",
+    "dev:docs": "pnpm --filter @startupjafari/charts-docs dev",
+    "dev:playground": "pnpm --filter @startupjafari/charts-playground dev",
     "typecheck": "pnpm -r run typecheck",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
@@ -32,7 +32,7 @@
     "clean": "pnpm -r exec rm -rf dist .turbo && rm -rf coverage test-results playwright-report",
     "test:visual": "scripts/e2e-docker.sh --project desktop --grep @visual",
     "test:visual:update": "scripts/e2e-docker.sh --project desktop --grep @visual --update-snapshots",
-    "storybook": "pnpm --filter @jafari/charts-storybook storybook",
+    "storybook": "pnpm --filter @startupjafari/charts-storybook storybook",
     "bench:core": "node benchmarks/core.mjs",
     "bench:leak": "node benchmarks/leak.mjs",
     "test:e2e:all": "scripts/e2e-docker.sh"

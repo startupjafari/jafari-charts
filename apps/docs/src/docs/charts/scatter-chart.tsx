@@ -1,4 +1,4 @@
-import { ScatterChart } from '@jafari/charts';
+import { ScatterChart } from '@startupjafari/charts';
 import { cohort } from '../../examples/data';
 import { baseGroup } from '../props';
 import type { ChartDoc } from '../types';

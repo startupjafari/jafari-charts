@@ -1,4 +1,4 @@
-import { TreemapChart } from '@jafari/charts';
+import { TreemapChart } from '@startupjafari/charts';
 import { courseLoad } from '../data';
 
 /** Flat rows grouped by `groupKey` and `subgroupKey`; `labelKey` names the tiles. */

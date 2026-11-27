@@ -1,4 +1,4 @@
-import { BarChart } from '@jafari/charts';
+import { BarChart } from '@startupjafari/charts';
 import { profit } from '../data';
 
 /** Negative values grow downwards from an emphasised zero line; labels sit at the bar ends. */

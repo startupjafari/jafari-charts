@@ -1,15 +1,15 @@
 {
-  "name": "@jafari/charts-benchmarks",
+  "name": "@startupjafari/charts-benchmarks",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "description": "Bundle-size checks and performance benchmarks (resolves the published dist output).",
   "dependencies": {
-    "@jafari/charts": "workspace:*",
-    "@jafari/charts-canvas": "workspace:*",
-    "@jafari/charts-core": "workspace:*",
-    "@jafari/charts-export": "workspace:*",
-    "@jafari/charts-react": "workspace:*",
-    "@jafari/charts-themes": "workspace:*"
+    "@startupjafari/charts": "workspace:*",
+    "@startupjafari/charts-canvas": "workspace:*",
+    "@startupjafari/charts-core": "workspace:*",
+    "@startupjafari/charts-export": "workspace:*",
+    "@startupjafari/charts-react": "workspace:*",
+    "@startupjafari/charts-themes": "workspace:*"
   }
 }

@@ -1,4 +1,4 @@
-import { LineChart, type CurveType } from '@jafari/charts';
+import { LineChart, type CurveType } from '@startupjafari/charts';
 import { useState } from 'react';
 import { registrations } from '../data';
 

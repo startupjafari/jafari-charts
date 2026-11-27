@@ -1,4 +1,4 @@
-import { StackedBarChart } from '@jafari/charts';
+import { StackedBarChart } from '@startupjafari/charts';
 import { complaints } from '../data';
 
 export default function Styling() {

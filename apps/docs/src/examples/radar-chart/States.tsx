@@ -1,4 +1,4 @@
-import { RadarChart } from '@jafari/charts';
+import { RadarChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { profiles } from '../data';
 

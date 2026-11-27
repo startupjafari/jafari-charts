@@ -1,4 +1,4 @@
-import { LineChart } from '@jafari/charts';
+import { LineChart } from '@startupjafari/charts';
 import { activity } from '../data';
 
 /** In a 320 px column ticks thin out and the legend wraps; nothing overflows. */

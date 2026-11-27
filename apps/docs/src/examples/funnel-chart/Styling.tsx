@@ -1,4 +1,4 @@
-import { formatCompact, FunnelChart } from '@jafari/charts';
+import { formatCompact, FunnelChart } from '@startupjafari/charts';
 import { admissions } from '../data';
 
 export default function Styling() {

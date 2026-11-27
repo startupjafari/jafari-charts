@@ -1,4 +1,4 @@
-import { Sparkline } from '@jafari/charts';
+import { Sparkline } from '@startupjafari/charts';
 import { activity } from '../data';
 
 const ROLES = ['students', 'teachers', 'staff'] as const;

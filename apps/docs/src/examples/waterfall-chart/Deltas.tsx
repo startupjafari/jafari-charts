@@ -1,4 +1,4 @@
-import { WaterfallChart } from '@jafari/charts';
+import { WaterfallChart } from '@startupjafari/charts';
 import { profit } from '../data';
 
 /** With `firstIsStart={false}` every row is a change starting from zero. */

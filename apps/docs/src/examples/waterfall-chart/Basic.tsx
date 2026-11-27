@@ -1,4 +1,4 @@
-import { WaterfallChart } from '@jafari/charts';
+import { WaterfallChart } from '@startupjafari/charts';
 import { cashflow } from '../data';
 
 /** The first row is the start; `isTotal` marks running totals (their value is ignored). */

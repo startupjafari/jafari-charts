@@ -1,4 +1,4 @@
-import { stylesheet } from '@jafari/charts-themes';
+import { stylesheet } from '@startupjafari/charts-themes';
 import * as React from 'react';
 import { useChartConfig } from '../providers/ChartProvider';
 
@@ -19,7 +19,7 @@ function LegacyStyles() {
 
 /**
  * Injects the Jafari Charts stylesheet once per document. Disable with
- * `<ChartProvider injectStyles={false}>` when importing `@jafari/charts/styles.css`.
+ * `<ChartProvider injectStyles={false}>` when importing `@startupjafari/charts/styles.css`.
  */
 export function ChartStyles() {
   const { injectStyles = true } = useChartConfig();

@@ -1,4 +1,4 @@
-import { WaterfallChart } from '@jafari/charts';
+import { WaterfallChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { cashflow } from '../data';
 

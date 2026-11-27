@@ -1,4 +1,4 @@
-import { PieChart } from '@jafari/charts';
+import { PieChart } from '@startupjafari/charts';
 import { roles } from '../data';
 
 /** A half pie: angles in degrees, clockwise from 12 o'clock. */

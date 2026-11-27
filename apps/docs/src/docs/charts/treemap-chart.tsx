@@ -1,4 +1,4 @@
-import { TreemapChart } from '@jafari/charts';
+import { TreemapChart } from '@startupjafari/charts';
 import { budgetTree } from '../../examples/data';
 import { baseGroup } from '../props';
 import type { ChartDoc } from '../types';

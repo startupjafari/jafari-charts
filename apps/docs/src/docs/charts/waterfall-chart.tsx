@@ -1,4 +1,4 @@
-import { WaterfallChart } from '@jafari/charts';
+import { WaterfallChart } from '@startupjafari/charts';
 import { cashflow } from '../../examples/data';
 import { CARTESIAN_KEYS } from '../keyboard';
 import { barGroup, baseGroup, cartesianGroup } from '../props';

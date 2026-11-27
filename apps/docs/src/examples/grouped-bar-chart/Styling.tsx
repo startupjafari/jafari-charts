@@ -1,4 +1,4 @@
-import { GroupedBarChart } from '@jafari/charts';
+import { GroupedBarChart } from '@startupjafari/charts';
 import { revenue } from '../data';
 
 export default function Styling() {

@@ -1,4 +1,4 @@
-import { RadarChart } from '@jafari/charts';
+import { RadarChart } from '@startupjafari/charts';
 import { profiles } from '../data';
 
 /** Several datasets on the same spokes, with a legend that toggles them. */

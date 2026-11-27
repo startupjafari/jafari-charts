@@ -1,4 +1,4 @@
-import { LineChart } from '@jafari/charts';
+import { LineChart } from '@startupjafari/charts';
 import { activity } from '../data';
 
 export default function Series() {

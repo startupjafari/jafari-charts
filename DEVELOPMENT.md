@@ -26,7 +26,7 @@
 | Everything CI runs                 | `pnpm check`                                  |
 
 Tests and dev servers resolve workspace packages to their TypeScript sources
-(`@jafari/source` export condition), so no build is needed while developing.
+(`@startupjafari/source` export condition), so no build is needed while developing.
 `pnpm size` and `pnpm pack:check` measure the built `dist` output.
 
 ## Layout
@@ -37,7 +37,7 @@ packages/themes   tokens, CSS stylesheet, createTheme
 packages/canvas   Canvas 2D renderer
 packages/react    React components (ChartView shell, primitives, charts)
 packages/export   SVG/PNG/WebP/CSV export
-packages/charts   @jafari/charts umbrella
+packages/charts   @startupjafari/charts umbrella
 apps/playground   dev sandbox + deterministic fixtures for e2e/visual/bench
 apps/docs         documentation site
 benchmarks        size and performance scripts, committed results
@@ -65,20 +65,21 @@ The six packages in `packages/*` share one version. Apps and benchmarks are priv
 2. Verify from a clean tree: `pnpm release:check` (clean, format, lint, types,
    tests, build, size budgets, `pack:check` with the consumer smoke test).
 3. Commit `chore(release): x.y.z`, tag `vx.y.z` (annotated), push both; wait for CI.
-4. Publish (npm account with publish rights in the `jafari` org):
+4. Publish as the npm user `startupjafari` (owner of the `@startupjafari` scope,
+   two-factor authentication on):
 
    ```bash
-   npm whoami                                   # must print the owner's account
+   npm whoami                                   # must print startupjafari
    pnpm -r publish --access public --dry-run    # list what would be published
    pnpm -r publish --access public              # add --otp=123456 if 2FA asks
    ```
 
    `pnpm -r publish` rewrites `workspace:*` to the real version, applies
-   `publishConfig.exports` (drops the `@jafari/source` condition), publishes in
+   `publishConfig.exports` (drops the `@startupjafari/source` condition), publishes in
    dependency order and skips versions already on npm — rerun it if a one-time
    password expires halfway. It refuses to run with uncommitted changes or off `main`.
 
-5. Check: `npm view @jafari/charts version`, then install the package in a fresh
+5. Check: `npm view @startupjafari/charts version`, then install the package in a fresh
    app. Create the GitHub release from the tag with the changelog section.
 
 ## Progress log
@@ -89,10 +90,13 @@ The six packages in `packages/*` share one version. Apps and benchmarks are priv
   startupjafari). CI green: quality, React 18, browser suite.
 - `CHANGELOG.md` 0.1.0, tag `v0.1.0`; npm publish is done by the owner (see
   "Releasing").
+- Packages renamed from `@jafari/*` to `@startupjafari/*` before the first npm
+  publish: the `@jafari` npm scope belongs to someone else, the owner's npm account
+  is `startupjafari`. The `@startupjafari/source` export condition was renamed too.
 
 ### 2026-11-26 (later) — owner approved publishing and integration
 
-- MIT confirmed; repository to be public on GitHub; npm publish under `@jafari`.
+- MIT confirmed; repository to be public on GitHub; npm publish (scope decided on 2026-11-27: `@startupjafari`).
 - Added: export tests in browsers, Firefox/WebKit/mobile Safari runs and visual
   baselines in Docker (173 tests pass in the container), zoom/pan/brush for
   scatter, category axes and calendar, controlled calendar/treemap state, shared

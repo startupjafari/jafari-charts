@@ -1,4 +1,4 @@
-import { ChartProvider } from '@jafari/charts';
+import { ChartProvider } from '@startupjafari/charts';
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { LANGS, messagesFor, useLang, useT } from './i18n';
 import { href, Link, switchLanguage, useLocation } from './lib/router';

@@ -1,4 +1,4 @@
-import { CalendarHeatmap } from '@jafari/charts';
+import { CalendarHeatmap } from '@startupjafari/charts';
 import { useState } from 'react';
 import { dailyLogins } from '../data';
 

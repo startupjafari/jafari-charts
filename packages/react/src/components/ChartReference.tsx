@@ -1,4 +1,4 @@
-import { isBandScale, type AnyScale } from '@jafari/charts-core';
+import { isBandScale, type AnyScale } from '@startupjafari/charts-core';
 import type { ReactNode } from 'react';
 import { useChart } from '../providers/ChartContext';
 

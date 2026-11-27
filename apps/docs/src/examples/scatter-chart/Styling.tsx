@@ -1,4 +1,4 @@
-import { ChartReferenceLine, ScatterChart } from '@jafari/charts';
+import { ChartReferenceLine, ScatterChart } from '@startupjafari/charts';
 import { cohort } from '../data';
 
 /** Shapes per group, custom colours, smaller translucent markers and axis titles. */

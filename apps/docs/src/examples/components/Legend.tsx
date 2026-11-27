@@ -1,4 +1,4 @@
-import { GroupedBarChart } from '@jafari/charts';
+import { GroupedBarChart } from '@startupjafari/charts';
 import { complaints } from '../data';
 
 /** `legend.render` receives the series (with colour and visibility) and the toggle function. */

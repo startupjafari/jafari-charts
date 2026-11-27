@@ -1,4 +1,4 @@
-import { ChartReferenceLine, ComboChart } from '@jafari/charts';
+import { ChartReferenceLine, ComboChart } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 export default function Styling() {

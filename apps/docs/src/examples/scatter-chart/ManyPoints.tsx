@@ -1,4 +1,4 @@
-import { ScatterChart } from '@jafari/charts';
+import { ScatterChart } from '@startupjafari/charts';
 import { cloud } from '../data';
 
 const data = cloud(100_000);

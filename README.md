@@ -12,14 +12,14 @@ libraries — every scale, curve, layout and interaction is implemented here.
 ## Install
 
 ```bash
-pnpm add @jafari/charts
+pnpm add @startupjafari/charts
 # react and react-dom (>= 18.2) are peer dependencies
 ```
 
 ## Quick start
 
 ```tsx
-import { AreaChart, LineChart } from '@jafari/charts';
+import { AreaChart, LineChart } from '@startupjafari/charts';
 
 <AreaChart data={users} xKey="date" yKey="count" height={260} />
 
@@ -175,7 +175,7 @@ All visual parameters are CSS custom properties (`--jc-*`):
 or in JS:
 
 ```tsx
-import { ChartProvider, createTheme } from '@jafari/charts';
+import { ChartProvider, createTheme } from '@startupjafari/charts';
 
 const brand = createTheme({ series: ['#0EA5E9', '#22C55E'], dark: { grid: '#1f2937' } });
 
@@ -185,14 +185,14 @@ const brand = createTheme({ series: ['#0EA5E9', '#22C55E'], dark: { grid: '#1f29
 ```
 
 Styles are injected automatically. For a strict CSP, import
-`@jafari/charts/styles.css` and set `<ChartProvider injectStyles={false}>`.
+`@startupjafari/charts/styles.css` and set `<ChartProvider injectStyles={false}>`.
 
 ## Export
 
 The export module is a separate entry and is never part of your main bundle unless imported:
 
 ```ts
-const { exportChart } = await import('@jafari/charts/export');
+const { exportChart } = await import('@startupjafari/charts/export');
 await exportChart(element, { format: 'png', scale: 2, background: 'light', filename: 'growth' });
 ```
 
@@ -217,12 +217,12 @@ Next.js does the same for other barrel packages such as Recharts:
 
 ```js
 // next.config.mjs
-export default { experimental: { optimizePackageImports: ['@jafari/charts'] } };
+export default { experimental: { optimizePackageImports: ['@startupjafari/charts'] } };
 ```
 
 Measured with Next.js 15 (`LineChart` + `DonutChart` imported in a Server
 Component): 41 KB of route JS with the option, 74 KB without it. Each chart
-family is also available as a subpath (`@jafari/charts-react/cartesian`, `/pie`,
+family is also available as a subpath (`@startupjafari/charts-react/cartesian`, `/pie`,
 `/radial`, `/scatter`, `/radar`, `/heatmap`, `/funnel`, `/treemap`, `/primitives`).
 
 ## Server rendering
@@ -230,7 +230,7 @@ family is also available as a subpath (`@jafari/charts-react/cartesian`, `/pie`,
 With React 19, the stylesheet is emitted during server rendering (hoisted
 `<style precedence>`). React 18 has no style hoisting, so styles are injected on
 the client — server-rendered React 18 apps should import
-`@jafari/charts/styles.css` to avoid unstyled HTML before hydration.
+`@startupjafari/charts/styles.css` to avoid unstyled HTML before hydration.
 
 Charts render on the server at `initialWidth` (default 640 px) and hydrate
 without mismatches, then adapt to the real width. React components ship with the
@@ -245,7 +245,7 @@ Measured with `pnpm size` (consumer build, minified + gzip, React external):
 | Base core (scales, geometry, curves, data, formatting)   | 11.1 KB |
 | React layer for `LineChart` (core external)              | 15.5 KB |
 | `LineChart` total (React layer + all math it uses + CSS) | 36.5 KB |
-| Everything from `@jafari/charts` (20 charts)             | 69.9 KB |
+| Everything from `@startupjafari/charts` (20 charts)      | 69.9 KB |
 | Canvas renderer (lazy chunk)                             | 1.7 KB  |
 | Export module (separate entry)                           | 2.5 KB  |
 
@@ -268,14 +268,14 @@ No comparison with other libraries is claimed.
 
 ## Packages
 
-| Package                 | Purpose                                            |
-| ----------------------- | -------------------------------------------------- |
-| `@jafari/charts`        | Main package (React components + utilities)        |
-| `@jafari/charts-core`   | Framework-independent math core, zero dependencies |
-| `@jafari/charts-react`  | React adapter                                      |
-| `@jafari/charts-canvas` | Canvas 2D renderer                                 |
-| `@jafari/charts-themes` | Tokens, themes, CSS                                |
-| `@jafari/charts-export` | SVG/PNG/WebP/CSV export                            |
+| Package                        | Purpose                                            |
+| ------------------------------ | -------------------------------------------------- |
+| `@startupjafari/charts`        | Main package (React components + utilities)        |
+| `@startupjafari/charts-core`   | Framework-independent math core, zero dependencies |
+| `@startupjafari/charts-react`  | React adapter                                      |
+| `@startupjafari/charts-canvas` | Canvas 2D renderer                                 |
+| `@startupjafari/charts-themes` | Tokens, themes, CSS                                |
+| `@startupjafari/charts-export` | SVG/PNG/WebP/CSV export                            |
 
 ## Development
 

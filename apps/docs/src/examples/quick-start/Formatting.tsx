@@ -1,4 +1,4 @@
-import { BarChart, formatCurrency } from '@jafari/charts';
+import { BarChart, formatCurrency } from '@startupjafari/charts';
 import { revenue } from '../data';
 
 export default function Formatting() {

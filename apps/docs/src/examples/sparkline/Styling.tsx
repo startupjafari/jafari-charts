@@ -1,4 +1,4 @@
-import { Sparkline } from '@jafari/charts';
+import { Sparkline } from '@startupjafari/charts';
 import { temperature } from '../data';
 
 export default function Styling() {

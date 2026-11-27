@@ -1,1 +1,1 @@
-export * from '@jafari/charts-react/scatter';
+export * from '@startupjafari/charts-react/scatter';

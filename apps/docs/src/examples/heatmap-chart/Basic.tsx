@@ -1,4 +1,4 @@
-import { HeatmapChart } from '@jafari/charts';
+import { HeatmapChart } from '@startupjafari/charts';
 import { sessionsByHour } from '../data';
 
 /** Rows are weekdays, columns hours; colour steps encode the number of sessions. */

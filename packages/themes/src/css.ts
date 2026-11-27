@@ -116,7 +116,7 @@ const COMPONENT_CSS = `
 
 /**
  * The complete stylesheet: CSS variables for light/dark themes plus component
- * styles. Shipped as `@jafari/charts/styles.css` and injected automatically by
+ * styles. Shipped as `@startupjafari/charts/styles.css` and injected automatically by
  * the React components (once per document).
  */
 export function createStylesheet(

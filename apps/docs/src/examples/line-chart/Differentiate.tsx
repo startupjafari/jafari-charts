@@ -1,4 +1,4 @@
-import { LineChart } from '@jafari/charts';
+import { LineChart } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 /** Marker shapes and dash patterns tell series apart without relying on colour. */

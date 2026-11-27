@@ -9,7 +9,7 @@ import {
   type MarkStyle,
   type Paint,
   type Rect,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 
 type Context2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 type Canvas = HTMLCanvasElement | OffscreenCanvas;

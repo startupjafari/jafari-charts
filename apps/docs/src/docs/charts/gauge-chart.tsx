@@ -1,4 +1,4 @@
-import { GaugeChart } from '@jafari/charts';
+import { GaugeChart } from '@startupjafari/charts';
 import { baseGroup } from '../props';
 import type { ChartDoc } from '../types';
 

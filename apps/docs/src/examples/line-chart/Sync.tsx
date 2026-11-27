@@ -1,4 +1,4 @@
-import { AreaChart, LineChart } from '@jafari/charts';
+import { AreaChart, LineChart } from '@startupjafari/charts';
 import { dailyUsers } from '../data';
 
 /** Hover either chart: both show the crosshair and tooltip at the same date. */

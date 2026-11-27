@@ -20,7 +20,7 @@ export default defineConfig(
       core: 'src/core.ts',
       themes: 'src/themes.ts',
       export: 'src/export.ts',
-      // Kept as separate local modules so `import { LineChart } from '@jafari/charts'`
+      // Kept as separate local modules so `import { LineChart } from '@startupjafari/charts'`
       // resolves to one chart family under barrel optimisation.
       ...Object.fromEntries(families.map((f) => [`react/${f}`, `src/react/${f}.ts`])),
     },

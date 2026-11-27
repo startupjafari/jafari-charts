@@ -1,6 +1,6 @@
 /**
- * @jafari/charts-react — React components for Jafari Charts.
- * Each chart family is also available as a subpath (`@jafari/charts-react/cartesian`, …).
+ * @startupjafari/charts-react — React components for Jafari Charts.
+ * Each chart family is also available as a subpath (`@startupjafari/charts-react/cartesian`, …).
  */
 export * from './entries/primitives';
 export * from './entries/cartesian';

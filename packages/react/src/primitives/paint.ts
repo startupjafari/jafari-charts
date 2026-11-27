@@ -1,4 +1,4 @@
-import type { LinearGradientPaint, MarkStyle, Paint } from '@jafari/charts-core';
+import type { LinearGradientPaint, MarkStyle, Paint } from '@startupjafari/charts-core';
 import type { CSSProperties } from 'react';
 
 /** Inline style for a mark. Colours go through `style` so `var(--token)` always works. */

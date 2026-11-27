@@ -1,5 +1,5 @@
-import { BarChart, LineChart } from '@jafari/charts';
-import * as exporter from '@jafari/charts/export';
+import { BarChart, LineChart } from '@startupjafari/charts';
+import * as exporter from '@startupjafari/charts/export';
 import { registrations, timeSeries } from '../data';
 
 const series = timeSeries(30);

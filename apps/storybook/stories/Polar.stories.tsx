@@ -1,4 +1,4 @@
-import { DonutChart, GaugeChart, PieChart, RadialProgressChart } from '@jafari/charts';
+import { DonutChart, GaugeChart, PieChart, RadialProgressChart } from '@startupjafari/charts';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { roles } from './data';
 

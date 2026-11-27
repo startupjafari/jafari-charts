@@ -12,7 +12,7 @@ import {
   type DimensionKey,
   type DimensionType,
   type NumericKey,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import { useMemo, type ReactElement, type ReactNode } from 'react';
 import type { DataTable } from '../../components/ChartA11y';
 import { ChartAxis } from '../../components/ChartAxis';

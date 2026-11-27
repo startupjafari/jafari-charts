@@ -1,4 +1,4 @@
-import { FunnelChart } from '@jafari/charts';
+import { FunnelChart } from '@startupjafari/charts';
 import { admissions } from '../data';
 
 /** Stages left to right; percentages relative to the previous stage (step conversion). */

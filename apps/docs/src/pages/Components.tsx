@@ -517,8 +517,8 @@ const PROVIDER: PropDef[] = [
     type: 'boolean',
     default: 'true',
     description: {
-      en: 'Inject the stylesheet automatically. Disable when importing `@jafari/charts/styles.css`.',
-      ru: 'Автоматически внедрять таблицу стилей. Отключите, если импортируете `@jafari/charts/styles.css`.',
+      en: 'Inject the stylesheet automatically. Disable when importing `@startupjafari/charts/styles.css`.',
+      ru: 'Автоматически внедрять таблицу стилей. Отключите, если импортируете `@startupjafari/charts/styles.css`.',
     },
   },
   {
@@ -923,7 +923,7 @@ export function Components() {
         <PropsTable props={PROVIDER} caption="ChartProvider" />
         <Callout title={t.provider.calloutTitle}>{t.provider.calloutBody}</Callout>
         <CodeBlock
-          code={`import { formatNumber, useChartConfig } from '@jafari/charts';
+          code={`import { formatNumber, useChartConfig } from '@startupjafari/charts';
 
 function Total({ value }: { value: number }) {
   const { locale = 'en' } = useChartConfig();

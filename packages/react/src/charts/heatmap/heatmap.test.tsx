@@ -3,7 +3,7 @@ import {
   buildCalendarModel,
   numericColumn,
   timeColumn,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';

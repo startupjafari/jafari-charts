@@ -1,4 +1,4 @@
-import { access, toLabel, toNumber, type HierarchyInput } from '@jafari/charts-core';
+import { access, toLabel, toNumber, type HierarchyInput } from '@startupjafari/charts-core';
 
 /** A node of hierarchical treemap data. */
 export interface TreemapDatum {

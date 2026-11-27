@@ -1,5 +1,5 @@
 {
-  "name": "@jafari/charts-export",
+  "name": "@startupjafari/charts-export",
   "version": "0.1.0",
   "author": "Mehman Jafari",
   "license": "MIT",
@@ -25,7 +25,7 @@
   },
   "exports": {
     ".": {
-      "@jafari/source": "./src/index.ts",
+      "@startupjafari/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"

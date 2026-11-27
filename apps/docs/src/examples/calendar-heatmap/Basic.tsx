@@ -1,4 +1,4 @@
-import { CalendarHeatmap } from '@jafari/charts';
+import { CalendarHeatmap } from '@startupjafari/charts';
 import { dailyLogins } from '../data';
 
 /** One cell per day; weeks are columns. Cells size themselves to the width. */

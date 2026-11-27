@@ -1,4 +1,4 @@
-import { estimateTextWidth } from '@jafari/charts-core';
+import { estimateTextWidth } from '@startupjafari/charts-core';
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { ScatterChart } from '../scatter/ScatterChart';

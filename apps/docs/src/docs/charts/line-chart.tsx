@@ -1,4 +1,4 @@
-import { LineChart } from '@jafari/charts';
+import { LineChart } from '@startupjafari/charts';
 import { activity } from '../../examples/data';
 import { Link } from '../../lib/router';
 import { baseGroup, cartesianGroup, seriesGroup } from '../props';

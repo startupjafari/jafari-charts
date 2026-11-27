@@ -7,7 +7,7 @@ import {
   TreemapChart,
   WaterfallChart,
   type TreemapDatum,
-} from '@jafari/charts';
+} from '@startupjafari/charts';
 import { useState, type ReactNode } from 'react';
 import { months, rng } from '../data';
 

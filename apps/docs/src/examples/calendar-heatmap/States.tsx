@@ -1,4 +1,4 @@
-import { CalendarHeatmap } from '@jafari/charts';
+import { CalendarHeatmap } from '@startupjafari/charts';
 import { dailyLogins } from '../data';
 
 export default function States() {

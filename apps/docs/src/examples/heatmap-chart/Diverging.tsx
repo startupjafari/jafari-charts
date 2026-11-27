@@ -1,4 +1,4 @@
-import { HeatmapChart } from '@jafari/charts';
+import { HeatmapChart } from '@startupjafari/charts';
 import { enrolmentChange } from '../data';
 
 /** Signed data on a diverging scale around zero, with value labels. */

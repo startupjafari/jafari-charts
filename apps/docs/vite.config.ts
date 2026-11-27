@@ -6,7 +6,7 @@ export default defineConfig({
   // Hash routing: relative asset URLs let the built site be served from any sub-path.
   base: './',
   // Resolve workspace packages to their TypeScript sources (instant HMR, no build step).
-  resolve: { conditions: ['@jafari/source', ...defaultClientConditions] },
+  resolve: { conditions: ['@startupjafari/source', ...defaultClientConditions] },
   server: { port: 5180, strictPort: true },
   preview: { port: 5180, strictPort: true },
 });

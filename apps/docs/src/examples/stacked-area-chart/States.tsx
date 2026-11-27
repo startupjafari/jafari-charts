@@ -1,4 +1,4 @@
-import { StackedAreaChart } from '@jafari/charts';
+import { StackedAreaChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { activity } from '../data';
 

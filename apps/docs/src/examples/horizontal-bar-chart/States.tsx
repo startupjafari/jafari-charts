@@ -1,4 +1,4 @@
-import { HorizontalBarChart } from '@jafari/charts';
+import { HorizontalBarChart } from '@startupjafari/charts';
 
 const ratings: { name: string; score: number }[] = [];
 

@@ -1,4 +1,4 @@
-import { batchMarks, markPath, isStrokeMark, type Mark } from '@jafari/charts-core';
+import { batchMarks, markPath, isStrokeMark, type Mark } from '@startupjafari/charts-core';
 import { memo, useMemo } from 'react';
 import { GradientDef } from './Gradient';
 import { isGradient, markStyle, safeId } from './paint';

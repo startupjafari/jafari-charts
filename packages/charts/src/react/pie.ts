@@ -1,1 +1,1 @@
-export * from '@jafari/charts-react/pie';
+export * from '@startupjafari/charts-react/pie';

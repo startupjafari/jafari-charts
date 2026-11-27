@@ -1,4 +1,4 @@
-import { BarChart, ChartReferenceLine } from '@jafari/charts';
+import { BarChart, ChartReferenceLine } from '@startupjafari/charts';
 import { useState } from 'react';
 import { registrations } from '../data';
 

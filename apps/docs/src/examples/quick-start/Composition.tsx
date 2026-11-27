@@ -1,4 +1,4 @@
-import { ChartReferenceArea, ChartReferenceLine, LineChart } from '@jafari/charts';
+import { ChartReferenceArea, ChartReferenceLine, LineChart } from '@startupjafari/charts';
 import { dailyUsers } from '../data';
 
 export default function Composition() {

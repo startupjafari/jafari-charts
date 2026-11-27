@@ -1,5 +1,5 @@
 {
-  "name": "@jafari/charts-react",
+  "name": "@startupjafari/charts-react",
   "version": "0.1.0",
   "author": "Mehman Jafari",
   "license": "MIT",
@@ -25,61 +25,61 @@
   },
   "exports": {
     ".": {
-      "@jafari/source": "./src/index.ts",
+      "@startupjafari/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./primitives": {
-      "@jafari/source": "./src/entries/primitives.ts",
+      "@startupjafari/source": "./src/entries/primitives.ts",
       "types": "./dist/entries/primitives.d.ts",
       "import": "./dist/entries/primitives.js",
       "default": "./dist/entries/primitives.js"
     },
     "./cartesian": {
-      "@jafari/source": "./src/entries/cartesian.ts",
+      "@startupjafari/source": "./src/entries/cartesian.ts",
       "types": "./dist/entries/cartesian.d.ts",
       "import": "./dist/entries/cartesian.js",
       "default": "./dist/entries/cartesian.js"
     },
     "./pie": {
-      "@jafari/source": "./src/entries/pie.ts",
+      "@startupjafari/source": "./src/entries/pie.ts",
       "types": "./dist/entries/pie.d.ts",
       "import": "./dist/entries/pie.js",
       "default": "./dist/entries/pie.js"
     },
     "./radial": {
-      "@jafari/source": "./src/entries/radial.ts",
+      "@startupjafari/source": "./src/entries/radial.ts",
       "types": "./dist/entries/radial.d.ts",
       "import": "./dist/entries/radial.js",
       "default": "./dist/entries/radial.js"
     },
     "./scatter": {
-      "@jafari/source": "./src/entries/scatter.ts",
+      "@startupjafari/source": "./src/entries/scatter.ts",
       "types": "./dist/entries/scatter.d.ts",
       "import": "./dist/entries/scatter.js",
       "default": "./dist/entries/scatter.js"
     },
     "./radar": {
-      "@jafari/source": "./src/entries/radar.ts",
+      "@startupjafari/source": "./src/entries/radar.ts",
       "types": "./dist/entries/radar.d.ts",
       "import": "./dist/entries/radar.js",
       "default": "./dist/entries/radar.js"
     },
     "./heatmap": {
-      "@jafari/source": "./src/entries/heatmap.ts",
+      "@startupjafari/source": "./src/entries/heatmap.ts",
       "types": "./dist/entries/heatmap.d.ts",
       "import": "./dist/entries/heatmap.js",
       "default": "./dist/entries/heatmap.js"
     },
     "./funnel": {
-      "@jafari/source": "./src/entries/funnel.ts",
+      "@startupjafari/source": "./src/entries/funnel.ts",
       "types": "./dist/entries/funnel.d.ts",
       "import": "./dist/entries/funnel.js",
       "default": "./dist/entries/funnel.js"
     },
     "./treemap": {
-      "@jafari/source": "./src/entries/treemap.ts",
+      "@startupjafari/source": "./src/entries/treemap.ts",
       "types": "./dist/entries/treemap.d.ts",
       "import": "./dist/entries/treemap.js",
       "default": "./dist/entries/treemap.js"
@@ -155,9 +155,9 @@
     }
   },
   "dependencies": {
-    "@jafari/charts-core": "workspace:*",
-    "@jafari/charts-themes": "workspace:*",
-    "@jafari/charts-canvas": "workspace:*"
+    "@startupjafari/charts-core": "workspace:*",
+    "@startupjafari/charts-themes": "workspace:*",
+    "@startupjafari/charts-canvas": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18.2.0",

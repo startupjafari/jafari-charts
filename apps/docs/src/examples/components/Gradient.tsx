@@ -1,4 +1,4 @@
-import { AreaChart, ChartGradient, ChartLabel, useChart } from '@jafari/charts';
+import { AreaChart, ChartGradient, ChartLabel, useChart } from '@startupjafari/charts';
 import { useId } from 'react';
 import { dailyUsers } from '../data';
 

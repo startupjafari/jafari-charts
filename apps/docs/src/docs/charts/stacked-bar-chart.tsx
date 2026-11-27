@@ -1,4 +1,4 @@
-import { StackedBarChart } from '@jafari/charts';
+import { StackedBarChart } from '@startupjafari/charts';
 import { registrations } from '../../examples/data';
 import { CARTESIAN_KEYS } from '../keyboard';
 import { barGroup, baseGroup, cartesianGroup, seriesGroup } from '../props';

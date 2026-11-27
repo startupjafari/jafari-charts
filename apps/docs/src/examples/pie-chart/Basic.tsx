@@ -1,4 +1,4 @@
-import { PieChart } from '@jafari/charts';
+import { PieChart } from '@startupjafari/charts';
 import { devices } from '../data';
 
 export default function Basic() {

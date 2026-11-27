@@ -5,7 +5,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "customConditions": ["@jafari/source"],
+    "customConditions": ["@startupjafari/source"],
     "jsx": "react-jsx",
     "strict": true,
     "noUncheckedIndexedAccess": true,

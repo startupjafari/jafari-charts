@@ -1,4 +1,4 @@
-import { ComboChart } from '@jafari/charts';
+import { ComboChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { revenue } from '../data';
 

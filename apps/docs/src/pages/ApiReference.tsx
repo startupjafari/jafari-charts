@@ -1,4 +1,4 @@
-import * as Library from '@jafari/charts';
+import * as Library from '@startupjafari/charts';
 import { CHARTS } from '../docs/charts';
 import { BASE_PROPS } from '../docs/props';
 import { useLang, useT, useText, type L } from '../i18n';
@@ -468,10 +468,10 @@ const TYPES = [
 ];
 
 const en = {
-  lead: 'Everything exported from @jafari/charts, grouped by purpose. Chart props are documented on each chart page.',
-  importsCode: `import { LineChart, ChartProvider, createTheme, formatNumber } from '@jafari/charts';
-import { createLinearScale } from '@jafari/charts/core';      // framework-independent math
-const { exportChart } = await import('@jafari/charts/export'); // lazy`,
+  lead: 'Everything exported from @startupjafari/charts, grouped by purpose. Chart props are documented on each chart page.',
+  importsCode: `import { LineChart, ChartProvider, createTheme, formatNumber } from '@startupjafari/charts';
+import { createLinearScale } from '@startupjafari/charts/core';      // framework-independent math
+const { exportChart } = await import('@startupjafari/charts/export'); // lazy`,
   groups: {
     charts: 'Charts',
     chartsLead: 'Every chart accepts BaseChartProps (below) plus its own props.',
@@ -485,7 +485,7 @@ const { exportChart } = await import('@jafari/charts/export'); // lazy`,
   baseProps: { lead: 'Shared by every chart.' },
   export: {
     toc: 'Export',
-    title: 'Export (@jafari/charts/export)',
+    title: 'Export (@startupjafari/charts/export)',
     lead: 'A separate entry point: never in your main bundle unless imported.',
   },
   types: {
@@ -505,10 +505,10 @@ const { exportChart } = await import('@jafari/charts/export'); // lazy`,
 const TEXT: L<typeof en> = {
   en,
   ru: {
-    lead: 'Всё, что экспортирует @jafari/charts, сгруппировано по назначению. Пропсы диаграмм описаны на странице каждой диаграммы.',
-    importsCode: `import { LineChart, ChartProvider, createTheme, formatNumber } from '@jafari/charts';
-import { createLinearScale } from '@jafari/charts/core';      // математика, не зависящая от фреймворка
-const { exportChart } = await import('@jafari/charts/export'); // ленивая загрузка`,
+    lead: 'Всё, что экспортирует @startupjafari/charts, сгруппировано по назначению. Пропсы диаграмм описаны на странице каждой диаграммы.',
+    importsCode: `import { LineChart, ChartProvider, createTheme, formatNumber } from '@startupjafari/charts';
+import { createLinearScale } from '@startupjafari/charts/core';      // математика, не зависящая от фреймворка
+const { exportChart } = await import('@startupjafari/charts/export'); // ленивая загрузка`,
     groups: {
       charts: 'Диаграммы',
       chartsLead: 'Каждая диаграмма принимает BaseChartProps (см. ниже) и собственные пропсы.',
@@ -522,7 +522,7 @@ const { exportChart } = await import('@jafari/charts/export'); // ленивая
     baseProps: { lead: 'Общие для всех диаграмм.' },
     export: {
       toc: 'Экспорт',
-      title: 'Экспорт (@jafari/charts/export)',
+      title: 'Экспорт (@startupjafari/charts/export)',
       lead: 'Отдельная точка входа: в основной бандл попадает, только если вы её импортируете.',
     },
     types: {

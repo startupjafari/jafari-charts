@@ -1,4 +1,4 @@
-import { CalendarHeatmap } from '@jafari/charts';
+import { CalendarHeatmap } from '@startupjafari/charts';
 import { dailyLogins } from '../../examples/data';
 import { baseGroup } from '../props';
 import type { ChartDoc } from '../types';

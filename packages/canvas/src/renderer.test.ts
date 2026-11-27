@@ -1,4 +1,4 @@
-import type { Mark } from '@jafari/charts-core';
+import type { Mark } from '@startupjafari/charts-core';
 import { describe, expect, it } from 'vitest';
 import { CanvasRenderer } from './renderer';
 

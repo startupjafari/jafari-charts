@@ -1,4 +1,4 @@
-import { GaugeChart } from '@jafari/charts';
+import { GaugeChart } from '@startupjafari/charts';
 
 /** A non-finite value (NaN) means "no data" and shows the empty state. */
 export default function States() {

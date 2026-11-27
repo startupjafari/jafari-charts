@@ -1,4 +1,4 @@
-import { AreaChart } from '@jafari/charts';
+import { AreaChart } from '@startupjafari/charts';
 import { dailyUsers } from '../../examples/data';
 import { CARTESIAN_KEYS } from '../keyboard';
 import { baseGroup, cartesianGroup, seriesGroup } from '../props';

@@ -1,4 +1,4 @@
-import { Sparkline } from '@jafari/charts';
+import { Sparkline } from '@startupjafari/charts';
 import { dailyUsers } from '../../examples/data';
 import { baseGroup, cartesianGroup } from '../props';
 import type { ChartDoc } from '../types';

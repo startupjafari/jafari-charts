@@ -1,4 +1,4 @@
-import { CalendarHeatmap, ChartProvider, DonutChart, LineChart } from '@jafari/charts';
+import { CalendarHeatmap, ChartProvider, DonutChart, LineChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { activity, dailyLogins } from '../data';
 

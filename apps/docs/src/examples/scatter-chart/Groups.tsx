@@ -1,4 +1,4 @@
-import { ScatterChart } from '@jafari/charts';
+import { ScatterChart } from '@startupjafari/charts';
 import { cohort } from '../data';
 
 /** `groupKey` splits long data into groups, each with its own colour and legend item. */

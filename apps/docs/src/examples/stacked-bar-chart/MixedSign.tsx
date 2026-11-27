@@ -1,4 +1,4 @@
-import { StackedBarChart } from '@jafari/charts';
+import { StackedBarChart } from '@startupjafari/charts';
 import { balance } from '../data';
 
 /** Positive parts stack upwards, negative parts downwards from zero. */

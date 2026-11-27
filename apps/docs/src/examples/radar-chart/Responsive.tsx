@@ -1,4 +1,4 @@
-import { RadarChart } from '@jafari/charts';
+import { RadarChart } from '@startupjafari/charts';
 import { profiles } from '../data';
 
 /** Long spoke labels are placed around the chart and truncated to fit. */

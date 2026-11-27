@@ -1,4 +1,4 @@
-import { AreaChart } from '@jafari/charts';
+import { AreaChart } from '@startupjafari/charts';
 import { temperature } from '../data';
 
 /** The fill grows from zero in both directions; null readings leave gaps. */

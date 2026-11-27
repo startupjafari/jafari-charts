@@ -1,4 +1,4 @@
-import { CalendarHeatmap } from '@jafari/charts';
+import { CalendarHeatmap } from '@startupjafari/charts';
 import { dailyLogins } from '../data';
 
 /** Russian month and weekday names; weeks start on Monday for ru and kk. */

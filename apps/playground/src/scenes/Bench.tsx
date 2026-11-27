@@ -1,4 +1,4 @@
-import { AreaChart, BarChart, LineChart, ScatterChart, type Renderer } from '@jafari/charts';
+import { AreaChart, BarChart, LineChart, ScatterChart, type Renderer } from '@startupjafari/charts';
 import { useEffect, useState, type ComponentType } from 'react';
 import { flushSync } from 'react-dom';
 import { rng } from '../data';

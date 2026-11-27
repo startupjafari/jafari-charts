@@ -4,8 +4,8 @@ import {
   formatAuto,
   formatPercent,
   type GaugeBand,
-} from '@jafari/charts-core';
-import { seriesColor } from '@jafari/charts-themes';
+} from '@startupjafari/charts-core';
+import { seriesColor } from '@startupjafari/charts-themes';
 import { useMemo, type ReactElement, type ReactNode } from 'react';
 import type { TooltipOptions } from '../../components/ChartTooltip';
 import { ChartView } from '../../components/ChartView';

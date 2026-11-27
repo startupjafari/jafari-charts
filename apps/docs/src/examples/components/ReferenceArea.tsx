@@ -1,4 +1,4 @@
-import { BarChart, ChartReferenceArea } from '@jafari/charts';
+import { BarChart, ChartReferenceArea } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 /** A target band on the value axis (y1–y2) and a highlighted range of categories (x1–x2). */

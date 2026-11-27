@@ -1,4 +1,4 @@
-import { LABEL_LINE_HEIGHT, type AxisTick, type Rect } from '@jafari/charts-core';
+import { LABEL_LINE_HEIGHT, type AxisTick, type Rect } from '@startupjafari/charts-core';
 import { memo } from 'react';
 import { useOptionalChart } from '../providers/ChartContext';
 

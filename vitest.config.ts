@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config';
 
 // Workspace packages resolve to their TypeScript sources through this export
 // condition, so tests never depend on a prior build.
-const SOURCE_CONDITION = '@jafari/source';
+const SOURCE_CONDITION = '@startupjafari/source';
 
 const resolveSource = {
   resolve: { conditions: [SOURCE_CONDITION, ...defaultClientConditions] },

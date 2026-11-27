@@ -1,4 +1,9 @@
-import { ChartReferenceLine, formatDate, formatNumber, GroupedBarChart } from '@jafari/charts';
+import {
+  ChartReferenceLine,
+  formatDate,
+  formatNumber,
+  GroupedBarChart,
+} from '@startupjafari/charts';
 import type { ReactNode } from 'react';
 import bench from '../../../../benchmarks/results/latest.json';
 import sizes from '../../../../benchmarks/size.json';
@@ -108,7 +113,7 @@ const RU_SIZE_SCENARIOS: Record<string, string> = {
   'app: LineChart (React layer + core it needs)':
     'приложение: LineChart (слой React + нужная ему часть core)',
   'app: AreaChart + BarChart + Sparkline': 'приложение: AreaChart + BarChart + Sparkline',
-  'app: everything from @jafari/charts': 'приложение: всё из @jafari/charts',
+  'app: everything from @startupjafari/charts': 'приложение: всё из @startupjafari/charts',
   'canvas renderer (lazy chunk, core external)': 'рендерер canvas (ленивый чанк, core — внешний)',
   'export module': 'модуль экспорта',
   'themes: tokens only': 'темы: только токены',

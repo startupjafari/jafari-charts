@@ -1,5 +1,5 @@
 {
-  "name": "@jafari/charts",
+  "name": "@startupjafari/charts",
   "version": "0.1.0",
   "author": "Mehman Jafari",
   "license": "MIT",
@@ -27,25 +27,25 @@
   },
   "exports": {
     ".": {
-      "@jafari/source": "./src/index.ts",
+      "@startupjafari/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./core": {
-      "@jafari/source": "./src/core.ts",
+      "@startupjafari/source": "./src/core.ts",
       "types": "./dist/core.d.ts",
       "import": "./dist/core.js",
       "default": "./dist/core.js"
     },
     "./themes": {
-      "@jafari/source": "./src/themes.ts",
+      "@startupjafari/source": "./src/themes.ts",
       "types": "./dist/themes.d.ts",
       "import": "./dist/themes.js",
       "default": "./dist/themes.js"
     },
     "./export": {
-      "@jafari/source": "./src/export.ts",
+      "@startupjafari/source": "./src/export.ts",
       "types": "./dist/export.d.ts",
       "import": "./dist/export.js",
       "default": "./dist/export.js"
@@ -94,10 +94,10 @@
     }
   },
   "dependencies": {
-    "@jafari/charts-core": "workspace:*",
-    "@jafari/charts-themes": "workspace:*",
-    "@jafari/charts-react": "workspace:*",
-    "@jafari/charts-export": "workspace:*"
+    "@startupjafari/charts-core": "workspace:*",
+    "@startupjafari/charts-themes": "workspace:*",
+    "@startupjafari/charts-react": "workspace:*",
+    "@startupjafari/charts-export": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18.2.0",

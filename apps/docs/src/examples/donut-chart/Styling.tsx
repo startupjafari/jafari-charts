@@ -1,4 +1,4 @@
-import { DonutChart } from '@jafari/charts';
+import { DonutChart } from '@startupjafari/charts';
 
 const budget = [
   { item: 'Salaries', amount: 61, color: '#6366F1' },

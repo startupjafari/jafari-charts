@@ -3,7 +3,7 @@ import {
   type ChartMessages,
   type HeatmapBucket,
   type HeatmapColorScale,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import { useMemo, type CSSProperties, type ReactNode } from 'react';
 import type { LegendOptions } from '../../components/ChartLegend';
 import { useChart, type SeriesInfo } from '../../providers/ChartContext';

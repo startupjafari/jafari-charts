@@ -1,5 +1,5 @@
 {
-  "name": "@jafari/charts-playground",
+  "name": "@startupjafari/charts-playground",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,11 +11,11 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@jafari/charts": "workspace:*",
-    "@jafari/charts-core": "workspace:*",
-    "@jafari/charts-react": "workspace:*",
-    "@jafari/charts-themes": "workspace:*",
-    "@jafari/charts-canvas": "workspace:*",
+    "@startupjafari/charts": "workspace:*",
+    "@startupjafari/charts-core": "workspace:*",
+    "@startupjafari/charts-react": "workspace:*",
+    "@startupjafari/charts-themes": "workspace:*",
+    "@startupjafari/charts-canvas": "workspace:*",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   }

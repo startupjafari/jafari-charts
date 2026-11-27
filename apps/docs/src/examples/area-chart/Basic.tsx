@@ -1,4 +1,4 @@
-import { AreaChart } from '@jafari/charts';
+import { AreaChart } from '@startupjafari/charts';
 import { dailyUsers } from '../data';
 
 export default function Basic() {

@@ -1,4 +1,4 @@
-import { cssVar, darkTheme, lightTheme, palette, type ThemeTokens } from '@jafari/charts';
+import { cssVar, darkTheme, lightTheme, palette, type ThemeTokens } from '@startupjafari/charts';
 import { useLang, useT, useText, type L } from '../i18n';
 import { Callout, PageHeader, Section } from '../ui/Callout';
 import { CodeBlock } from '../ui/CodeBlock';

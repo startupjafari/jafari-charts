@@ -1,1 +1,1 @@
-export * from '@jafari/charts-react/cartesian';
+export * from '@startupjafari/charts-react/cartesian';

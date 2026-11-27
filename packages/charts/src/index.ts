@@ -1,9 +1,9 @@
 /**
- * @jafari/charts — engineered for performance. Beautiful charts. Zero compromise.
+ * @startupjafari/charts — engineered for performance. Beautiful charts. Zero compromise.
  *
  * Everything needed to render charts in React. Framework-independent utilities
- * are available from `@jafari/charts/core`, themes from `@jafari/charts/themes`
- * and the (lazily loadable) export module from `@jafari/charts/export`.
+ * are available from `@startupjafari/charts/core`, themes from `@startupjafari/charts/themes`
+ * and the (lazily loadable) export module from `@startupjafari/charts/export`.
  */
 // Re-exported per chart family through local modules: bundlers that optimise
 // barrel imports (Next.js `optimizePackageImports`) can then resolve each name to
@@ -28,7 +28,7 @@ export {
   type ThemeInput,
   type ThemeMode,
   type ThemeTokens,
-} from '@jafari/charts-themes';
+} from '@startupjafari/charts-themes';
 export {
   formatNumber,
   formatCompact,
@@ -41,4 +41,4 @@ export {
   type CurveType,
   type SymbolShape,
   type AxisValue,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';

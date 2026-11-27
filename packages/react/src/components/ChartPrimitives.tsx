@@ -3,7 +3,7 @@ import {
   drawSymbol,
   type LinearGradientPaint,
   type SymbolShape,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import type { CSSProperties, ReactNode } from 'react';
 import { GradientDef } from '../primitives/Gradient';
 

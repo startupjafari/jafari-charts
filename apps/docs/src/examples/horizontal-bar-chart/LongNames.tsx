@@ -1,4 +1,4 @@
-import { HorizontalBarChart } from '@jafari/charts';
+import { HorizontalBarChart } from '@startupjafari/charts';
 
 const universities = [
   { id: 'kaznu', name: 'Казахский национальный университет имени аль-Фараби', users: 1840 },

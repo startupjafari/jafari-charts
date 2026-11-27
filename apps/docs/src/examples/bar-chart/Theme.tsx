@@ -1,4 +1,4 @@
-import { BarChart, createTheme } from '@jafari/charts';
+import { BarChart, createTheme } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 /** Tokens can be overridden per chart: palette, radius, grid colour per mode. */

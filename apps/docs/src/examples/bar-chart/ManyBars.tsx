@@ -1,4 +1,4 @@
-import { BarChart } from '@jafari/charts';
+import { BarChart } from '@startupjafari/charts';
 import { dailyUsers } from '../data';
 
 /** 120 daily bars: date labels are inferred and thinned, every bar stays hoverable. */

@@ -1,4 +1,4 @@
-import { FunnelChart } from '@jafari/charts';
+import { FunnelChart } from '@startupjafari/charts';
 import { admissions } from '../../examples/data';
 import { ITEM_KEYS } from '../keyboard';
 import { baseGroup } from '../props';

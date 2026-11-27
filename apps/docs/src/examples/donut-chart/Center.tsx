@@ -1,4 +1,4 @@
-import { DonutChart, formatCompact, formatPercent } from '@jafari/charts';
+import { DonutChart, formatCompact, formatPercent } from '@startupjafari/charts';
 import { roles } from '../data';
 
 const total = roles.reduce((s, r) => s + r.count, 0);

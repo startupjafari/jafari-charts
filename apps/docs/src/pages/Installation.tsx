@@ -5,11 +5,11 @@ import { Callout, PageHeader, Section } from '../ui/Callout';
 import { CodeBlock } from '../ui/CodeBlock';
 
 const ENTRY_POINTS = [
-  '@jafari/charts',
-  '@jafari/charts/core',
-  '@jafari/charts/themes',
-  '@jafari/charts/export',
-  '@jafari/charts/styles.css',
+  '@startupjafari/charts',
+  '@startupjafari/charts/core',
+  '@startupjafari/charts/themes',
+  '@startupjafari/charts/export',
+  '@startupjafari/charts/styles.css',
 ] as const;
 
 type EntryPoint = (typeof ENTRY_POINTS)[number];
@@ -54,18 +54,18 @@ const TEXT: L<InstallationText> = {
     importCol: 'Import',
     contentsCol: 'Contents',
     entries: {
-      '@jafari/charts': (
+      '@startupjafari/charts': (
         <>
           Chart components, primitives, <code>ChartProvider</code>, hooks, <code>createTheme</code>{' '}
           and the formatting helpers.
         </>
       ),
-      '@jafari/charts/core':
+      '@startupjafari/charts/core':
         'The framework-independent math core (scales, ticks, curves, models…).',
-      '@jafari/charts/themes': 'Tokens, themes and the stylesheet generator.',
-      '@jafari/charts/export':
+      '@startupjafari/charts/themes': 'Tokens, themes and the stylesheet generator.',
+      '@startupjafari/charts/export':
         'SVG/PNG/WebP/CSV export — never in your main bundle unless imported.',
-      '@jafari/charts/styles.css': 'The stylesheet, for strict Content Security Policies.',
+      '@startupjafari/charts/styles.css': 'The stylesheet, for strict Content Security Policies.',
     },
     styles: 'Styles',
     stylesText: (
@@ -121,18 +121,19 @@ const TEXT: L<InstallationText> = {
     importCol: 'Импорт',
     contentsCol: 'Содержимое',
     entries: {
-      '@jafari/charts': (
+      '@startupjafari/charts': (
         <>
           Компоненты диаграмм, примитивы, <code>ChartProvider</code>, хуки, <code>createTheme</code>{' '}
           и функции форматирования.
         </>
       ),
-      '@jafari/charts/core':
+      '@startupjafari/charts/core':
         'Математическое ядро, не зависящее от фреймворка (шкалы, деления, кривые, модели…).',
-      '@jafari/charts/themes': 'Токены, темы и генератор таблицы стилей.',
-      '@jafari/charts/export':
+      '@startupjafari/charts/themes': 'Токены, темы и генератор таблицы стилей.',
+      '@startupjafari/charts/export':
         'Экспорт в SVG/PNG/WebP/CSV — попадает в основной бандл, только если вы его импортируете.',
-      '@jafari/charts/styles.css': 'Таблица стилей — для строгих политик Content Security Policy.',
+      '@startupjafari/charts/styles.css':
+        'Таблица стилей — для строгих политик Content Security Policy.',
     },
     styles: 'Стили',
     stylesText: (
@@ -188,9 +189,9 @@ export function Installation() {
       <Section id="install" title={t.install}>
         <CodeBlock
           files={[
-            { name: 'pnpm', code: 'pnpm add @jafari/charts', language: 'bash' },
-            { name: 'npm', code: 'npm install @jafari/charts', language: 'bash' },
-            { name: 'yarn', code: 'yarn add @jafari/charts', language: 'bash' },
+            { name: 'pnpm', code: 'pnpm add @startupjafari/charts', language: 'bash' },
+            { name: 'npm', code: 'npm install @startupjafari/charts', language: 'bash' },
+            { name: 'yarn', code: 'yarn add @startupjafari/charts', language: 'bash' },
           ]}
         />
         <p>{t.peers}</p>
@@ -223,8 +224,8 @@ export function Installation() {
         <p>{t.stylesText}</p>
         <CodeBlock
           title="main.tsx"
-          code={`import '@jafari/charts/styles.css';
-import { ChartProvider } from '@jafari/charts';
+          code={`import '@startupjafari/charts/styles.css';
+import { ChartProvider } from '@startupjafari/charts';
 
 root.render(
   <ChartProvider injectStyles={false}>
@@ -239,7 +240,7 @@ root.render(
         <p>{t.useClient}</p>
         <CodeBlock
           title="app/page.tsx"
-          code={`import { LineChart } from '@jafari/charts';
+          code={`import { LineChart } from '@startupjafari/charts';
 
 export default async function Page() {
   const data = await getAnalytics();
@@ -261,7 +262,7 @@ export default async function Page() {
       <Section id="export" title={t.exportTitle}>
         <p>{t.exportText}</p>
         <CodeBlock
-          code={`const { exportChart } = await import('@jafari/charts/export');
+          code={`const { exportChart } = await import('@startupjafari/charts/export');
 await exportChart(element, { format: 'png', scale: 2, background: 'light', filename: 'growth' });`}
         />
         <p>{t.next}</p>

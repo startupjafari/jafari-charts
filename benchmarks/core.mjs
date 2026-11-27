@@ -1,4 +1,4 @@
-// Core (framework-free) micro-benchmarks against the built @jafari/charts-core.
+// Core (framework-free) micro-benchmarks against the built @startupjafari/charts-core.
 // Usage: node benchmarks/core.mjs  → prints a table and writes results/core.json
 import {
   buildCartesianModel,
@@ -6,7 +6,7 @@ import {
   lttb,
   minMaxDownsample,
   nearestIndex,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 

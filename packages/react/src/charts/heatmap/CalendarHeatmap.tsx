@@ -14,7 +14,7 @@ import {
   type Mark,
   type NumericKey,
   type Store,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import {
   useMemo,
   useRef,

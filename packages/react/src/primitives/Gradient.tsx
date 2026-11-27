@@ -1,4 +1,4 @@
-import type { LinearGradientPaint } from '@jafari/charts-core';
+import type { LinearGradientPaint } from '@startupjafari/charts-core';
 
 /** `<linearGradient>` for a gradient paint (user-space coordinates). */
 export function GradientDef({ id, paint }: { id: string; paint: LinearGradientPaint }) {

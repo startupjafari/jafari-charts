@@ -11,7 +11,7 @@ const server = spawn(
   'pnpm',
   [
     '--filter',
-    '@jafari/charts-playground',
+    '@startupjafari/charts-playground',
     'exec',
     'vite',
     'preview',

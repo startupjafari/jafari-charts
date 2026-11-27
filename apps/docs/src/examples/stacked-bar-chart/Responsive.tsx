@@ -1,4 +1,4 @@
-import { StackedBarChart } from '@jafari/charts';
+import { StackedBarChart } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 export default function Responsive() {

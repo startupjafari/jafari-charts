@@ -1,4 +1,4 @@
-import { StackedAreaChart } from '@jafari/charts';
+import { StackedAreaChart } from '@startupjafari/charts';
 import { activity } from '../../examples/data';
 import { CARTESIAN_KEYS } from '../keyboard';
 import { baseGroup, cartesianGroup, seriesGroup } from '../props';

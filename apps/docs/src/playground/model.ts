@@ -1,4 +1,4 @@
-import type { CurveType, Renderer, ThemeMode } from '@jafari/charts';
+import type { CurveType, Renderer, ThemeMode } from '@startupjafari/charts';
 import type { L, Lang } from '../i18n/lang';
 
 /**
@@ -523,7 +523,7 @@ export function generateCode(config: PlaygroundConfig, lang: Lang): string {
   const count = effectiveSeries(config);
   const props: string[] = [];
   const lines: string[] = [];
-  const header: string[] = [`import { ${info.component} } from '@jafari/charts';`, ''];
+  const header: string[] = [`import { ${info.component} } from '@startupjafari/charts';`, ''];
 
   if (info.kind === 'gauge') {
     props.push(`value={${config.gaugeValue}}`, `label="${DEMO_TEXT[lang].gauge}"`);

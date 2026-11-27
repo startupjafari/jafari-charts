@@ -1,4 +1,4 @@
-import { formatNumber, type CurveType, type Renderer, type ThemeMode } from '@jafari/charts';
+import { formatNumber, type CurveType, type Renderer, type ThemeMode } from '@startupjafari/charts';
 import { useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useLang, useT, useText, type L } from '../i18n';
 import { Link } from '../lib/router';

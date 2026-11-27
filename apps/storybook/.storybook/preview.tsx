@@ -1,4 +1,4 @@
-import { ChartProvider } from '@jafari/charts';
+import { ChartProvider } from '@startupjafari/charts';
 import type { Decorator, Preview } from '@storybook/react-vite';
 
 const withChartTheme: Decorator = (Story, context) => {

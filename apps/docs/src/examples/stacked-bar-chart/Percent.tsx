@@ -1,4 +1,4 @@
-import { formatPercent, StackedBarChart } from '@jafari/charts';
+import { formatPercent, StackedBarChart } from '@startupjafari/charts';
 import { complaints } from '../data';
 
 export default function Percent() {

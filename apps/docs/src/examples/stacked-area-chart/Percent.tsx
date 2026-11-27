@@ -1,4 +1,4 @@
-import { formatPercent, StackedAreaChart } from '@jafari/charts';
+import { formatPercent, StackedAreaChart } from '@startupjafari/charts';
 import { activity } from '../data';
 
 /** Each day is normalised to 100 % — composition rather than volume. */

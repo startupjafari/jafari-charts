@@ -1,4 +1,4 @@
-import { Sparkline } from '@jafari/charts';
+import { Sparkline } from '@startupjafari/charts';
 import { dailyUsers } from '../data';
 
 /** Tooltip and crosshair are off by default; turn them on when the exact value matters. */

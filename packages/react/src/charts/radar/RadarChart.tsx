@@ -12,8 +12,8 @@ import {
   type RadarSeriesSpec,
   type SymbolShape,
   type TextMark,
-} from '@jafari/charts-core';
-import { seriesColor } from '@jafari/charts-themes';
+} from '@startupjafari/charts-core';
+import { seriesColor } from '@startupjafari/charts-themes';
 import { memo, useCallback, useMemo, type ReactElement, type ReactNode } from 'react';
 import type { DataTable } from '../../components/ChartA11y';
 import type { LegendOptions } from '../../components/ChartLegend';

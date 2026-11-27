@@ -1,4 +1,4 @@
-import { BarChart, HorizontalBarChart } from '@jafari/charts';
+import { BarChart, HorizontalBarChart } from '@startupjafari/charts';
 import type { ReactNode } from 'react';
 
 // Long Russian/Kazakh university names: wrapped category labels, per-bar colours, integer

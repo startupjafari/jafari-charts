@@ -1,4 +1,4 @@
-import { BarChart, type ThemeMode } from '@jafari/charts';
+import { BarChart, type ThemeMode } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 const MODES: ThemeMode[] = ['light', 'dark', 'auto'];

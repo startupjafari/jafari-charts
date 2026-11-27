@@ -1,4 +1,4 @@
-import { RadialProgressChart } from '@jafari/charts';
+import { RadialProgressChart } from '@startupjafari/charts';
 import { useState } from 'react';
 
 /** Changing the value animates the ring (unless reduced motion is on). */

@@ -1,4 +1,4 @@
-import { RadialProgressChart } from '@jafari/charts';
+import { RadialProgressChart } from '@startupjafari/charts';
 import { completion } from '../data';
 
 /** Several targets as concentric rings, outermost first, with a legend and tooltip. */

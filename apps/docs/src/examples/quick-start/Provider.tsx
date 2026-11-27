@@ -1,4 +1,4 @@
-import { BarChart, ChartProvider, DonutChart } from '@jafari/charts';
+import { BarChart, ChartProvider, DonutChart } from '@startupjafari/charts';
 
 const months = [
   { month: 'Қаң', students: 1250 },

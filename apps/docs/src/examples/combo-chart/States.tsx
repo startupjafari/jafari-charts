@@ -1,4 +1,4 @@
-import { ComboChart } from '@jafari/charts';
+import { ComboChart } from '@startupjafari/charts';
 import { revenue } from '../data';
 
 export default function States() {

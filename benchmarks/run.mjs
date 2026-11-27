@@ -44,12 +44,12 @@ if (process.argv.includes('--report-only')) {
 }
 
 console.log('Building playground (production)…');
-execSync('pnpm --filter @jafari/charts-playground build', { cwd: root, stdio: 'ignore' });
+execSync('pnpm --filter @startupjafari/charts-playground build', { cwd: root, stdio: 'ignore' });
 const server = spawn(
   'pnpm',
   [
     '--filter',
-    '@jafari/charts-playground',
+    '@startupjafari/charts-playground',
     'exec',
     'vite',
     'preview',

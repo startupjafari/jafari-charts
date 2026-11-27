@@ -1,4 +1,4 @@
-import { DonutChart } from '@jafari/charts';
+import { DonutChart } from '@startupjafari/charts';
 import { devices } from '../data';
 
 export default function HalfDonut() {

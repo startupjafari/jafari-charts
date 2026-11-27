@@ -13,28 +13,28 @@ contributors; the user-facing API lives in the README and the docs site.
 | Beautiful by default       | Validated palette, 2px lines, 4px rounded data ends, surface gaps between stacked marks, hairline grid, value-first tooltips — all defaults, no configuration.                                                                                                              |
 | Lightweight                | Zero runtime dependencies in the core; ESM with one output module per source module; `sideEffects: false`; canvas and export are lazy/optional. Budgets checked by `pnpm size`.                                                                                             |
 | Zero chart dependencies    | Every scale, tick algorithm, curve, shape, layout and interaction is implemented here.                                                                                                                                                                                      |
-| Framework-independent core | `@jafari/charts-core` has no React/DOM imports (enforced by ESLint `no-restricted-imports`). Chart _models_ (data → marks) live in the core.                                                                                                                                |
+| Framework-independent core | `@startupjafari/charts-core` has no React/DOM imports (enforced by ESLint `no-restricted-imports`). Chart _models_ (data → marks) live in the core.                                                                                                                         |
 | Accessibility first        | Every chart has a role/name/description, a keyboard model, a live region and a hidden data table; identity never relies on colour alone.                                                                                                                                    |
 
 ## 2. Packages
 
 ```
-@jafari/charts            umbrella: React components + selected core/themes exports
-├── @jafari/charts-react  React adapter: ChartView shell, primitives, 20 chart components
-│   ├── @jafari/charts-core    math core (no deps)
-│   ├── @jafari/charts-themes  tokens, light/dark, CSS variables, stylesheet
-│   └── @jafari/charts-canvas  Canvas 2D renderer (loaded lazily)
-└── @jafari/charts-export  SVG/PNG/WebP/CSV export (separate entry: @jafari/charts/export)
+@startupjafari/charts            umbrella: React components + selected core/themes exports
+├── @startupjafari/charts-react  React adapter: ChartView shell, primitives, 20 chart components
+│   ├── @startupjafari/charts-core    math core (no deps)
+│   ├── @startupjafari/charts-themes  tokens, light/dark, CSS variables, stylesheet
+│   └── @startupjafari/charts-canvas  Canvas 2D renderer (loaded lazily)
+└── @startupjafari/charts-export  SVG/PNG/WebP/CSV export (separate entry: @startupjafari/charts/export)
 ```
 
-There is deliberately **no `@jafari/charts-svg` package yet**: the SVG renderer is
+There is deliberately **no `@startupjafari/charts-svg` package yet**: the SVG renderer is
 the React layer (React owns the DOM), and everything renderer-independent —
 path generation, mark batching, transitions — is already in the core. A separate
 package would only make sense for a framework-free SVG string renderer
 (server-side images, Vue/Svelte adapters); see ROADMAP "Later".
 
 Workspace packages resolve each other's **TypeScript sources** in development
-through the custom export condition `@jafari/source` (see `tsconfig.base.json`
+through the custom export condition `@startupjafari/source` (see `tsconfig.base.json`
 `customConditions`, `vitest.config.ts`, playground `vite.config.ts`). No build is
 needed to test or develop. Published manifests (`publishConfig.exports`) expose
 only `dist`.
@@ -180,10 +180,10 @@ boundary (every chart shipped, 69.5 KB route JS), and Next's barrel optimisation
 does not follow a re-export into another package's full barrel. Therefore:
 
 - component modules carry `"use client"`; barrels (`index.js`, `entries/*`) do not;
-- `@jafari/charts-react` exposes one entry per chart family (subpath exports);
-- `@jafari/charts` re-exports those family entries.
+- `@startupjafari/charts-react` exposes one entry per chart family (subpath exports);
+- `@startupjafari/charts` re-exports those family entries.
 
-With `optimizePackageImports: ['@jafari/charts']` the route ships 41 KB and no
+With `optimizePackageImports: ['@startupjafari/charts']` the route ships 41 KB and no
 unused chart code; without it, 74 KB (documented in the README).
 
 ## 10. Decisions log

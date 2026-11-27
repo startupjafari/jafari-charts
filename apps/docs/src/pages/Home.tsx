@@ -1,4 +1,4 @@
-import { AreaChart, formatNumber } from '@jafari/charts';
+import { AreaChart, formatNumber } from '@startupjafari/charts';
 import type { ReactNode } from 'react';
 import bench from '../../../../benchmarks/results/latest.json';
 import sizes from '../../../../benchmarks/size.json';
@@ -50,7 +50,7 @@ const TEXT: L<HomeText> = {
     keyNumbers: 'Key numbers',
     kb: (v) => `${v} KB`,
     lineSize: 'gzip for a LineChart, including the math and CSS it uses',
-    allSize: 'gzip for everything in @jafari/charts',
+    allSize: 'gzip for everything in @startupjafari/charts',
     domNodes: 'DOM nodes for a 100 000-point line chart (SVG)',
     dependencies: 'third-party chart or math dependencies',
     statsNote: (
@@ -108,7 +108,7 @@ const TEXT: L<HomeText> = {
     keyNumbers: 'Ключевые цифры',
     kb: (v) => `${v.replace('.', ',')} КБ`,
     lineSize: 'gzip для LineChart вместе с нужной ему математикой и CSS',
-    allSize: 'gzip для всего @jafari/charts',
+    allSize: 'gzip для всего @startupjafari/charts',
     domNodes: 'DOM-узлов у линейной диаграммы на 100 000 точек (SVG)',
     dependencies: 'сторонних зависимостей для диаграмм или математики',
     statsNote: (

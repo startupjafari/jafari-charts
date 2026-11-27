@@ -1,4 +1,4 @@
-import { ChartProvider, createTheme, LineChart, Sparkline } from '@jafari/charts';
+import { ChartProvider, createTheme, LineChart, Sparkline } from '@startupjafari/charts';
 import { activity } from '../data';
 
 const brand = createTheme({

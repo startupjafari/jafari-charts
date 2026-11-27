@@ -3,8 +3,8 @@ import {
   numericColumn,
   type StackOffset,
   type WaterfallKind,
-} from '@jafari/charts-core';
-import { cssVar } from '@jafari/charts-themes';
+} from '@startupjafari/charts-core';
+import { cssVar } from '@startupjafari/charts-themes';
 import { useMemo, type ReactElement } from 'react';
 import { CartesianChart, connectorMarks, type CartesianPreset } from './CartesianChart';
 import type { BarOptions, CartesianChartProps } from './types';

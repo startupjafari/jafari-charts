@@ -1,1 +1,1 @@
-export * from '@jafari/charts-export';
+export * from '@startupjafari/charts-export';

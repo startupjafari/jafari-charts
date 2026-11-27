@@ -10,7 +10,7 @@ import {
   LineChart,
   RadialProgressChart,
   Sparkline,
-} from '@jafari/charts';
+} from '@startupjafari/charts';
 import type { ReactNode } from 'react';
 import {
   activity,

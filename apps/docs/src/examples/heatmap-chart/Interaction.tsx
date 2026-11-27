@@ -1,4 +1,4 @@
-import { HeatmapChart } from '@jafari/charts';
+import { HeatmapChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { sessionsByHour } from '../data';
 

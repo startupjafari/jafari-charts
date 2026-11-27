@@ -1,4 +1,4 @@
-import { createTheme, LineChart } from '@jafari/charts';
+import { createTheme, LineChart } from '@startupjafari/charts';
 import { activity } from '../data';
 
 /** Tokens for every mode, plus per-mode overrides. */

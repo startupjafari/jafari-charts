@@ -1,4 +1,4 @@
-import { DonutChart } from '@jafari/charts';
+import { DonutChart } from '@startupjafari/charts';
 import { roles } from '../../examples/data';
 import { ITEM_KEYS } from '../keyboard';
 import { baseGroup, PIE_PROPS } from '../props';

@@ -1,4 +1,4 @@
-import { HeatmapChart } from '@jafari/charts';
+import { HeatmapChart } from '@startupjafari/charts';
 import { sessionsByHour } from '../data';
 
 /** A custom colour ramp with explicit thresholds, wider gaps and rounded cells. */

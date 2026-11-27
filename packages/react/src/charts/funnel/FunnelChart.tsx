@@ -10,8 +10,8 @@ import {
   type FunnelVariant,
   type KeysMatching,
   type NumericKey,
-} from '@jafari/charts-core';
-import { seriesColor } from '@jafari/charts-themes';
+} from '@startupjafari/charts-core';
+import { seriesColor } from '@startupjafari/charts-themes';
 import { useCallback, useMemo, type ReactElement } from 'react';
 import { useStoreSelector } from '../../hooks/useStoreSelector';
 import { TextLabels } from '../../primitives/TextLabels';

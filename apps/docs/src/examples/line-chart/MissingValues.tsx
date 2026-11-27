@@ -1,4 +1,4 @@
-import { LineChart } from '@jafari/charts';
+import { LineChart } from '@startupjafari/charts';
 import { temperature } from '../data';
 
 /** `null` readings become gaps; the axis zooms to the range and keeps zero visible. */

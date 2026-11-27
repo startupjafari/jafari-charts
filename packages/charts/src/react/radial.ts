@@ -1,1 +1,1 @@
-export * from '@jafari/charts-react/radial';
+export * from '@startupjafari/charts-react/radial';

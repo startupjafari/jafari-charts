@@ -1,4 +1,4 @@
-import { PieChart } from '@jafari/charts';
+import { PieChart } from '@startupjafari/charts';
 import { devices } from '../../examples/data';
 import { ITEM_KEYS } from '../keyboard';
 import { baseGroup, PIE_PROPS } from '../props';

@@ -1,4 +1,4 @@
-import { HeatmapChart } from '@jafari/charts';
+import { HeatmapChart } from '@startupjafari/charts';
 import { sessionsByHour } from '../../examples/data';
 import { baseGroup } from '../props';
 import type { ChartDoc } from '../types';

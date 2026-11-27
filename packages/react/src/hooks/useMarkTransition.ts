@@ -5,7 +5,7 @@ import {
   tween,
   type EasingFunction,
   type Mark,
-} from '@jafari/charts-core';
+} from '@startupjafari/charts-core';
 import { useRef, useState } from 'react';
 import { useIsomorphicLayoutEffect } from '../internal/env';
 

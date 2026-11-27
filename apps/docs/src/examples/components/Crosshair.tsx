@@ -1,4 +1,4 @@
-import { BarChart, LineChart } from '@jafari/charts';
+import { BarChart, LineChart } from '@startupjafari/charts';
 import { registrations } from '../data';
 
 /** Lines get a crosshair (here with a horizontal line too); bars get a soft cursor band. */

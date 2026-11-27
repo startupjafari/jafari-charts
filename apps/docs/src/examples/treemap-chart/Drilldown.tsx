@@ -1,4 +1,4 @@
-import { TreemapChart } from '@jafari/charts';
+import { TreemapChart } from '@startupjafari/charts';
 import { useState } from 'react';
 import { courseLoad } from '../data';
 

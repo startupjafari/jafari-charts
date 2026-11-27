@@ -1,4 +1,4 @@
-import { AreaChart, LineChart } from '@jafari/charts';
+import { AreaChart, LineChart } from '@startupjafari/charts';
 import { activity } from '../data';
 
 /**

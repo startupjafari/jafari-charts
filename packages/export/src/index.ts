@@ -1,9 +1,9 @@
 /**
- * @jafari/charts-export — SVG, PNG, WebP and CSV export.
+ * @startupjafari/charts-export — SVG, PNG, WebP and CSV export.
  * Import it on demand so it never enlarges the main bundle:
  *
  * ```ts
- * const { exportChart } = await import('@jafari/charts/export');
+ * const { exportChart } = await import('@startupjafari/charts/export');
  * await exportChart(chartElement, { format: 'png', scale: 2, filename: 'growth' });
  * ```
  */

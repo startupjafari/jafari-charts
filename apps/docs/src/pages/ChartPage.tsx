@@ -170,7 +170,7 @@ export function ChartPage({ doc }: { doc: ChartDoc }) {
   const ui = useT();
   const t = useText(TEXT);
   const usage = doc.sections.usage;
-  const importLine = `import { ${doc.component} } from '@jafari/charts';`;
+  const importLine = `import { ${doc.component} } from '@startupjafari/charts';`;
   const toc = [
     ...t.sections
       .filter((s) => doc.sections[s.id].length > 0)

@@ -1,1 +1,1 @@
-export * from '@jafari/charts-react/treemap';
+export * from '@startupjafari/charts-react/treemap';

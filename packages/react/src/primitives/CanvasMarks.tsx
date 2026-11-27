@@ -1,5 +1,5 @@
-import type * as CanvasModuleNs from '@jafari/charts-canvas';
-import type { Mark, Rect } from '@jafari/charts-core';
+import type * as CanvasModuleNs from '@startupjafari/charts-canvas';
+import type { Mark, Rect } from '@startupjafari/charts-core';
 import { useEffect, useRef, useState } from 'react';
 import { useIsomorphicLayoutEffect } from '../internal/env';
 
@@ -11,7 +11,7 @@ type Resolver = ReturnType<CanvasModule['createColorResolver']>;
 let loaded: CanvasModule | null = null;
 let loading: Promise<CanvasModule> | null = null;
 function loadCanvas(): Promise<CanvasModule> {
-  loading ??= import('@jafari/charts-canvas').then((m) => (loaded = m));
+  loading ??= import('@startupjafari/charts-canvas').then((m) => (loaded = m));
   return loading;
 }
 

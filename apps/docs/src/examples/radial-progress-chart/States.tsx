@@ -1,4 +1,4 @@
-import { RadialProgressChart } from '@jafari/charts';
+import { RadialProgressChart } from '@startupjafari/charts';
 import { useState } from 'react';
 
 type State = 'loading' | 'error' | 'zero';

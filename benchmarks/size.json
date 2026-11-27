@@ -49,7 +49,7 @@
     "status": "ok"
   },
   {
-    "scenario": "app: everything from @jafari/charts",
+    "scenario": "app: everything from @startupjafari/charts",
     "min KB": "200.9",
     "gzip KB": "71.0",
     "budget KB": 71,

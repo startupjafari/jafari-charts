@@ -8,7 +8,7 @@ const config: StorybookConfig = {
   // Resolve workspace packages to their TypeScript sources (same as the playground).
   viteFinal: (cfg) => ({
     ...cfg,
-    resolve: { ...cfg.resolve, conditions: ['@jafari/source', ...defaultClientConditions] },
+    resolve: { ...cfg.resolve, conditions: ['@startupjafari/source', ...defaultClientConditions] },
   }),
 };
 

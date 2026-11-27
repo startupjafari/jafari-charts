@@ -1,4 +1,4 @@
-import { RadialProgressChart } from '@jafari/charts';
+import { RadialProgressChart } from '@startupjafari/charts';
 import { completion } from '../data';
 
 /** The rings scale to the smaller of width and height. */

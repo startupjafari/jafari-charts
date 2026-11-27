@@ -13,7 +13,7 @@ import {
   Sparkline,
   StackedAreaChart,
   StackedBarChart,
-} from '@jafari/charts';
+} from '@startupjafari/charts';
 import { memo } from 'react';
 import type { Lang } from '../i18n/lang';
 import {

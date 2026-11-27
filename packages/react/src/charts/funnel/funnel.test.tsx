@@ -1,4 +1,4 @@
-import { buildFunnelModel } from '@jafari/charts-core';
+import { buildFunnelModel } from '@startupjafari/charts-core';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { FunnelChart } from './FunnelChart';

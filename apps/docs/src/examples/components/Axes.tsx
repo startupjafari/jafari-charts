@@ -1,4 +1,4 @@
-import { ChartGrid, ChartMarker, ChartStyles, XAxis, YAxis } from '@jafari/charts';
+import { ChartGrid, ChartMarker, ChartStyles, XAxis, YAxis } from '@startupjafari/charts';
 
 /**
  * Axis and grid primitives also work outside a chart: pass `ticks` and `plot`
