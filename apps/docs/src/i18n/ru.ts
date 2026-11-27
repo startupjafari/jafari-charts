@@ -3,7 +3,6 @@ import type { Messages } from './en';
 /** Russian UI strings. Typed as `Messages`: a missing or extra key is a compile error. */
 export const ru: Messages = {
   langName: 'Русский',
-  langCode: 'RU',
   meta: {
     description:
       'Jafari Charts — библиотека диаграмм для React, написанная с нуля. Спроектирована для производительности. Красивые диаграммы. Без компромиссов.',
@@ -29,6 +28,9 @@ export const ru: Messages = {
     light: 'Светлая',
     dark: 'Тёмная',
     system: 'Системная',
+  },
+  select: {
+    empty: 'Пусто',
   },
   search: {
     label: 'Фильтр страниц',

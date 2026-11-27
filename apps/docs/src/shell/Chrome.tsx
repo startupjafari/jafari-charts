@@ -1,11 +1,11 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { ArrowLeft, ArrowRight, GitBranch, Menu, X } from 'lucide-react';
 import { useT } from '../i18n';
-import { cn } from '../lib/cn';
 import { Link, useLocation } from '../lib/router';
 import { REPO_URL } from '../lib/repo';
 import { pageOrder } from '../nav';
-import { LanguageSwitch, ThemeSwitch } from './controls';
+import { Button } from '../ui/button';
+import { LanguageSelect, ThemeSelect } from './controls';
 import { Brand, Sidebar, VERSION } from './Sidebar';
 
 /** Previous / next page, in sidebar order. */
@@ -16,32 +16,34 @@ export function PrevNext({ path }: { path: string }) {
   if (i < 0) return null;
   const prev = order[i - 1];
   const next = order[i + 1];
-  const card =
-    'group/pn flex min-w-0 flex-col gap-0.5 rounded-xl bg-card px-4 py-3 ring-1 ring-foreground/10 outline-none hover:bg-muted/40 hover:ring-ring/50 focus-visible:ring-2 focus-visible:ring-ring/60';
   return (
     <nav
       className="mt-14 grid grid-cols-1 gap-3 border-t border-border pt-8 sm:grid-cols-2"
       aria-label={t.a11y.prevNext}
     >
       {prev ? (
-        <Link to={prev.to} className={card}>
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <ArrowLeft className="size-3.5 group-hover/pn:-translate-x-0.5" aria-hidden />
-            {t.pager.previous}
-          </span>
-          <span className="truncate font-semibold text-foreground">{prev.label}</span>
-        </Link>
+        <Button asChild variant="outline" size="xl" className="min-w-0 justify-start">
+          <Link to={prev.to}>
+            <ArrowLeft aria-hidden />
+            <span className="min-w-0 truncate">
+              <span className="font-normal text-muted-foreground">{t.pager.previous}: </span>
+              {prev.label}
+            </span>
+          </Link>
+        </Button>
       ) : (
         <span className="max-sm:hidden" />
       )}
       {next ? (
-        <Link to={next.to} className={cn(card, 'sm:items-end sm:text-right')}>
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            {t.pager.next}
-            <ArrowRight className="size-3.5 group-hover/pn:translate-x-0.5" aria-hidden />
-          </span>
-          <span className="max-w-full truncate font-semibold text-foreground">{next.label}</span>
-        </Link>
+        <Button asChild variant="outline" size="xl" className="min-w-0 justify-end">
+          <Link to={next.to}>
+            <span className="min-w-0 truncate">
+              <span className="font-normal text-muted-foreground">{t.pager.next}: </span>
+              {next.label}
+            </span>
+            <ArrowRight aria-hidden />
+          </Link>
+        </Button>
       ) : null}
     </nav>
   );
@@ -74,13 +76,16 @@ export function MobileNav({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Trigger asChild>
-        <button
+        <Button
           type="button"
-          className="-ml-1.5 flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/20 lg:hidden"
+          variant="ghost"
+          size="md"
+          icon
+          className="-ml-1.5 lg:hidden"
           aria-label={open ? t.a11y.closeNavigation : t.a11y.openNavigation}
         >
-          <Menu className="size-5" aria-hidden />
-        </button>
+          <Menu aria-hidden />
+        </Button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="drawer-overlay fixed inset-0 z-[100] bg-overlay/40 backdrop-blur-[2px] lg:hidden" />
@@ -90,20 +95,23 @@ export function MobileNav({
         >
           <Dialog.Title className="sr-only">{t.a11y.docsNav}</Dialog.Title>
           <Dialog.Close asChild>
-            <button
+            <Button
               type="button"
-              className="absolute top-2.5 right-2.5 z-10 flex size-9 items-center justify-center rounded-lg text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/20"
+              variant="ghost"
+              size="md"
+              icon
+              className="absolute top-2.5 right-2.5 z-10"
               aria-label={t.a11y.closeNavigation}
             >
-              <X className="size-5" aria-hidden />
-            </button>
+              <X aria-hidden />
+            </Button>
           </Dialog.Close>
           <div className="min-h-0 flex-1">
             <Sidebar onNavigate={() => onOpenChange(false)} />
           </div>
           <div className="flex shrink-0 flex-col gap-2 border-t border-sidebar-border p-3">
-            <LanguageSwitch labels />
-            <ThemeSwitch labels />
+            <LanguageSelect />
+            <ThemeSelect />
           </div>
         </Dialog.Content>
       </Dialog.Portal>
@@ -156,22 +164,22 @@ export function TopBar({
         </nav>
         <div className="ml-auto flex shrink-0 items-center gap-2">
           {REPO_URL ? (
-            <a
-              href={REPO_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Button
+              asChild
+              variant="ghost"
+              size="md"
               // Hidden between lg and xl, where the section links need the room (the
               // sidebar still links to the GitHub page).
-              className="hidden h-8 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground sm:inline-flex lg:max-xl:hidden"
+              className="hidden sm:inline-flex lg:max-xl:hidden"
             >
-              <GitBranch className="size-4" aria-hidden />
-              GitHub
-            </a>
+              <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
+                <GitBranch aria-hidden />
+                GitHub
+              </a>
+            </Button>
           ) : null}
-          <LanguageSwitch />
-          <div className="hidden sm:block">
-            <ThemeSwitch />
-          </div>
+          <LanguageSelect size="md" compact className="w-auto" />
+          <ThemeSelect size="md" className="hidden w-auto sm:flex" />
         </div>
       </div>
     </header>

@@ -4,6 +4,7 @@ import { useT } from '../i18n';
 import { cn } from '../lib/cn';
 import { tokenize, type Language } from '../lib/highlight';
 import { CopyButton } from './CopyButton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
 
 export interface CodeFile {
   name: string;
@@ -59,59 +60,63 @@ export function CodeBlock({
   const file = list[Math.min(active, list.length - 1)] as CodeFile;
   const text = file.code.replace(/\s+$/, '');
   const showHeader = list.length > 1 || Boolean(list[0]?.name);
-  const lang = file.language ?? language;
-  const HeaderIcon = lang === 'bash' ? Terminal : FileCode2;
-  return (
-    <div
+  const HeaderIcon = (file.language ?? language) === 'bash' ? Terminal : FileCode2;
+  const body = (f: CodeFile) => (
+    <pre
+      tabIndex={0}
+      aria-label={f.name ? t.codeOf(f.name) : t.code}
       className={cn(
-        'codeblock relative min-w-0 overflow-hidden bg-code',
-        bare ? 'rounded-none' : 'my-4 rounded-xl ring-1 ring-foreground/10',
-        className,
+        'm-0 max-h-[560px] overflow-auto px-4 py-3.5 text-[0.8125rem] leading-[1.65] [tab-size:2] focus-visible:outline-offset-[-2px]',
+        !showHeader && 'pr-24',
+        wrap && 'break-words whitespace-pre-wrap',
       )}
     >
+      <Code code={f.code.replace(/\s+$/, '')} language={f.language ?? language} />
+    </pre>
+  );
+  const frame = cn(
+    'codeblock relative min-w-0 overflow-hidden bg-code',
+    bare ? 'rounded-none' : 'my-4 rounded-xl ring-1 ring-foreground/10',
+    className,
+  );
+  const header =
+    'flex min-h-10 items-center justify-between gap-2 border-b border-border bg-muted/40 py-1 pr-1.5 pl-3';
+  if (list.length > 1) {
+    // Several files: StudentHub's Tabs (Radix), one panel per file.
+    return (
+      <Tabs value={String(active)} onValueChange={(v) => setActive(Number(v))} className={frame}>
+        <div className={cn(header, 'py-1.5 pl-1.5')}>
+          <TabsList aria-label={t.files} className="w-auto min-w-0">
+            {list.map((f, i) => (
+              <TabsTrigger key={f.name} value={String(i)} className="font-mono text-xs">
+                {f.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <CopyButton text={text} />
+        </div>
+        {list.map((f, i) => (
+          <TabsContent key={f.name} value={String(i)} tabIndex={-1} className="mt-0">
+            {body(f)}
+          </TabsContent>
+        ))}
+      </Tabs>
+    );
+  }
+  return (
+    <div className={frame}>
       {showHeader ? (
-        <div className="flex min-h-10 items-center justify-between gap-2 border-b border-border bg-muted/40 py-1 pr-1.5 pl-3">
-          {list.length > 1 ? (
-            <div
-              className="-ml-1.5 flex min-w-0 gap-0.5 overflow-x-auto [scrollbar-width:none]"
-              role="tablist"
-              aria-label={t.files}
-            >
-              {list.map((f, i) => (
-                <button
-                  key={f.name}
-                  type="button"
-                  role="tab"
-                  aria-selected={i === active}
-                  className="inline-flex h-7 shrink-0 items-center rounded-lg px-2.5 font-mono text-xs font-medium whitespace-nowrap text-muted-foreground outline-none hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/20 aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm dark:aria-selected:bg-muted"
-                  onClick={() => setActive(i)}
-                >
-                  {f.name}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <span className="flex min-w-0 items-center gap-2 text-xs font-medium text-muted-foreground">
-              <HeaderIcon className="size-3.5 shrink-0" aria-hidden />
-              <span className="truncate font-mono">{list[0]?.name}</span>
-            </span>
-          )}
+        <div className={header}>
+          <span className="flex min-w-0 items-center gap-2 text-xs font-medium text-muted-foreground">
+            <HeaderIcon className="size-3.5 shrink-0" aria-hidden />
+            <span className="truncate font-mono">{list[0]?.name}</span>
+          </span>
           <CopyButton text={text} />
         </div>
       ) : null}
       <div className="relative">
         {showHeader ? null : <CopyButton text={text} floating />}
-        <pre
-          tabIndex={0}
-          aria-label={file.name ? t.codeOf(file.name) : t.code}
-          className={cn(
-            'm-0 max-h-[560px] overflow-auto px-4 py-3.5 text-[0.8125rem] leading-[1.65] [tab-size:2] focus-visible:outline-offset-[-2px]',
-            !showHeader && 'pr-24',
-            wrap && 'break-words whitespace-pre-wrap',
-          )}
-        >
-          <Code code={text} language={lang} />
-        </pre>
+        {body(file)}
       </div>
     </div>
   );

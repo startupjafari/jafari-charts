@@ -22,7 +22,11 @@ import { useHoverFps, useRenderMetrics } from '../playground/useMetrics';
 import { Callout, PageHeader } from '../ui/Callout';
 import { CodeBlock } from '../ui/CodeBlock';
 import { ErrorBoundary } from '../ui/ErrorBoundary';
-import { Segmented } from '../ui/Segmented';
+import { Button } from '../ui/button';
+import { Label } from '../ui/label';
+import { SegmentedTabs, type SegmentedTabItem } from '../ui/segmented-tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { ToggleSwitch } from '../ui/toggle-switch';
 
 const CURVES: CurveType[] = ['monotone', 'linear', 'step', 'stepBefore', 'stepAfter'];
 const PALETTE_NAMES: readonly PaletteName[] = ['default', 'ocean', 'sunset', 'forest', 'custom'];
@@ -351,6 +355,7 @@ const TEXT: L<PlaygroundText> = {
   },
 };
 
+/** A labelled field: StudentHub's `Label` over the control, an optional hint under it. */
 function Field({
   label,
   hint,
@@ -363,16 +368,70 @@ function Field({
   const id = useId();
   return (
     <div className="field">
-      <label htmlFor={id} className="field-label">
-        {label}
-      </label>
+      <Label htmlFor={id}>{label}</Label>
       {children(id)}
       {hint ? <p className="field-hint">{hint}</p> : null}
     </div>
   );
 }
 
-function Check({
+/** A single choice from a few options: StudentHub's SegmentedTabs named by a visible label. */
+function Choice<V extends string>({
+  label,
+  items,
+  value,
+  onChange,
+}: {
+  label: string;
+  items: readonly SegmentedTabItem<V>[];
+  value: V;
+  onChange: (value: V) => void;
+}) {
+  const id = useId();
+  return (
+    <div className="field">
+      <Label id={id}>{label}</Label>
+      <SegmentedTabs aria-labelledby={id} items={items} value={value} onChange={onChange} stretch />
+    </div>
+  );
+}
+
+/** A select over a fixed list: StudentHub's Select with a visible label. */
+function SelectField<V extends string>({
+  label,
+  hint,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  hint?: string;
+  value: V;
+  onChange: (value: V) => void;
+  options: readonly { value: V; label: string }[];
+}) {
+  return (
+    <Field label={label} {...(hint ? { hint } : {})}>
+      {(id) => (
+        <Select value={value} onValueChange={(next) => onChange(next as V)}>
+          <SelectTrigger id={id}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((o) => (
+              <SelectItem key={o.value} value={o.value}>
+                {o.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+    </Field>
+  );
+}
+
+/** An option that applies at once: a settings row with StudentHub's ToggleSwitch. */
+function Toggle({
   label,
   checked,
   onChange,
@@ -383,16 +442,14 @@ function Check({
   onChange: (v: boolean) => void;
   disabled?: boolean;
 }) {
+  const id = useId();
   return (
-    <label className={`check${disabled ? ' check-disabled' : ''}`}>
-      <input
-        type="checkbox"
-        checked={checked}
-        disabled={disabled}
-        onChange={(e) => onChange(e.target.checked)}
-      />
-      <span>{label}</span>
-    </label>
+    <div className="flex items-center justify-between gap-3 py-1">
+      <Label htmlFor={id} className="leading-snug font-normal">
+        {label}
+      </Label>
+      <ToggleSwitch id={id} checked={checked} onChange={onChange} disabled={disabled} />
+    </div>
   );
 }
 
@@ -455,24 +512,15 @@ export function Playground() {
       <PageHeader eyebrow={ui.nav.tools} title={ui.pages.playground} lead={t.lead} />
       <div className="pg-layout">
         <form className="pg-controls" aria-label={t.form} onSubmit={(e) => e.preventDefault()}>
-          <Field label={t.chartType}>
-            {(id) => (
-              <select
-                id={id}
-                value={config.kind}
-                onChange={(e) => setKind(e.target.value as ChartKind)}
-              >
-                {KINDS.map((k) => (
-                  <option key={k.kind} value={k.kind}>
-                    {t.kindLabel(k)}
-                  </option>
-                ))}
-              </select>
-            )}
-          </Field>
+          <SelectField
+            label={t.chartType}
+            value={config.kind}
+            onChange={setKind}
+            options={KINDS.map((k) => ({ value: k.kind, label: t.kindLabel(k) }))}
+          />
 
           {info.points.length > 1 ? (
-            <Field
+            <SelectField
               label={
                 info.x === 'time' || info.x === 'number'
                   ? t.dataPoints
@@ -485,21 +533,13 @@ export function Playground() {
                 : info.x === 'number' && config.points >= 10000
                   ? { hint: t.scatterHint }
                   : {})}
-            >
-              {(id) => (
-                <select
-                  id={id}
-                  value={config.points}
-                  onChange={(e) => update({ points: Number(e.target.value) })}
-                >
-                  {info.points.map((p) => (
-                    <option key={p} value={p}>
-                      {formatNumber(p, { locale: lang })}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </Field>
+              value={String(config.points)}
+              onChange={(v) => update({ points: Number(v) })}
+              options={info.points.map((p) => ({
+                value: String(p),
+                label: formatNumber(p, { locale: lang }),
+              }))}
+            />
           ) : null}
 
           {info.kind === 'gauge' ? (
@@ -518,17 +558,17 @@ export function Playground() {
           ) : null}
 
           {info.maxSeries > 1 ? (
-            <Segmented
+            <Choice
               label={t.series}
-              options={[1, 2, 3, 4]
+              items={[1, 2, 3, 4]
                 .filter((n) => n <= info.maxSeries)
-                .map((n) => ({ value: n, label: String(n) }))}
-              value={seriesCount}
-              onChange={(n) => update({ series: n })}
+                .map((n) => ({ value: String(n), label: String(n) }))}
+              value={String(seriesCount)}
+              onChange={(n) => update({ series: Number(n) })}
             />
           ) : null}
 
-          <Segmented
+          <SelectField
             label={t.colours}
             options={PALETTE_NAMES.map((value) => ({ value, label: t.palettes[value] }))}
             value={config.palette}
@@ -554,9 +594,9 @@ export function Playground() {
             ) : null}
           </div>
 
-          <Segmented
+          <Choice
             label={t.theme}
-            options={[
+            items={[
               { value: 'auto', label: t.auto },
               { value: 'light', label: t.light },
               { value: 'dark', label: t.dark },
@@ -565,9 +605,9 @@ export function Playground() {
             onChange={(theme: ThemeMode) => update({ theme })}
           />
 
-          <Segmented
+          <Choice
             label={t.renderer}
-            options={[
+            items={[
               { value: 'svg', label: 'SVG' },
               { value: 'canvas', label: 'Canvas' },
               { value: 'auto', label: t.auto },
@@ -577,7 +617,7 @@ export function Playground() {
           />
 
           <div className="field">
-            <Check
+            <Toggle
               label={t.fillWidth}
               checked={config.fillWidth}
               onChange={(fillWidth) => update({ fillWidth })}
@@ -609,34 +649,34 @@ export function Playground() {
           </div>
 
           <div className="field">
-            <Check
+            <Toggle
               label={t.animation}
               checked={config.animation}
               onChange={(animation) => update({ animation })}
             />
             {info.tooltip ? (
-              <Check
+              <Toggle
                 label={t.tooltip}
                 checked={config.tooltip}
                 onChange={(tooltip) => update({ tooltip })}
               />
             ) : null}
             {info.legend ? (
-              <Check
+              <Toggle
                 label={t.legend}
                 checked={config.legend}
                 onChange={(legend) => update({ legend })}
               />
             ) : null}
             {info.zoom ? (
-              <Check label={t.zoom} checked={config.zoom} onChange={(zoom) => update({ zoom })} />
+              <Toggle label={t.zoom} checked={config.zoom} onChange={(zoom) => update({ zoom })} />
             ) : null}
           </div>
 
           {info.tooltip && info.axes && info.x === 'time' && config.tooltip ? (
-            <Segmented
+            <Choice
               label={t.tooltipMode}
-              options={[
+              items={[
                 { value: 'shared', label: t.shared },
                 { value: 'item', label: t.item },
               ]}
@@ -646,9 +686,9 @@ export function Playground() {
           ) : null}
 
           {info.legend && config.legend ? (
-            <Segmented
+            <Choice
               label={t.legendPosition}
-              options={[
+              items={[
                 { value: 'bottom', label: t.bottom },
                 { value: 'top', label: t.top },
               ]}
@@ -658,26 +698,17 @@ export function Playground() {
           ) : null}
 
           {info.curve ? (
-            <Field label={t.curve}>
-              {(id) => (
-                <select
-                  id={id}
-                  value={config.curve}
-                  onChange={(e) => update({ curve: e.target.value as CurveType })}
-                >
-                  {CURVES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </Field>
+            <SelectField
+              label={t.curve}
+              value={config.curve}
+              onChange={(curve) => update({ curve })}
+              options={CURVES.map((c) => ({ value: c, label: c }))}
+            />
           ) : null}
 
-          <button type="button" className="btn btn-sm" onClick={() => update(DEFAULT_CONFIG)}>
+          <Button type="button" variant="outline" size="md" onClick={() => update(DEFAULT_CONFIG)}>
             {t.reset}
-          </button>
+          </Button>
         </form>
 
         <div className="pg-main">

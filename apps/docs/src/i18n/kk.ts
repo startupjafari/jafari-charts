@@ -3,7 +3,6 @@ import type { Messages } from './en';
 /** Kazakh UI strings. Typed as `Messages`: a missing or extra key is a compile error. */
 export const kk: Messages = {
   langName: 'Қазақша',
-  langCode: 'ҚАЗ',
   meta: {
     description:
       'Jafari Charts — React үшін нөлден жазылған диаграммалар кітапханасы. Өнімділікке арнап жобаланған. Әдемі диаграммалар. Ымырасыз.',
@@ -29,6 +28,9 @@ export const kk: Messages = {
     light: 'Ашық',
     dark: 'Күңгірт',
     system: 'Жүйелік',
+  },
+  select: {
+    empty: 'Бос',
   },
   search: {
     label: 'Беттерді сүзу',

@@ -71,30 +71,38 @@ test.describe('desktop shell', () => {
   });
 });
 
-test('theme switch: light, dark and system', async ({ page, isMobile }) => {
-  test.skip(isMobile, 'The top-bar switch is desktop-only (phones use the drawer).');
+test('theme select: light, dark and system', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'The top-bar select is desktop-only (phones use the drawer).');
   await openDocs(page, '/getting-started', { theme: 'light' });
   const html = page.locator('html');
-  const theme = page.getByRole('group', { name: 'Colour theme' });
-  await theme.getByRole('button', { name: 'Dark' }).click();
+  const theme = page.getByRole('combobox', { name: 'Colour theme' });
+  await expect(theme).toHaveText('System');
+  await theme.click();
+  // StudentHub's theme select order.
+  await expect(page.getByRole('option')).toHaveText(['System', 'Light', 'Dark']);
+  await page.getByRole('option', { name: 'Dark' }).click();
   await expect(html).toHaveClass(/dark/);
   await page.reload();
   await expect(html).toHaveClass(/dark/);
-  await theme.getByRole('button', { name: 'System' }).click();
+  await expect(theme).toHaveText('Dark');
+  // Keyboard: open with Enter, move with the arrows, pick with Enter.
+  await theme.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('option', { name: 'Dark' })).toBeFocused();
+  await page.keyboard.press('ArrowUp');
+  await expect(page.getByRole('option', { name: 'Light' })).toBeFocused();
+  await page.keyboard.press('ArrowUp');
+  await expect(page.getByRole('option', { name: 'System' })).toBeFocused();
+  await page.keyboard.press('Enter');
   await expect(html).not.toHaveClass(/dark/);
-  await expect(theme.getByRole('button', { name: 'System' })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(theme).toHaveText('System');
+  await expect(theme).toBeFocused();
 });
 
-test('language switch keeps the page', async ({ page }) => {
+test('language select keeps the page', async ({ page }) => {
   await openDocs(page, '/charts/pie-chart');
-  await page
-    .getByRole('group', { name: 'Language' })
-    .first()
-    .getByRole('button', { name: 'RU' })
-    .click();
+  await page.getByRole('combobox', { name: 'Language' }).first().click();
+  await page.getByRole('option', { name: 'Русский' }).click();
   await expect(page).toHaveURL(/#\/ru\/charts\/pie-chart$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'ru');
   await expect(page.getByRole('tab', { name: 'Код' }).first()).toBeVisible();
@@ -103,9 +111,12 @@ test('language switch keeps the page', async ({ page }) => {
 test.describe('Kazakh', () => {
   test('the switch opens the same page in Kazakh and the choice sticks', async ({ page }) => {
     await openDocs(page, '/charts/pie-chart');
-    const switcher = page.getByRole('group', { name: 'Language' }).first();
-    await expect(switcher.getByRole('button')).toHaveText(['EN', 'RU', 'ҚАЗ']);
-    await switcher.getByRole('button', { name: 'ҚАЗ' }).click();
+    const switcher = page.getByRole('combobox', { name: 'Language' }).first();
+    await expect(switcher).toHaveText('English');
+    await switcher.click();
+    // StudentHub's order and endonyms.
+    await expect(page.getByRole('option')).toHaveText(['Русский', 'Қазақша', 'English']);
+    await page.getByRole('option', { name: 'Қазақша' }).click();
     await expect(page).toHaveURL(/#\/kk\/charts\/pie-chart$/);
     const html = page.locator('html');
     await expect(html).toHaveAttribute('lang', 'kk');
@@ -115,20 +126,15 @@ test.describe('Kazakh', () => {
       /нөлден жазылған диаграммалар кітапханасы/,
     );
     await expect(page.getByText('Қашан қолдану керек', { exact: true })).toBeVisible();
-    await expect(
-      page.getByRole('group', { name: 'Тіл' }).first().getByRole('button', { name: 'ҚАЗ' }),
-    ).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('combobox', { name: 'Тіл' }).first()).toHaveText('Қазақша');
     // An unprefixed link now follows the stored choice.
     await page.goto('/#/installation');
     await expect(page).toHaveURL(/#\/kk\/installation$/);
     await expect(page.locator('main h1')).toHaveText('Орнату');
     await expect(page).toHaveTitle('Орнату · Jafari Charts');
     // And back to English.
-    await page
-      .getByRole('group', { name: 'Тіл' })
-      .first()
-      .getByRole('button', { name: 'EN' })
-      .click();
+    await page.getByRole('combobox', { name: 'Тіл' }).first().click();
+    await page.getByRole('option', { name: 'English' }).click();
     await expect(page).toHaveURL(/#\/installation$/);
     await expect(html).toHaveAttribute('lang', 'en');
   });
@@ -145,9 +151,9 @@ test.describe('Kazakh', () => {
     await openDocs(page, '/getting-started');
     await page.getByRole('button', { name: 'Open navigation' }).click();
     const drawer = page.getByRole('dialog');
-    const switcher = drawer.getByRole('group', { name: 'Language' });
-    await expect(switcher.getByRole('button')).toHaveText(['English', 'Русский', 'Қазақша']);
-    await switcher.getByRole('button', { name: 'Қазақша' }).click();
+    await drawer.getByRole('combobox', { name: 'Language' }).click();
+    await expect(page.getByRole('option')).toHaveText(['Русский', 'Қазақша', 'English']);
+    await page.getByRole('option', { name: 'Қазақша' }).click();
     await expect(page).toHaveURL(/#\/kk\/getting-started$/);
     await expect(drawer.getByRole('link', { name: 'Жылдам бастау' })).toBeVisible();
   });
@@ -188,6 +194,50 @@ test('examples switch between preview and code, and code can be copied', async (
   await expect(example.getByRole('button', { name: /Copied|Copy failed/ })).toBeVisible();
   await example.getByRole('tab', { name: 'Preview' }).click();
   await expect(example.locator('.jc-root').first()).toBeVisible();
+  // Toolbar: StudentHub's SegmentedTabs (pressed buttons) for the preview theme and width.
+  const theme = example.getByRole('group', { name: /^Preview theme/ });
+  await theme.getByRole('button', { name: 'Dark' }).click();
+  await expect(theme.getByRole('button', { name: 'Dark' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(example.locator('.example-preview')).toHaveAttribute('data-preview-theme', 'dark');
+  await example
+    .getByRole('group', { name: /^Preview width/ })
+    .getByRole('button', { name: '320' })
+    .click();
+  await expect(example.locator('.example-stage')).toHaveAttribute('data-width', '320');
+});
+
+test('props groups expand and collapse with their toggle button', async ({ page }) => {
+  await openDocs(page, '/charts/bar-chart');
+  const group = page.locator('[data-prop-group]').nth(2);
+  const toggle = group.getByRole('button').first();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(group.locator('table')).toBeHidden();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(group.locator('table')).toBeVisible();
+  await toggle.press('Enter');
+  await expect(group.locator('table')).toBeHidden();
+});
+
+test('playground controls drive the chart and the code', async ({ page }) => {
+  await openDocs(page, '/playground');
+  const form = page.getByRole('form', { name: 'Chart configuration' });
+  const code = page.locator('.codeblock pre');
+  await form.getByRole('combobox', { name: 'Chart type' }).click();
+  await page.getByRole('option', { name: 'Bar (BarChart)' }).click();
+  await expect(code).toContainText('<BarChart');
+  await form
+    .getByRole('group', { name: 'Renderer' })
+    .getByRole('button', { name: 'Canvas' })
+    .click();
+  await expect(code).toContainText('renderer="canvas"');
+  const animation = form.getByRole('switch', { name: 'Animation' });
+  await expect(animation).toHaveAttribute('aria-checked', 'true');
+  await animation.click();
+  await expect(animation).toHaveAttribute('aria-checked', 'false');
+  await expect(code).toContainText('animation={false}');
+  await form.getByRole('button', { name: 'Reset' }).click();
+  await expect(form.getByRole('combobox', { name: 'Chart type' })).toHaveText('Line (LineChart)');
 });
 
 test('charts follow the site theme', async ({ page }) => {

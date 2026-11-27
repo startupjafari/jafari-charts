@@ -1,13 +1,15 @@
 import { ArrowRightLeft, Check, ChevronRight, Lightbulb } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import type { ChartDoc, ChartSectionId, PropGroup } from '../docs/types';
 import { useLang, useT, useText, type L } from '../i18n';
+import { cn } from '../lib/cn';
 import { Link, useLocation } from '../lib/router';
 import { Callout, Kbd, PageHeader, Section } from '../ui/Callout';
 import { CodeBlock } from '../ui/CodeBlock';
 import { Example } from '../ui/Example';
 import { inlineCode, PropsTable, richText } from '../ui/PropsTable';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import { WHEN_TO_USE } from '../docs/when-to-use';
 
 const INSTALL = 'pnpm add @startupjafari/charts';
@@ -169,30 +171,49 @@ const TEXT: L<ChartPageText> = {
   },
 };
 
+/** A collapsible group of props: StudentHub's ghost Button as the disclosure toggle. */
 function PropGroupView({ group, open }: { group: PropGroup; open: boolean }) {
   const lang = useLang();
+  const [expanded, setExpanded] = useState(open);
+  const panelId = useId();
   return (
-    <details
-      className="group/pg my-4 overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10"
-      open={open}
+    <div
+      data-prop-group=""
+      data-state={expanded ? 'open' : 'closed'}
+      className="my-4 overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10"
     >
-      <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-semibold outline-none select-none hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-inset group-open/pg:border-b group-open/pg:border-border [&::-webkit-details-marker]:hidden">
-        <ChevronRight
-          className="size-4 shrink-0 text-muted-foreground transition-transform group-open/pg:rotate-90"
-          aria-hidden
-        />
-        <span className="min-w-0 flex-1">{group.title[lang]}</span>
-        <Badge variant="secondary" className="tabular-nums">
-          {group.props.length}
-        </Badge>
-      </summary>
-      {group.note ? (
-        <p className="m-0 border-b border-border bg-muted/20 px-4 py-2.5 text-sm text-muted-foreground">
-          {richText(group.note[lang])}
-        </p>
-      ) : null}
-      <PropsTable props={group.props} bare />
-    </details>
+      <div className={cn('p-1.5', expanded && 'border-b border-border')}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="xl"
+          aria-expanded={expanded}
+          aria-controls={panelId}
+          onClick={() => setExpanded((v) => !v)}
+          className="w-full justify-start px-2.5 font-semibold"
+        >
+          <ChevronRight
+            className={cn(
+              'text-muted-foreground transition-transform motion-reduce:transition-none',
+              expanded && 'rotate-90',
+            )}
+            aria-hidden
+          />
+          <span className="min-w-0 flex-1 truncate text-left">{group.title[lang]}</span>
+          <Badge variant="secondary" className="tabular-nums">
+            {group.props.length}
+          </Badge>
+        </Button>
+      </div>
+      <div id={panelId} hidden={!expanded}>
+        {group.note ? (
+          <p className="m-0 border-b border-border bg-muted/20 px-4 py-2.5 text-sm text-muted-foreground">
+            {richText(group.note[lang])}
+          </p>
+        ) : null}
+        <PropsTable props={group.props} bare />
+      </div>
+    </div>
   );
 }
 

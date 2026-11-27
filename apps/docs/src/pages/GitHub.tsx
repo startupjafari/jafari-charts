@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useT, useText, type L } from '../i18n';
 import { Link } from '../lib/router';
 import { REPO_URL } from '../lib/repo';
+import { Button } from '../ui/button';
 import { Callout, PageHeader } from '../ui/Callout';
 
 interface GitHubText {
@@ -63,9 +64,11 @@ export function GitHub() {
       <article>
         <PageHeader eyebrow={ui.nav.reference} title={ui.pages.github} lead={t.lead} />
         <p>
-          <a className="btn btn-primary" href={REPO_URL} target="_blank" rel="noopener noreferrer">
-            {t.open}
-          </a>
+          <Button asChild>
+            <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
+              {t.open}
+            </a>
+          </Button>
         </p>
         <p className="muted">
           <code>{REPO_URL}</code>

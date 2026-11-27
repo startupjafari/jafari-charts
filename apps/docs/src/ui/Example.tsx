@@ -1,4 +1,3 @@
-import * as Tabs from '@radix-ui/react-tabs';
 import { Code2, Eye, Monitor, Moon, Sun } from 'lucide-react';
 import { Suspense, use, useState, type ReactNode } from 'react';
 import { loadCode, loadExample } from '../examples';
@@ -6,7 +5,8 @@ import { useT } from '../i18n';
 import { cn } from '../lib/cn';
 import { CodeBlock } from './CodeBlock';
 import { ErrorBoundary } from './ErrorBoundary';
-import { Segmented } from './Segmented';
+import { SegmentedTabs } from './segmented-tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
 
 export type PreviewTheme = 'auto' | 'light' | 'dark';
 export type PreviewWidth = 'fill' | 480 | 320;
@@ -35,9 +35,6 @@ function ExampleCode({ id }: { id: string }) {
   return <CodeBlock files={files} bare />;
 }
 
-const TRIGGER =
-  'inline-flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-[0.8125rem] font-medium whitespace-nowrap text-muted-foreground outline-none hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/25 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm dark:data-[state=active]:bg-input/50';
-
 /**
  * A live example: the component rendered in a themable, resizable preview, with
  * its exact source code one tab away.
@@ -62,31 +59,37 @@ export function Example({
   ] as const;
   const widths = [
     { value: 'fill', label: t.example.widthFill },
-    { value: 480, label: '480' },
-    { value: 320, label: '320' },
+    { value: '480', label: '480' },
+    { value: '320', label: '320' },
   ] as const;
   const [theme, setTheme] = useState<PreviewTheme>('auto');
   const [w, setW] = useState<PreviewWidth>(width);
   const [tab, setTab] = useState('preview');
   const titleId = anchor ? `${anchor}-title` : undefined;
+  // StudentHub's SegmentedTabs, compact (a toolbar row). The theme row shows icons only —
+  // the names stay as the buttons' accessible names — so it never collapses into a list.
   const controls = (
     <div className="ml-auto flex flex-wrap items-center gap-2">
-      <Segmented
-        label={t.example.previewTheme(title)}
-        hideLabel
-        size="sm"
-        options={themes}
+      <SegmentedTabs
+        aria-label={t.example.previewTheme(title)}
+        compact
+        collapsible={false}
+        items={themes.map(({ value, label, icon }) => ({
+          value,
+          icon,
+          label: <span className="sr-only">{label}</span>,
+        }))}
         value={theme}
         onChange={setTheme}
       />
       {fixedWidth ? null : (
-        <Segmented
-          label={t.example.previewWidth(title)}
-          hideLabel
-          size="sm"
-          options={widths}
-          value={w}
-          onChange={setW}
+        <SegmentedTabs
+          aria-label={t.example.previewWidth(title)}
+          compact
+          collapsible={false}
+          items={widths}
+          value={String(w) as (typeof widths)[number]['value']}
+          onChange={(next) => setW(next === 'fill' ? 'fill' : (Number(next) as 480 | 320))}
         />
       )}
     </div>
@@ -159,40 +162,37 @@ export function Example({
           <div className="border-t border-border">{code}</div>
         </div>
       ) : (
-        <Tabs.Root
+        <Tabs
           value={tab}
           onValueChange={setTab}
           className="overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10"
         >
           <div className="flex flex-wrap items-center gap-2 border-b border-border bg-muted/30 px-2 py-1.5">
-            <Tabs.List
-              aria-label={t.example.views(title)}
-              className="inline-flex gap-0.5 rounded-xl border border-border bg-muted/50 p-0.5"
-            >
-              <Tabs.Trigger value="preview" className={TRIGGER}>
-                <Eye className="size-3.5" aria-hidden />
+            <TabsList aria-label={t.example.views(title)}>
+              <TabsTrigger value="preview">
+                <Eye className="size-4" aria-hidden />
                 {t.example.preview}
-              </Tabs.Trigger>
-              <Tabs.Trigger value="code" className={TRIGGER}>
-                <Code2 className="size-3.5" aria-hidden />
+              </TabsTrigger>
+              <TabsTrigger value="code">
+                <Code2 className="size-4" aria-hidden />
                 {t.example.code}
-              </Tabs.Trigger>
-            </Tabs.List>
+              </TabsTrigger>
+            </TabsList>
             {tab === 'preview' ? controls : null}
           </div>
           {/* The preview stays mounted while the code is shown: switching back is instant. */}
-          <Tabs.Content
+          <TabsContent
             value="preview"
             forceMount
             tabIndex={-1}
-            className="outline-none data-[state=inactive]:hidden"
+            className="mt-0 data-[state=inactive]:hidden"
           >
             {preview}
-          </Tabs.Content>
-          <Tabs.Content value="code" tabIndex={-1} className="outline-none">
+          </TabsContent>
+          <TabsContent value="code" tabIndex={-1} className="mt-0">
             {code}
-          </Tabs.Content>
-        </Tabs.Root>
+          </TabsContent>
+        </Tabs>
       )}
     </section>
   );
