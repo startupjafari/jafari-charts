@@ -28,6 +28,15 @@ const TEXT: L<NotFoundText> = {
       </>
     ),
   },
+  kk: {
+    lead: (path) => `«${path}» мекенжайында бет жоқ.`,
+    links: (
+      <>
+        <Link to="/">Басты бетке</Link> өтіңіз, <Link to="/charts">диаграммалар</Link> тізімін
+        немесе <Link to="/api">API анықтамалығын</Link> қараңыз.
+      </>
+    ),
+  },
 };
 
 export function NotFound() {

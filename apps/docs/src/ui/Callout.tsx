@@ -105,7 +105,10 @@ export function PageHeader({
           <h1 className="m-0 text-[1.75rem] leading-tight font-bold tracking-[-0.025em] [overflow-wrap:anywhere] sm:text-[2rem]">
             {title}
           </h1>
-          {tag ? <Badge>{tag}</Badge> : null}
+          {tag ? (
+            // Long localised tags (“Негізгі диаграммалар · Топтастырылған бағаналы диаграмма”) wrap on phones.
+            <Badge className="max-w-full whitespace-normal">{tag}</Badge>
+          ) : null}
         </div>
       </div>
       {lead ? (

@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 
 /**
- * Opens a docs page (`/charts/line-chart`, `/ru/…`) in a colour scheme with reduced
+ * Opens a docs page (`/charts/line-chart`, `/ru/…`, `/kk/…`) in a colour scheme with reduced
  * motion, waits for fonts and the first heading, and collects console errors.
  */
 export async function openDocs(

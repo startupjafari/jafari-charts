@@ -21,6 +21,13 @@ const TEXT: L<ChangelogText> = {
       body: 'Записи ниже приводятся в оригинале, без перевода, — так они в точности совпадают с CHANGELOG.md в репозитории.',
     },
   },
+  kk: {
+    lead: 'Сайтты құрастыру кезінде репозиторийдегі CHANGELOG.md файлынан алынады.',
+    englishOnly: {
+      title: 'Өзгерістер журналы ағылшын тілінде жүргізіледі',
+      body: 'Төмендегі жазбалар аудармасыз, түпнұсқа күйінде берілген — осылайша олар репозиторийдегі CHANGELOG.md файлымен дәл сәйкес келеді.',
+    },
+  },
 };
 
 export function Changelog() {
@@ -31,7 +38,7 @@ export function Changelog() {
     <article>
       <PageHeader eyebrow={ui.nav.reference} title={ui.pages.changelog} lead={t.lead} />
       {t.englishOnly ? <Callout title={t.englishOnly.title}>{t.englishOnly.body}</Callout> : null}
-      {/* The source is English: mark it so screen readers switch voice on the Russian site. */}
+      {/* The source is English: mark it so screen readers switch voice on the Russian and Kazakh sites. */}
       <div lang={lang === 'en' ? undefined : 'en'}>
         <Markdown source={changelog} skipTitle />
       </div>

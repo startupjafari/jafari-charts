@@ -8,11 +8,16 @@ import type { ChartDoc } from '../types';
 export const horizontalBarChart: ChartDoc = {
   slug: 'horizontal-bar-chart',
   component: 'HorizontalBarChart',
-  title: { en: 'Horizontal bar chart', ru: 'Горизонтальная столбчатая диаграмма' },
+  title: {
+    en: 'Horizontal bar chart',
+    ru: 'Горизонтальная столбчатая диаграмма',
+    kk: 'Көлденең бағаналы диаграмма',
+  },
   group: 'Core',
   summary: {
     en: 'Rankings and comparisons with long category names, value labels included.',
     ru: 'Рейтинги и сравнения с длинными названиями категорий — сразу с подписями значений.',
+    kk: 'Санат атаулары ұзын рейтингтер мен салыстырулар — мән жазулары бірден қосулы.',
   },
   description: {
     en: (
@@ -61,18 +66,45 @@ export const horizontalBarChart: ChartDoc = {
         </p>
       </>
     ),
+    kk: (
+      <>
+        <p>
+          Санаттар сол жақ ось бойымен жоғарыдан төмен орналасады, сондықтан ұзын атаулар оқылатын
+          күйде қалады: олар қиылмай, сөз шекарасында екі жолға тасымалданады. Екі жолға да
+          сыймайтын атау ғана көп нүктемен аяқталады; қалқымалы кеңесте ол әрқашан толық көрінеді.
+          Мән жазулары әдепкіде қосулы. Егер <code>height</code> бермесеңіз, биіктік жол санымен
+          бірге өседі — әр жолға 32 px, 160-тан 560 px-ке дейін.
+        </p>
+        <p>
+          Кез келген декарттық диаграммадағыдай, қай жақта салынса да, <code>xAxis</code>{' '}
+          санаттарды, ал <code>yAxis</code> мәндерді баптайды:{' '}
+          <code>
+            xAxis={'{'}false{'}'}
+          </code>{' '}
+          атауларды,{' '}
+          <code>
+            yAxis={'{'}false{'}'}
+          </code>{' '}
+          төменгі мәндер осін жасырады.
+        </p>
+      </>
+    ),
   },
   thumbnail: () => (
     <HorizontalBarChart data={universities} xKey="name" yKey="score" {...THUMB} labels={false} />
   ),
   sections: {
     usage: [
-      { id: 'horizontal-bar-chart/Basic', title: { en: 'Basic', ru: 'Базовый пример' } },
+      {
+        id: 'horizontal-bar-chart/Basic',
+        title: { en: 'Basic', ru: 'Базовый пример', kk: 'Негізгі мысал' },
+      },
       {
         id: 'horizontal-bar-chart/LongNames',
         title: {
           en: 'Long names and a highlighted bar',
           ru: 'Длинные названия и выделенный столбец',
+          kk: 'Ұзын атаулар және ерекшеленген бағана',
         },
         description: {
           en: (
@@ -89,6 +121,14 @@ export const horizontalBarChart: ChartDoc = {
               столбца по его строке данных; подсказка показывает этот цвет, легенда — цвет ряда.
             </p>
           ),
+          kk: (
+            <p>
+              Университеттердің ұзын атаулары сөз шекарасында екі жолға тасымалданады, сондықтан
+              басы бірдей атаулар араласып кетпейді. Қатар баптауларындағы <code>colorBy</code>{' '}
+              бағананың түсін оның деректер жолы бойынша анықтайды; қалқымалы кеңес осы түсті, ал
+              шартты белгілер қатардың түсін көрсетеді.
+            </p>
+          ),
         },
       },
     ],
@@ -98,44 +138,64 @@ export const horizontalBarChart: ChartDoc = {
         title: {
           en: 'Compact bars with formatted labels',
           ru: 'Компактные столбцы с форматированными подписями',
+          kk: 'Пішімделген жазулары бар ықшам бағаналар',
         },
       },
       {
         id: 'horizontal-bar-chart/NoLabels',
-        title: { en: 'Without labels, vertical grid', ru: 'Без подписей, с вертикальной сеткой' },
+        title: {
+          en: 'Without labels, vertical grid',
+          ru: 'Без подписей, с вертикальной сеткой',
+          kk: 'Жазуларсыз, тік тормен',
+        },
       },
     ],
     interaction: [
       {
         id: 'horizontal-bar-chart/Interaction',
-        title: { en: 'Hover events', ru: 'События наведения' },
+        title: { en: 'Hover events', ru: 'События наведения', kk: 'Меңзерді апару оқиғалары' },
       },
     ],
     responsive: [
       {
         id: 'horizontal-bar-chart/Responsive',
-        title: { en: 'Narrow container', ru: 'Узкий контейнер' },
+        title: { en: 'Narrow container', ru: 'Узкий контейнер', kk: 'Тар контейнер' },
         width: 320,
       },
     ],
-    empty: [{ id: 'horizontal-bar-chart/States', title: { en: 'Empty state', ru: 'Нет данных' } }],
+    empty: [
+      {
+        id: 'horizontal-bar-chart/States',
+        title: { en: 'Empty state', ru: 'Нет данных', kk: 'Деректер жоқ' },
+      },
+    ],
   },
   keyboard: CARTESIAN_KEYS,
   props: [
     {
-      title: { en: 'HorizontalBarChart props', ru: 'Пропсы HorizontalBarChart' },
+      title: {
+        en: 'HorizontalBarChart props',
+        ru: 'Пропсы HorizontalBarChart',
+        kk: 'HorizontalBarChart пропстары',
+      },
       note: {
         en: 'All BarChart props except `layout`.',
         ru: 'Все пропсы BarChart, кроме `layout`.',
+        kk: 'BarChart-тың `layout` пропынан басқа барлық пропстары.',
       },
       props: [
         {
           name: 'height',
           type: 'number',
-          default: { en: 'rows × 32 + 40 (160–560)', ru: 'число строк × 32 + 40 (160–560)' },
+          default: {
+            en: 'rows × 32 + 40 (160–560)',
+            ru: 'число строк × 32 + 40 (160–560)',
+            kk: 'жол саны × 32 + 40 (160–560)',
+          },
           description: {
             en: 'Grows with the number of rows unless set.',
             ru: 'Если не задана, растёт с числом строк.',
+            kk: 'Берілмесе, жол санымен бірге өседі.',
           },
         },
         {
@@ -145,6 +205,7 @@ export const horizontalBarChart: ChartDoc = {
           description: {
             en: 'Value labels at bar ends.',
             ru: 'Подписи значений на концах столбцов.',
+            kk: 'Бағаналардың ұшындағы мән жазулары.',
           },
         },
         {
@@ -154,6 +215,7 @@ export const horizontalBarChart: ChartDoc = {
           description: {
             en: 'Stack series horizontally.',
             ru: 'Складывает ряды в стек по горизонтали.',
+            kk: 'Қатарларды көлденеңінен жинақтайды.',
           },
         },
       ],

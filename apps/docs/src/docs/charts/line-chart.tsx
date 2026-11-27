@@ -8,11 +8,12 @@ import type { ChartDoc } from '../types';
 export const lineChart: ChartDoc = {
   slug: 'line-chart',
   component: 'LineChart',
-  title: { en: 'Line chart', ru: 'Линейная диаграмма' },
+  title: { en: 'Line chart', ru: 'Линейная диаграмма', kk: 'Сызықтық график' },
   group: 'Core',
   summary: {
     en: 'One or more series over time, numbers or categories — the workhorse for trends.',
     ru: 'Один или несколько рядов данных по времени, числам или категориям — основной инструмент для трендов.',
+    kk: 'Уақыт, сандар немесе санаттар бойынша бір не бірнеше қатар — трендтерді көрсетудің негізгі құралы.',
   },
   description: {
     en: (
@@ -47,6 +48,23 @@ export const lineChart: ChartDoc = {
         </p>
       </>
     ),
+    kk: (
+      <>
+        <p>
+          Әдепкіде сызықтар монотонды қисықпен салынады: ол деректер шегінен ешқашан шықпайды, ал
+          бос мәндерде ештеңені ойдан қоспай, үзіліп қалады. Деректер нөлге жақын болса (санақ
+          мәндері), мәндер осі нөлді қамтиды, ал басқа жағдайларда деректер аралығына бейімделеді
+          (бағалар, температура).
+        </p>
+        <p>
+          Екі не одан көп қатар болғанда шартты белгілер (оның элементтері қатарларды жасырады және
+          көрсетеді), айқас сызық және ортақ қалқымалы кеңес пайда болады. Үлкен деректер жиыны LTTB
+          алгоритмімен пиксельге шамамен екі нүктеге дейін сиретіледі, сондықтан салынған жол —
+          онымен бірге DOM да — 1 000 нүкте берсеңіз де, 100 000 нүкте берсеңіз де бірдей өлшемде
+          қалады (<Link to="/performance">Өнімділік</Link> бетін қараңыз).
+        </p>
+      </>
+    ),
   },
   thumbnail: () => (
     <LineChart
@@ -67,7 +85,7 @@ export const lineChart: ChartDoc = {
     usage: [
       {
         id: 'line-chart/Basic',
-        title: { en: 'Basic', ru: 'Базовый пример' },
+        title: { en: 'Basic', ru: 'Базовый пример', kk: 'Негізгі мысал' },
         description: {
           en: (
             <p>
@@ -89,6 +107,17 @@ export const lineChart: ChartDoc = {
               .
             </p>
           ),
+          kk: (
+            <p>
+              Деректер жолдарын, X осіне арналған өрісті және мәндер өрісін беріңіз.{' '}
+              <code>Date</code> объектілері мен ISO пішіміндегі күн жолдары уақыт ретінде танылады;
+              сандық уақыт белгілері үшін{' '}
+              <code>
+                xAxis={'{{'} type: 'time' {'}}'}
+              </code>{' '}
+              қосыңыз.
+            </p>
+          ),
         },
       },
       {
@@ -96,6 +125,7 @@ export const lineChart: ChartDoc = {
         title: {
           en: 'Several series with a reference line',
           ru: 'Несколько рядов и опорная линия',
+          kk: 'Бірнеше қатар және тірек сызық',
         },
         description: {
           en: (
@@ -110,23 +140,34 @@ export const lineChart: ChartDoc = {
               <code>ChartReferenceLine</code> передаются в <code>children</code>.
             </p>
           ),
+          kk: (
+            <p>
+              <code>series</code> әр сызыққа бір жазба қабылдайды. <code>ChartReferenceLine</code>{' '}
+              сияқты примитивтер <code>children</code> ішінде беріледі.
+            </p>
+          ),
         },
       },
       {
         id: 'line-chart/MissingValues',
-        title: { en: 'Missing and negative values', ru: 'Пропуски и отрицательные значения' },
+        title: {
+          en: 'Missing and negative values',
+          ru: 'Пропуски и отрицательные значения',
+          kk: 'Бос және теріс мәндер',
+        },
         description: {
           en: <p>Null values leave gaps; the axis adapts to negative ranges.</p>,
           ru: (
             <p>Значения null оставляют разрывы; ось подстраивается под отрицательный диапазон.</p>
           ),
+          kk: <p>null мәндері үзілістер қалдырады; ось теріс аралыққа бейімделеді.</p>,
         },
       },
     ],
     styling: [
       {
         id: 'line-chart/Curves',
-        title: { en: 'Curves and markers', ru: 'Кривые и маркеры' },
+        title: { en: 'Curves and markers', ru: 'Кривые и маркеры', kk: 'Қисықтар мен маркерлер' },
         description: {
           en: (
             <p>
@@ -138,6 +179,11 @@ export const lineChart: ChartDoc = {
               <code>curve</code> переключает интерполяцию; <code>dots</code> добавляет маркеры.
             </p>
           ),
+          kk: (
+            <p>
+              <code>curve</code> интерполяцияны ауыстырады; <code>dots</code> маркерлер қосады.
+            </p>
+          ),
         },
       },
       {
@@ -145,6 +191,7 @@ export const lineChart: ChartDoc = {
         title: {
           en: 'Colours, dashes, axes and formatting',
           ru: 'Цвета, пунктир, оси и форматирование',
+          kk: 'Түстер, пунктир, осьтер және пішімдеу',
         },
         description: {
           en: (
@@ -159,11 +206,21 @@ export const lineChart: ChartDoc = {
               сетки, заголовок оси, форматирование значений и легенда сверху.
             </p>
           ),
+          kk: (
+            <p>
+              Жеке қатарларға арналған <code>color</code> және <code>dashed</code>, тік тор
+              сызықтары, ось атауы, мәндерді пішімдеу және жоғарғы жақтағы шартты белгілер.
+            </p>
+          ),
         },
       },
       {
         id: 'line-chart/Differentiate',
-        title: { en: 'Identity without colour', ru: 'Различимость без цвета' },
+        title: {
+          en: 'Identity without colour',
+          ru: 'Различимость без цвета',
+          kk: 'Түссіз ажырату',
+        },
         description: {
           en: (
             <p>
@@ -177,6 +234,12 @@ export const lineChart: ChartDoc = {
               печати, для людей с нарушениями цветовосприятия и для режима принудительных цветов.
             </p>
           ),
+          kk: (
+            <p>
+              <code>differentiate</code> әр қатарға өз маркер пішіні мен пунктир түрін береді —
+              басып шығару, түсті қабылдауы ерекше адамдар және мәжбүрлі түстер режимі үшін.
+            </p>
+          ),
         },
       },
     ],
@@ -186,6 +249,7 @@ export const lineChart: ChartDoc = {
         title: {
           en: 'Zoom, pan and brush',
           ru: 'Масштабирование, панорамирование и выделение диапазона',
+          kk: 'Масштабтау, жылжыту және аралықты таңдау',
         },
         description: {
           en: (
@@ -203,6 +267,14 @@ export const lineChart: ChartDoc = {
               контролируется через <code>xDomain</code>.
             </p>
           ),
+          kk: (
+            <p>
+              Ctrl/⌘ + тінтуір дөңгелегі немесе екі саусақпен қысу масштабтайды; үлкейтілген күйде
+              сүйреу көріністі жылжытады, ал толық көріністе сүйреу аралықты таңдайды (brush) және
+              оны үлкейтеді. Масштабты қалпына келтіру үшін екі рет шертіңіз немесе 0 пернесін
+              басыңыз. Мұнда көрінетін аралық <code>xDomain</code> арқылы басқарылады.
+            </p>
+          ),
         },
       },
       {
@@ -210,6 +282,7 @@ export const lineChart: ChartDoc = {
         title: {
           en: 'Controlled legend, active point and clicks',
           ru: 'Контролируемая легенда, активная точка и нажатия',
+          kk: 'Басқарылатын шартты белгілер, белсенді нүкте және басу',
         },
         description: {
           en: (
@@ -224,11 +297,21 @@ export const lineChart: ChartDoc = {
               когда диаграмма в фокусе) и нажимайте на точки.
             </p>
           ),
+          kk: (
+            <p>
+              Шартты белгілерде қатарларды жасырыңыз не көрсетіңіз, батырмалармен (немесе диаграмма
+              фокуста болғанда көрсеткі пернелерімен) нүктелер бойынша жүріңіз және нүктені басыңыз.
+            </p>
+          ),
         },
       },
       {
         id: 'line-chart/Sync',
-        title: { en: 'Synchronised charts', ru: 'Синхронизированные диаграммы' },
+        title: {
+          en: 'Synchronised charts',
+          ru: 'Синхронизированные диаграммы',
+          kk: 'Синхрондалған диаграммалар',
+        },
         description: {
           en: (
             <p>
@@ -240,20 +323,30 @@ export const lineChart: ChartDoc = {
               Диаграммы с одинаковым <code>syncId</code> синхронизируют перекрестие и подсказку.
             </p>
           ),
+          kk: (
+            <p>
+              Бірдей <code>syncId</code> бар диаграммалар айқас сызық пен қалқымалы кеңесті ортақ
+              пайдаланады.
+            </p>
+          ),
         },
       },
     ],
     responsive: [
       {
         id: 'line-chart/Responsive',
-        title: { en: 'Narrow container', ru: 'Узкий контейнер' },
+        title: { en: 'Narrow container', ru: 'Узкий контейнер', kk: 'Тар контейнер' },
         width: 320,
       },
     ],
     empty: [
       {
         id: 'line-chart/States',
-        title: { en: 'Empty, loading and error', ru: 'Нет данных, загрузка и ошибка' },
+        title: {
+          en: 'Empty, loading and error',
+          ru: 'Нет данных, загрузка и ошибка',
+          kk: 'Деректер жоқ, жүктелу және қате',
+        },
       },
     ],
   },

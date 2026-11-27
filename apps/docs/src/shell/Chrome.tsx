@@ -134,12 +134,12 @@ export function TopBar({
   ];
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
-      <div className="flex h-14 items-center gap-2 px-4 sm:px-6 lg:px-8">
+      <div className="flex h-14 items-center gap-2 px-4 sm:px-6 xl:px-8">
         <MobileNav open={menuOpen} onOpenChange={onMenuOpenChange} />
         <div className="min-w-0 lg:hidden">
           <Brand compact />
         </div>
-        <nav aria-label={t.a11y.primaryNav} className="hidden items-center gap-1 lg:flex">
+        <nav aria-label={t.a11y.primaryNav} className="hidden items-center lg:flex xl:gap-1">
           {links.map((l) => {
             const active = path === l.to || path.startsWith(`${l.to}/`);
             return (
@@ -147,7 +147,7 @@ export function TopBar({
                 key={l.to}
                 to={l.to}
                 data-active={active ? '' : undefined}
-                className="inline-flex h-8 items-center rounded-lg px-3 text-sm font-medium whitespace-nowrap text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/20 data-[active]:bg-primary/10 data-[active]:text-primary-ink"
+                className="inline-flex h-8 items-center rounded-lg px-1.5 text-[0.8125rem] font-medium whitespace-nowrap text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/20 data-[active]:bg-primary/10 data-[active]:text-primary-ink xl:px-3 xl:text-sm"
               >
                 {l.label}
               </Link>
@@ -160,7 +160,9 @@ export function TopBar({
               href={REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden h-8 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground sm:inline-flex"
+              // Hidden between lg and xl, where the section links need the room (the
+              // sidebar still links to the GitHub page).
+              className="hidden h-8 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground sm:inline-flex lg:max-xl:hidden"
             >
               <GitBranch className="size-4" aria-hidden />
               GitHub

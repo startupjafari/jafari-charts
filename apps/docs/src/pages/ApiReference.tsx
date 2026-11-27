@@ -31,6 +31,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'Target lines, thresholds, averages (data values).',
       ru: 'Целевые линии, пороги, средние значения (в значениях данных).',
+      kk: 'Мақсатты сызықтар, шектер, орташа мәндер (деректер мәндерімен).',
     },
     to: '/components',
     section: 'reference',
@@ -41,6 +42,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'Highlighted region on either axis.',
       ru: 'Выделенная область по любой из осей.',
+      kk: 'Кез келген ось бойынша ерекшеленген аймақ.',
     },
     to: '/components',
     section: 'reference',
@@ -51,6 +53,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'A highlighted point with an optional label.',
       ru: 'Выделенная точка с необязательной подписью.',
+      kk: 'Ерекшеленген нүкте, қаласаңыз жазуымен бірге.',
     },
     to: '/components',
     section: 'reference',
@@ -61,6 +64,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'A note attached to a pixel position, with a leader line.',
       ru: 'Заметка, привязанная к позиции в пикселях, с выносной линией.',
+      kk: 'Пиксельдегі орынға байланған, сілтеме сызығы бар ескертпе.',
     },
     to: '/components',
     section: 'annotations',
@@ -71,6 +75,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'Text in chart pixels using text tokens.',
       ru: 'Текст в пикселях диаграммы, оформленный текстовыми токенами.',
+      kk: 'Диаграмма пиксельдеріндегі, мәтін токендерімен безендірілген мәтін.',
     },
     to: '/components',
     section: 'annotations',
@@ -81,6 +86,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'A single symbol (circle, square, diamond, triangle, cross, star…).',
       ru: 'Одиночный символ (круг, квадрат, ромб, треугольник, крест, звезда…).',
+      kk: 'Жалғыз таңба (шеңбер, шаршы, ромб, үшбұрыш, айқыш, жұлдыз…).',
     },
     to: '/components',
     section: 'annotations',
@@ -91,6 +97,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'Linear gradient definition for custom marks.',
       ru: 'Определение линейного градиента для собственных меток.',
+      kk: 'Өз белгілеріңізге арналған сызықтық градиент анықтамасы.',
     },
     to: '/components',
     section: 'gradient',
@@ -101,6 +108,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'Tick labels along one edge of the plot.',
       ru: 'Подписи делений вдоль одной из сторон области построения.',
+      kk: 'Салу аймағының бір шетінің бойындағы бөлік жазулары.',
     },
     to: '/components',
     section: 'axes',
@@ -108,7 +116,11 @@ const PRIMITIVES: ApiEntry[] = [
   {
     name: 'ChartGrid',
     signature: '(props: ChartGridProps) => ReactNode',
-    description: { en: 'Hairline gridlines.', ru: 'Тонкие линии сетки.' },
+    description: {
+      en: 'Hairline gridlines.',
+      ru: 'Тонкие линии сетки.',
+      kk: 'Жіңішке тор сызықтары.',
+    },
     to: '/components',
     section: 'axes',
   },
@@ -118,6 +130,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'HTML tooltip (rendered by charts; configure with the `tooltip` prop).',
       ru: 'HTML-подсказка (её отрисовывают сами диаграммы; настраивается пропом `tooltip`).',
+      kk: 'HTML қалқымалы кеңес (оны диаграммалардың өзі салады; `tooltip` пропымен бапталады).',
     },
     to: '/components',
     section: 'tooltip',
@@ -128,6 +141,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'Legend with toggle buttons (configure with the `legend` prop).',
       ru: 'Легенда с кнопками-переключателями (настраивается пропом `legend`).',
+      kk: 'Ауыстырғыш түймелері бар шартты белгілер (`legend` пропымен бапталады).',
     },
     to: '/components',
     section: 'legend',
@@ -138,6 +152,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'Active-x hairline and the bar cursor band.',
       ru: 'Тонкая линия в активной точке по X и полоса-курсор столбчатых диаграмм.',
+      kk: 'X бойынша белсенді нүктедегі жіңішке сызық және бағаналы диаграммалардағы курсор жолағы.',
     },
     to: '/components',
     section: 'crosshair',
@@ -148,6 +163,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'State overlays used by every chart.',
       ru: 'Слои состояний, которые используют все диаграммы.',
+      kk: 'Барлық диаграмма пайдаланатын күй қабаттары.',
     },
     to: '/components',
     section: 'states',
@@ -158,6 +174,7 @@ const PRIMITIVES: ApiEntry[] = [
     description: {
       en: 'Swatch identifying a series (line, square or symbol).',
       ru: 'Значок, обозначающий ряд (линия, квадрат или символ).',
+      kk: 'Қатарды белгілейтін белгіше (сызық, шаршы немесе таңба).',
     },
   },
 ];
@@ -169,6 +186,7 @@ const PROVIDERS: ApiEntry[] = [
     description: {
       en: 'Defaults (locale, theme, animation, renderer, messages, injectStyles) for every chart below.',
       ru: 'Значения по умолчанию (locale, theme, animation, renderer, messages, injectStyles) для всех вложенных диаграмм.',
+      kk: 'Ішкі диаграммалардың барлығына арналған әдепкі мәндер (locale, theme, animation, renderer, messages, injectStyles).',
     },
     to: '/components',
     section: 'chart-provider',
@@ -179,6 +197,7 @@ const PROVIDERS: ApiEntry[] = [
     description: {
       en: 'The merged provider configuration.',
       ru: 'Объединённая конфигурация провайдеров.',
+      kk: 'Провайдерлердің біріктірілген конфигурациясы.',
     },
   },
   {
@@ -187,6 +206,7 @@ const PROVIDERS: ApiEntry[] = [
     description: {
       en: 'Inside a chart: scales (`frame`), `plot`, `width`, `height`, the interaction `store`, `series`, `locale`, `messages`. Throws outside a chart.',
       ru: 'Внутри диаграммы: шкалы (`frame`), `plot`, `width`, `height`, хранилище взаимодействия `store`, `series`, `locale`, `messages`. Вне диаграммы выбрасывает ошибку.',
+      kk: 'Диаграмма ішінде: шкалалар (`frame`), `plot`, `width`, `height`, өзара әрекеттесу қоймасы `store`, `series`, `locale`, `messages`. Диаграммадан тыс қате лақтырады.',
     },
     to: '/components',
     section: 'annotations',
@@ -197,6 +217,7 @@ const PROVIDERS: ApiEntry[] = [
     description: {
       en: 'Like `useChart`, but returns null outside a chart.',
       ru: 'То же, что `useChart`, но вне диаграммы возвращает null.',
+      kk: '`useChart` сияқты, бірақ диаграммадан тыс null қайтарады.',
     },
   },
   {
@@ -205,6 +226,7 @@ const PROVIDERS: ApiEntry[] = [
     description: {
       en: 'Subscribe to a slice of the interaction store (re-renders only when it changes).',
       ru: 'Подписка на часть хранилища взаимодействия (перерисовка — только когда эта часть меняется).',
+      kk: 'Өзара әрекеттесу қоймасының бір бөлігіне жазылу (қайта рендеринг тек сол бөлік өзгергенде болады).',
     },
   },
   {
@@ -213,6 +235,7 @@ const PROVIDERS: ApiEntry[] = [
     description: {
       en: 'True when the user prefers reduced motion.',
       ru: 'Возвращает true, если пользователь включил «уменьшение движения».',
+      kk: 'Пайдаланушы «қозғалысты азайту» баптауын қосса, true қайтарады.',
     },
   },
 ];
@@ -224,6 +247,7 @@ const BUILDING_BLOCKS: ApiEntry[] = [
     description: {
       en: 'The shell every chart uses: layers, interaction, tooltip, legend, states and accessibility. For building new chart types.',
       ru: 'Оболочка, на которой построены все диаграммы: слои, взаимодействие, подсказка, легенда, состояния и доступность. Для создания новых типов диаграмм.',
+      kk: 'Барлық диаграмма құрылған қабық: қабаттар, өзара әрекеттесу, қалқымалы кеңес, шартты белгілер, күйлер және қолжетімділік. Диаграмманың жаңа түрлерін жасауға арналған.',
     },
   },
   {
@@ -232,6 +256,7 @@ const BUILDING_BLOCKS: ApiEntry[] = [
     description: {
       en: 'Resolves size, locale, messages, animation, theme and the store for a new chart type.',
       ru: 'Определяет размер, локаль, тексты, анимацию, тему и хранилище для нового типа диаграммы.',
+      kk: 'Диаграмманың жаңа түрі үшін өлшемді, локальді, мәтіндерді, анимацияны, тақырыпты және қойманы анықтайды.',
     },
   },
   {
@@ -240,6 +265,7 @@ const BUILDING_BLOCKS: ApiEntry[] = [
     description: {
       en: 'SVG renderer for scene marks (batched paths).',
       ru: 'SVG-рендерер меток сцены (пути объединяются в пакеты).',
+      kk: 'Сахна белгілеріне арналған SVG рендерері (path элементтері топтап біріктіріледі).',
     },
   },
   {
@@ -248,6 +274,7 @@ const BUILDING_BLOCKS: ApiEntry[] = [
     description: {
       en: 'Canvas renderer for scene marks (loads the canvas module lazily).',
       ru: 'Canvas-рендерер меток сцены (модуль canvas загружается лениво).',
+      kk: 'Сахна белгілеріне арналған Canvas рендерері (canvas модулін кешіктіріп жүктейді).',
     },
   },
   {
@@ -256,6 +283,7 @@ const BUILDING_BLOCKS: ApiEntry[] = [
     description: {
       en: 'Text marks (value labels).',
       ru: 'Текстовые метки (подписи значений).',
+      kk: 'Мәтіндік белгілер (мән жазулары).',
     },
   },
   {
@@ -264,6 +292,7 @@ const BUILDING_BLOCKS: ApiEntry[] = [
     description: {
       en: 'Visually hidden data table.',
       ru: 'Визуально скрытая таблица данных.',
+      kk: 'Көзге көрінбейтін деректер кестесі.',
     },
   },
   {
@@ -272,6 +301,7 @@ const BUILDING_BLOCKS: ApiEntry[] = [
     description: {
       en: 'Injects the stylesheet once per document (respects `injectStyles`).',
       ru: 'Внедряет таблицу стилей один раз на документ (учитывает `injectStyles`).',
+      kk: 'Стильдер кестесін құжатқа бір рет енгізеді (`injectStyles` ескеріледі).',
     },
   },
 ];
@@ -283,6 +313,7 @@ const THEMING: ApiEntry[] = [
     description: {
       en: 'A theme from token overrides, optionally per mode (`light`, `dark`).',
       ru: 'Тема из переопределённых токенов, при необходимости — отдельно для каждого режима (`light`, `dark`).',
+      kk: 'Қайта анықталған токендерден жасалған тақырып, қажет болса — әр режим үшін бөлек (`light`, `dark`).',
     },
     to: '/themes',
     section: 'create-theme',
@@ -290,14 +321,18 @@ const THEMING: ApiEntry[] = [
   {
     name: 'lightTheme / darkTheme',
     signature: 'ThemeTokens',
-    description: { en: 'Default token values.', ru: 'Значения токенов по умолчанию.' },
+    description: {
+      en: 'Default token values.',
+      ru: 'Значения токенов по умолчанию.',
+      kk: 'Токендердің әдепкі мәндері.',
+    },
     to: '/themes',
     section: 'tokens',
   },
   {
     name: 'palette',
     signature: '{ primary, blue, success, warning, error, purple, cyan, pink }',
-    description: { en: 'Brand colours.', ru: 'Фирменные цвета.' },
+    description: { en: 'Brand colours.', ru: 'Фирменные цвета.', kk: 'Фирмалық түстер.' },
     to: '/themes',
     section: 'palette',
   },
@@ -307,6 +342,7 @@ const THEMING: ApiEntry[] = [
     description: {
       en: '`var(--jc-series-N)` for a 0-based series slot.',
       ru: '`var(--jc-series-N)` для слота ряда (нумерация с 0).',
+      kk: 'Қатар слотына арналған `var(--jc-series-N)` (нөмірлеу 0-ден басталады).',
     },
   },
   {
@@ -315,6 +351,7 @@ const THEMING: ApiEntry[] = [
     description: {
       en: "CSS variable reference, e.g. `cssVar('grid')` → `var(--jc-grid)`.",
       ru: "Ссылка на CSS-переменную, например `cssVar('grid')` → `var(--jc-grid)`.",
+      kk: "CSS айнымалысына сілтеме, мысалы `cssVar('grid')` → `var(--jc-grid)`.",
     },
   },
 ];
@@ -327,6 +364,7 @@ const FORMATTING: ApiEntry[] = [
     description: {
       en: 'Cached Intl number formatting; missing values print "—".',
       ru: 'Форматирование чисел через Intl с кешированием; отсутствующие значения выводятся как «—».',
+      kk: 'Intl арқылы кэштелетін сан пішімдеу; жоқ мәндер «—» болып шығады.',
     },
   },
   {
@@ -335,6 +373,7 @@ const FORMATTING: ApiEntry[] = [
     description: {
       en: '1 234 567 → "1.2M" (en), "1,2 млн" (ru, kk).',
       ru: '1 234 567 → "1.2M" (en), "1,2 млн" (ru, kk).',
+      kk: '1 234 567 → "1.2M" (en), "1,2 млн" (ru, kk).',
     },
   },
   {
@@ -343,6 +382,7 @@ const FORMATTING: ApiEntry[] = [
     description: {
       en: 'Ratio to percent: 0.25 → "25%".',
       ru: 'Перевод доли в проценты: 0.25 → "25%".',
+      kk: 'Үлесті пайызға айналдыру: 0.25 → "25%".',
     },
   },
   {
@@ -351,6 +391,7 @@ const FORMATTING: ApiEntry[] = [
     description: {
       en: 'Currency with narrow symbols (₸, $, €).',
       ru: 'Денежные суммы с узкими символами валют (₸, $, €).',
+      kk: 'Валютаның қысқа таңбалары бар ақша сомалары (₸, $, €).',
     },
   },
   {
@@ -360,6 +401,7 @@ const FORMATTING: ApiEntry[] = [
     description: {
       en: 'Cached Intl date formatting.',
       ru: 'Форматирование дат через Intl с кешированием.',
+      kk: 'Intl арқылы кэштелетін күн пішімдеу.',
     },
   },
   {
@@ -368,6 +410,7 @@ const FORMATTING: ApiEntry[] = [
     description: {
       en: 'Built-in texts for a BCP 47 locale ("ru-RU" → ru), English fallback.',
       ru: 'Встроенные тексты для локали BCP 47 ("ru-RU" → ru); если локаль не поддерживается — английские.',
+      kk: 'BCP 47 локалі үшін кірістірілген мәтіндер ("ru-RU" → ru); локаль қолдау көрсетілмесе — ағылшынша.',
     },
   },
   {
@@ -376,6 +419,7 @@ const FORMATTING: ApiEntry[] = [
     description: {
       en: 'Built-in texts for English, Russian and Kazakh.',
       ru: 'Встроенные тексты на английском, русском и казахском.',
+      kk: 'Ағылшын, орыс және қазақ тілдеріндегі кірістірілген мәтіндер.',
     },
   },
 ];
@@ -387,6 +431,7 @@ const EXPORT: ApiEntry[] = [
     description: {
       en: "Exports a rendered chart: `format` 'svg' | 'png' | 'webp' | 'csv', `scale`, `background`, `legend`, `padding`, `filename`, `download`.",
       ru: "Экспортирует отрисованную диаграмму: `format` 'svg' | 'png' | 'webp' | 'csv', `scale`, `background`, `legend`, `padding`, `filename`, `download`.",
+      kk: "Салынған диаграмманы экспорттайды: `format` 'svg' | 'png' | 'webp' | 'csv', `scale`, `background`, `legend`, `padding`, `filename`, `download`.",
     },
   },
   {
@@ -395,6 +440,7 @@ const EXPORT: ApiEntry[] = [
     description: {
       en: 'Standalone SVG with inlined styles.',
       ru: 'Самодостаточный SVG со встроенными стилями.',
+      kk: 'Стильдері ішіне кірістірілген дербес SVG.',
     },
   },
   {
@@ -403,6 +449,7 @@ const EXPORT: ApiEntry[] = [
     description: {
       en: 'Blobs without triggering a download.',
       ru: 'Blob-объекты без запуска скачивания.',
+      kk: 'Жүктеп алуды іске қоспайтын Blob нысандары.',
     },
   },
   {
@@ -411,6 +458,7 @@ const EXPORT: ApiEntry[] = [
     description: {
       en: 'Whether the browser can encode WebP.',
       ru: 'Умеет ли браузер кодировать WebP.',
+      kk: 'Браузер WebP пішімінде кодтай ала ма.',
     },
   },
   {
@@ -419,6 +467,7 @@ const EXPORT: ApiEntry[] = [
     description: {
       en: 'RFC 4180 CSV with formula-injection protection and an optional BOM.',
       ru: 'CSV по RFC 4180 с защитой от инъекции формул и необязательным BOM.',
+      kk: 'Формула инъекциясынан қорғалған, қалауыңызша BOM қосылатын RFC 4180 бойынша CSV.',
     },
   },
   {
@@ -427,6 +476,7 @@ const EXPORT: ApiEntry[] = [
     description: {
       en: 'Triggers a browser download.',
       ru: 'Запускает скачивание файла в браузере.',
+      kk: 'Браузерде файлды жүктеп алуды іске қосады.',
     },
   },
 ];
@@ -536,6 +586,41 @@ const { exportChart } = await import('@startupjafari/charts/export'); // лен�
         </p>
       ),
       alsoExported: 'Также экспортируются (runtime-значения, не описанные выше)',
+    },
+  },
+  kk: {
+    lead: '@startupjafari/charts пакетінен экспортталатынның бәрі мақсатына қарай топтастырылған. Диаграммалардың пропстары әр диаграмманың өз бетінде сипатталған.',
+    importsCode: `import { LineChart, ChartProvider, createTheme, formatNumber } from '@startupjafari/charts';
+import { createLinearScale } from '@startupjafari/charts/core';      // фреймворкке тәуелсіз математика
+const { exportChart } = await import('@startupjafari/charts/export'); // кешіктірілген жүктеу`,
+    groups: {
+      charts: 'Диаграммалар',
+      chartsLead: 'Әр диаграмма BaseChartProps (төменде) және өз пропстарын қабылдайды.',
+      primitives: 'Примитивтер',
+      providers: 'Провайдер және хуктар',
+      buildingBlocks: 'Диаграмманың жаңа түрлеріне арналған құрылыс блоктары',
+      theming: 'Тақырыптар',
+      formatting: 'Пішімдеу және локализация',
+    },
+    table: { export: 'Атауы', description: 'Сипаттамасы' },
+    baseProps: { lead: 'Барлық диаграммаға ортақ.' },
+    export: {
+      toc: 'Экспорт',
+      title: 'Экспорт (@startupjafari/charts/export)',
+      lead: 'Бөлек кіру нүктесі: оны импорттамасаңыз, негізгі бандлға кірмейді.',
+    },
+    types: {
+      title: 'Типтер',
+      intro: 'TypeScript типтерінің бәрі негізгі кіру нүктесінен экспортталады:',
+      pattern: (
+        <p>
+          Пропс типтері <code>&lt;Component&gt;Props</code> үлгісімен аталады (
+          <code>LineChart</code> компоненті <code>CartesianChartProps</code> типін пайдаланады;
+          сондай-ақ <code>AreaChartProps</code>, <code>BarChartProps</code>,{' '}
+          <code>PieChartProps</code>… бар).
+        </p>
+      ),
+      alsoExported: 'Сондай-ақ экспортталады (жоғарыда сипатталмаған runtime мәндері)',
     },
   },
 };

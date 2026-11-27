@@ -6,11 +6,12 @@ import type { ChartDoc } from '../types';
 export const treemapChart: ChartDoc = {
   slug: 'treemap-chart',
   component: 'TreemapChart',
-  title: { en: 'Treemap', ru: 'Древовидная карта (treemap)' },
+  title: { en: 'Treemap', ru: 'Древовидная карта (treemap)', kk: 'Ағаштық карта' },
   group: 'Advanced',
   summary: {
     en: 'Part-to-whole for hierarchies, as nested rectangles sized by value.',
     ru: 'Доли целого в иерархических данных: вложенные прямоугольники, площадь которых пропорциональна значению.',
+    kk: 'Иерархиялық деректердегі тұтастың бөліктері: ауданы мәнге пропорционал кірістірілген тіктөртбұрыштар.',
   },
   description: {
     en: (
@@ -44,6 +45,23 @@ export const treemapChart: ChartDoc = {
         </p>
       </>
     ),
+    kk: (
+      <>
+        <p>
+          Иерархияны (жапырақтар — <code>{'{ name, value }'}</code>, ата-ана түйіндер —{' '}
+          <code>{'{ name, children }'}</code>) немесе <code>groupKey</code>, міндетті емес{' '}
+          <code>subgroupKey</code> және <code>labelKey</code> бойынша топтастырылған бір деңгейлі
+          жолдарды беріңіз. Тақталар squarified алгоритмімен орналастырылады, сондықтан шаршыға
+          жақын болып, оңай салыстырылады.
+        </p>
+        <p>
+          Жоғарғы деңгей санаттары палитра түстерін және шартты белгілерді алады (2–12 санат
+          болғанда); шартты белгілердің элементтері тармақтарды жасырады. <code>drilldown</code>{' '}
+          қосылса, санатты басқанда ол жақындатылады, ал навигация тізбегі арқылы кері қайтуға
+          болады.
+        </p>
+      </>
+    ),
   },
   thumbnail: () => (
     <TreemapChart
@@ -61,9 +79,12 @@ export const treemapChart: ChartDoc = {
     usage: [
       {
         id: 'treemap-chart/Basic',
-        title: { en: 'Hierarchical data', ru: 'Иерархические данные' },
+        title: { en: 'Hierarchical data', ru: 'Иерархические данные', kk: 'Иерархиялық деректер' },
       },
-      { id: 'treemap-chart/Rows', title: { en: 'Flat rows', ru: 'Плоские строки' } },
+      {
+        id: 'treemap-chart/Rows',
+        title: { en: 'Flat rows', ru: 'Плоские строки', kk: 'Бір деңгейлі жолдар' },
+      },
     ],
     styling: [
       {
@@ -71,23 +92,33 @@ export const treemapChart: ChartDoc = {
         title: {
           en: 'Colours, depth shading, gaps and radius',
           ru: 'Цвета, оттенки по уровням, зазоры и скругление',
+          kk: 'Түстер, деңгей бойынша реңктер, аралықтар және дөңгелектеу',
         },
       },
     ],
     interaction: [
       {
         id: 'treemap-chart/Drilldown',
-        title: { en: 'Drill-down', ru: 'Детализация (drill-down)' },
+        title: {
+          en: 'Drill-down',
+          ru: 'Детализация (drill-down)',
+          kk: 'Тереңдеп қарау (drill-down)',
+        },
       },
     ],
     responsive: [
       {
         id: 'treemap-chart/Responsive',
-        title: { en: 'Narrow container', ru: 'Узкий контейнер' },
+        title: { en: 'Narrow container', ru: 'Узкий контейнер', kk: 'Тар контейнер' },
         width: 320,
       },
     ],
-    empty: [{ id: 'treemap-chart/States', title: { en: 'Empty state', ru: 'Нет данных' } }],
+    empty: [
+      {
+        id: 'treemap-chart/States',
+        title: { en: 'Empty state', ru: 'Нет данных', kk: 'Деректер жоқ' },
+      },
+    ],
   },
   keyboard: [
     [
@@ -95,29 +126,49 @@ export const treemapChart: ChartDoc = {
       {
         en: 'Previous / next tile (largest first, depth first)',
         ru: 'Предыдущая / следующая плитка (от крупных к мелким, обход в глубину)',
+        kk: 'Алдыңғы / келесі тақта (үлкенінен кішісіне, тереңдікке қарай)',
       },
     ],
-    ['↑ ↓', { en: 'Tile above / below', ru: 'Плитка выше / ниже' }],
-    ['Home End', { en: 'First / last tile', ru: 'Первая / последняя плитка' }],
+    [
+      '↑ ↓',
+      { en: 'Tile above / below', ru: 'Плитка выше / ниже', kk: 'Жоғарыдағы / төмендегі тақта' },
+    ],
+    [
+      'Home End',
+      { en: 'First / last tile', ru: 'Первая / последняя плитка', kk: 'Бірінші / соңғы тақта' },
+    ],
     [
       'Enter',
       {
         en: 'Click; with drilldown, zoom into the category',
         ru: 'Нажатие; с drilldown — приблизить категорию',
+        kk: 'Басу; drilldown болса — санатты жақындату',
       },
     ],
     [
       'Backspace',
-      { en: 'Zoom out one level (drilldown)', ru: 'Подняться на уровень выше (drilldown)' },
+      {
+        en: 'Zoom out one level (drilldown)',
+        ru: 'Подняться на уровень выше (drilldown)',
+        kk: 'Бір деңгей жоғары көтерілу (drilldown)',
+      },
     ],
-    ['Esc', { en: 'Clear the active tile', ru: 'Сбросить активную плитку' }],
+    [
+      'Esc',
+      {
+        en: 'Clear the active tile',
+        ru: 'Сбросить активную плитку',
+        kk: 'Белсенді тақтаны алып тастау',
+      },
+    ],
   ],
   props: [
     {
-      title: { en: 'TreemapChart props', ru: 'Пропсы TreemapChart' },
+      title: { en: 'TreemapChart props', ru: 'Пропсы TreemapChart', kk: 'TreemapChart пропстары' },
       note: {
         en: 'Either hierarchical `data` or flat rows with `groupKey` and `valueKey`.',
         ru: 'Либо иерархические данные в `data`, либо плоские строки с `groupKey` и `valueKey`.',
+        kk: '`data` ішіндегі иерархиялық деректер немесе `groupKey` пен `valueKey` бар бір деңгейлі жолдар.',
       },
       props: [
         {
@@ -127,6 +178,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'A root node, a list of top-level nodes, or flat rows.',
             ru: 'Корневой узел, список узлов верхнего уровня или плоские строки.',
+            kk: 'Түбір түйін, жоғарғы деңгей түйіндерінің тізімі немесе бір деңгейлі жолдар.',
           },
         },
         {
@@ -135,6 +187,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Flat rows: top-level category.',
             ru: 'Плоские строки: категория верхнего уровня.',
+            kk: 'Бір деңгейлі жолдар: жоғарғы деңгей санаты.',
           },
         },
         {
@@ -143,6 +196,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Flat rows: optional second level.',
             ru: 'Плоские строки: необязательный второй уровень.',
+            kk: 'Бір деңгейлі жолдар: міндетті емес екінші деңгей.',
           },
         },
         {
@@ -151,6 +205,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: "Flat rows: tile name (without it a group's rows are summed into one tile).",
             ru: 'Плоские строки: название плитки (без него строки группы суммируются в одну плитку).',
+            kk: 'Бір деңгейлі жолдар: тақта атауы (онсыз топ жолдары бір тақтаға қосылады).',
           },
         },
         {
@@ -159,21 +214,27 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Flat rows: value (required with `groupKey`).',
             ru: 'Плоские строки: значение (обязательно вместе с `groupKey`).',
+            kk: 'Бір деңгейлі жолдар: мән (`groupKey` бар болса, міндетті).',
           },
         },
         {
           name: 'colors',
           type: 'readonly string[]',
-          default: { en: 'theme palette', ru: 'палитра темы' },
+          default: { en: 'theme palette', ru: 'палитра темы', kk: 'тақырып палитрасы' },
           description: {
             en: 'Colours of top-level categories by position.',
             ru: 'Цвета категорий верхнего уровня по порядку.',
+            kk: 'Жоғарғы деңгей санаттарының реті бойынша түстер.',
           },
         },
         {
           name: 'valueFormatter',
           type: '(value: number) => string',
-          description: { en: 'Formats values.', ru: 'Форматирует значения.' },
+          description: {
+            en: 'Formats values.',
+            ru: 'Форматирует значения.',
+            kk: 'Мәндерді пішімдейді.',
+          },
         },
         {
           name: 'tooltip',
@@ -182,15 +243,17 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Tile tooltip with share of the parent.',
             ru: 'Подсказка плитки с долей от родителя.',
+            kk: 'Ата-ана түйіндегі үлесі көрсетілетін тақтаның қалқымалы кеңесі.',
           },
         },
         {
           name: 'legend',
           type: 'boolean | LegendOptions',
-          default: { en: '2–12 categories', ru: '2–12 категорий' },
+          default: { en: '2–12 categories', ru: '2–12 категорий', kk: '2–12 санат' },
           description: {
             en: 'Top-level categories; clicking one hides its branch.',
             ru: 'Категории верхнего уровня; нажатие на категорию скрывает её ветвь.',
+            kk: 'Жоғарғы деңгей санаттары; санатты басқанда оның тармағы жасырылады.',
           },
         },
         {
@@ -200,6 +263,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Name and value on tiles that fit.',
             ru: 'Название и значение на плитках, где они помещаются.',
+            kk: 'Сыятын тақталардағы атау мен мән.',
           },
         },
         {
@@ -209,13 +273,18 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Header strips with the name on parent tiles.',
             ru: 'Полосы-заголовки с названием на родительских плитках.',
+            kk: 'Ата-ана тақталардағы атауы бар тақырып жолақтары.',
           },
         },
         {
           name: 'gap',
           type: 'number',
           default: '2',
-          description: { en: 'Gap between tiles, px.', ru: 'Зазор между плитками, px.' },
+          description: {
+            en: 'Gap between tiles, px.',
+            ru: 'Зазор между плитками, px.',
+            kk: 'Тақталар арасындағы аралық, px.',
+          },
         },
         {
           name: 'cornerRadius',
@@ -223,6 +292,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Tile corner radius, px.',
             ru: 'Радиус скругления углов плиток, px.',
+            kk: 'Тақта бұрыштарын дөңгелектеу радиусы, px.',
           },
         },
         {
@@ -232,6 +302,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Slightly lighter tiles at deeper levels.',
             ru: 'Плитки на более глубоких уровнях немного светлее.',
+            kk: 'Тереңірек деңгейлердегі тақталар сәл ашығырақ.',
           },
         },
         {
@@ -241,6 +312,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Click a category to zoom in; Backspace or the breadcrumb zooms out.',
             ru: 'Нажатие на категорию приближает её; Backspace или «хлебные крошки» возвращают на уровень выше.',
+            kk: 'Санатты басқанда ол жақындатылады; Backspace немесе навигация тізбегі бір деңгей жоғары қайтарады.',
           },
         },
         {
@@ -249,6 +321,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Overrides for `all`, `back`, `breadcrumb`, `share`, `ofParent` (built in for en, ru, kk).',
             ru: 'Переопределения текстов `all`, `back`, `breadcrumb`, `share`, `ofParent` (встроены для en, ru, kk).',
+            kk: '`all`, `back`, `breadcrumb`, `share`, `ofParent` мәтіндерін қайта анықтау (en, ru, kk үшін кірістірілген).',
           },
         },
         {
@@ -257,6 +330,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Hidden top-level categories.',
             ru: 'Скрытые категории верхнего уровня.',
+            kk: 'Жасырылған жоғарғы деңгей санаттары.',
           },
         },
         {
@@ -265,6 +339,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Event with `datum`, `key`, `name`, `path`, `value`, `share`, `depth`, `leaf`.',
             ru: 'Событие с полями `datum`, `key`, `name`, `path`, `value`, `share`, `depth`, `leaf`.',
+            kk: '`datum`, `key`, `name`, `path`, `value`, `share`, `depth`, `leaf` өрістері бар оқиға.',
           },
         },
         {
@@ -273,6 +348,7 @@ export const treemapChart: ChartDoc = {
           description: {
             en: 'Called with the zoomed path after drill-down navigation.',
             ru: 'Вызывается с путём к открытому уровню после перехода при детализации.',
+            kk: 'Тереңдеп қарау кезінде деңгей ауысқанда ашылған деңгейдің жолымен шақырылады.',
           },
         },
       ],

@@ -39,3 +39,14 @@ test('@visual phone drawer (dark)', async ({ page, isMobile }) => {
   await settle(page);
   await expect(page).toHaveScreenshot('drawer-dark.png');
 });
+
+for (const [name, path] of [
+  ['home', '/kk'],
+  ['line-chart', '/kk/charts/line-chart'],
+] as const) {
+  test(`@visual kk ${name} (light)`, async ({ page }) => {
+    await openDocs(page, path, { theme: 'light' });
+    await settle(page);
+    await expect(page).toHaveScreenshot(`kk-${name}-light.png`);
+  });
+}

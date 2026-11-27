@@ -8,11 +8,12 @@ import type { ChartDoc } from '../types';
 export const areaChart: ChartDoc = {
   slug: 'area-chart',
   component: 'AreaChart',
-  title: { en: 'Area chart', ru: 'Диаграмма с областями' },
+  title: { en: 'Area chart', ru: 'Диаграмма с областями', kk: 'Аймақтық диаграмма' },
   group: 'Core',
   summary: {
     en: 'A line with a soft gradient fill — volume over time, at a glance.',
     ru: 'Линия с мягкой градиентной заливкой — динамика объёма во времени с первого взгляда.',
+    kk: 'Жұмсақ градиентті бояуы бар сызық — уақыт бойынша көлем динамикасы бір қарағаннан түсінікті.',
   },
   description: {
     en: (
@@ -29,22 +30,39 @@ export const areaChart: ChartDoc = {
         принимает <code>LineChart</code>, а также <code>gradient</code>.
       </p>
     ),
+    kk: (
+      <p>
+        Бояу базалық сызыққа қарай бозарады, сондықтан бір-бірін жабатын қатарлар оқылатын күйде
+        қалады. Аймақтар әрқашан нөлден басталады, теріс мәндер үшін одан төмен қарай салынады.
+        <code>LineChart</code> қабылдайтынның бәрі мұнда да жұмыс істейді, оған қоса{' '}
+        <code>gradient</code> бар.
+      </p>
+    ),
   },
   thumbnail: () => <AreaChart data={dailyUsers} xKey="date" yKey="users" {...THUMB} />,
   sections: {
     usage: [
-      { id: 'area-chart/Basic', title: { en: 'Basic', ru: 'Базовый пример' } },
+      { id: 'area-chart/Basic', title: { en: 'Basic', ru: 'Базовый пример', kk: 'Негізгі мысал' } },
       {
         id: 'area-chart/MultiSeries',
-        title: { en: 'Overlapping series', ru: 'Перекрывающиеся ряды' },
+        title: {
+          en: 'Overlapping series',
+          ru: 'Перекрывающиеся ряды',
+          kk: 'Бір-бірін жабатын қатарлар',
+        },
         description: {
           en: <p>Series are drawn in order; the gradient keeps the back series visible.</p>,
           ru: <p>Ряды рисуются по порядку; благодаря градиенту задние ряды остаются видны.</p>,
+          kk: <p>Қатарлар ретімен салынады; градиенттің арқасында артқы қатарлар көрінеді.</p>,
         },
       },
       {
         id: 'area-chart/Negative',
-        title: { en: 'Negative values and gaps', ru: 'Отрицательные значения и пропуски' },
+        title: {
+          en: 'Negative values and gaps',
+          ru: 'Отрицательные значения и пропуски',
+          kk: 'Теріс мәндер және үзілістер',
+        },
       },
     ],
     styling: [
@@ -53,6 +71,7 @@ export const areaChart: ChartDoc = {
         title: {
           en: 'Solid fill, linear curve, markers',
           ru: 'Сплошная заливка, линейная кривая, маркеры',
+          kk: 'Тұтас бояу, сызықтық қисық, маркерлер',
         },
         description: {
           en: (
@@ -65,6 +84,11 @@ export const areaChart: ChartDoc = {
               <code>gradient={'{false}'}</code> включает ровную полупрозрачную заливку.
             </p>
           ),
+          kk: (
+            <p>
+              <code>gradient={'{false}'}</code> біркелкі жартылай мөлдір бояуды пайдаланады.
+            </p>
+          ),
         },
       },
       {
@@ -72,13 +96,18 @@ export const areaChart: ChartDoc = {
         title: {
           en: 'Step curve with a fixed value range',
           ru: 'Ступенчатая кривая и фиксированный диапазон значений',
+          kk: 'Сатылы қисық және бекітілген мәндер аралығы',
         },
       },
     ],
     interaction: [
       {
         id: 'area-chart/Brush',
-        title: { en: 'Brush selection', ru: 'Выделение диапазона (brush)' },
+        title: {
+          en: 'Brush selection',
+          ru: 'Выделение диапазона (brush)',
+          kk: 'Аралықты таңдау (brush)',
+        },
         description: {
           en: (
             <p>
@@ -92,27 +121,37 @@ export const areaChart: ChartDoc = {
               получает диапазон и индексы первой и последней точки данных.
             </p>
           ),
+          kk: (
+            <p>
+              <code>brush</code> аралықты сүйреп таңдауға мүмкіндік береді; <code>onBrush</code>{' '}
+              аралықты және деректердің бірінші мен соңғы нүктесінің индекстерін алады.
+            </p>
+          ),
         },
       },
     ],
     responsive: [
       {
         id: 'area-chart/Responsive',
-        title: { en: 'Narrow container', ru: 'Узкий контейнер' },
+        title: { en: 'Narrow container', ru: 'Узкий контейнер', kk: 'Тар контейнер' },
         width: 320,
       },
     ],
     empty: [
       {
         id: 'area-chart/States',
-        title: { en: 'Empty, loading and error', ru: 'Нет данных, загрузка и ошибка' },
+        title: {
+          en: 'Empty, loading and error',
+          ru: 'Нет данных, загрузка и ошибка',
+          kk: 'Деректер жоқ, жүктелу және қате',
+        },
       },
     ],
   },
   keyboard: CARTESIAN_KEYS,
   props: [
     {
-      title: { en: 'AreaChart props', ru: 'Пропсы AreaChart' },
+      title: { en: 'AreaChart props', ru: 'Пропсы AreaChart', kk: 'AreaChart пропстары' },
       props: [
         {
           name: 'gradient',
@@ -121,6 +160,7 @@ export const areaChart: ChartDoc = {
           description: {
             en: 'Gradient fill fading towards the baseline; `false` for a flat fill.',
             ru: 'Градиентная заливка, бледнеющая к базовой линии; `false` — ровная заливка.',
+            kk: 'Базалық сызыққа қарай бозаратын градиентті бояу; `false` — біркелкі бояу.',
           },
         },
       ],
