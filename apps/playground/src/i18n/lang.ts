@@ -4,14 +4,17 @@
  */
 export type Lang = 'en' | 'ru' | 'kk';
 
-/** Every interface language, in switcher order. English is the fallback. */
-export const LANGS: readonly Lang[] = ['en', 'ru', 'kk'];
+/**
+ * Every interface language, in the order of StudentHub's language select (Русский,
+ * Қазақша, English). English is the fallback.
+ */
+export const LANGS: readonly Lang[] = ['ru', 'kk', 'en'];
 
-/** Short switcher labels and native names (shown as the button tooltip). */
-export const LANG_LABELS: { readonly [K in Lang]: { short: string; native: string } } = {
-  en: { short: 'EN', native: 'English' },
-  ru: { short: 'RU', native: 'Русский' },
-  kk: { short: 'ҚАЗ', native: 'Қазақша' },
+/** Native names (endonyms, never translated) and StudentHub flag codes. */
+export const LANG_LABELS: { readonly [K in Lang]: { native: string; flag: 'ru' | 'kz' | 'en' } } = {
+  ru: { native: 'Русский', flag: 'ru' },
+  kk: { native: 'Қазақша', flag: 'kz' },
+  en: { native: 'English', flag: 'en' },
 };
 
 /** A value in every interface language. TypeScript reports a missing translation. */

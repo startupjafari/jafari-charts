@@ -146,6 +146,9 @@ export const ru: Messages = {
     renderer: 'Рендерер',
     presets: 'Быстрый выбор',
   },
+  common: {
+    empty: 'Пусто',
+  },
   readout: {
     full: 'весь',
     all: 'все',

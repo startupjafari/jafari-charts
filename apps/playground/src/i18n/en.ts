@@ -146,6 +146,11 @@ export const en = {
     renderer: 'Renderer',
     presets: 'Presets',
   },
+  /** Shared control texts (StudentHub `Common`). */
+  common: {
+    /** An open select with no options. */
+    empty: 'Empty',
+  },
   /** Live read-outs in card footers (the English values are what the e2e suites expect). */
   readout: {
     full: 'full',

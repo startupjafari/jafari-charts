@@ -147,6 +147,9 @@ export const kk: Messages = {
     renderer: 'Рендерер',
     presets: 'Дайын баптаулар',
   },
+  common: {
+    empty: 'Бос',
+  },
   readout: {
     full: 'толық',
     all: 'барлығы',

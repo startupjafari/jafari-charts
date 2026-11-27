@@ -4,11 +4,14 @@ import type { ThemePreference } from '../lib/theme';
 /** Chart number and date locales offered in the sidebar (any BCP 47 tag works in `?locale=`). */
 export type Locale = 'en' | 'ru' | 'kk';
 
-/** Native language names: a locale picker lists every language in its own name. */
+/**
+ * Native language names: a locale picker lists every language in its own name, in the
+ * order of the interface language select.
+ */
 export const LOCALES: ReadonlyArray<{ value: Locale; label: string }> = [
-  { value: 'en', label: 'English' },
   { value: 'ru', label: 'Русский' },
   { value: 'kk', label: 'Қазақша' },
+  { value: 'en', label: 'English' },
 ];
 
 /** Query parameters that survive navigation between scenes. */
