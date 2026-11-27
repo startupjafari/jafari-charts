@@ -23,7 +23,7 @@ import { loadCode } from '../examples';
 import { kkPlural, ruPlural, useLang, useT, useText, type L, type Lang } from '../i18n';
 import { cn } from '../lib/cn';
 import { Link } from '../lib/router';
-import { buttonVariants } from '../ui/button';
+import { Button } from '../ui/button';
 import { SectionPanel } from '../ui/card';
 import { CodeBlock } from '../ui/CodeBlock';
 import { CopyButton } from '../ui/CopyButton';
@@ -596,17 +596,18 @@ export function Home() {
             {t.lead}
           </p>
           <div className="soft-up mt-8 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap [--delay:0.28s]">
-            <Link
-              to="/getting-started"
-              className={cn(buttonVariants({ size: 'xl' }), 'primary-glow')}
-            >
-              {t.getStarted}
-              <ArrowRight aria-hidden />
-            </Link>
-            <Link to="/charts" className={buttonVariants({ variant: 'outline', size: 'xl' })}>
-              <LayoutGrid aria-hidden />
-              {t.browseCharts(CHARTS.length)}
-            </Link>
+            <Button asChild size="xl" className="primary-glow">
+              <Link to="/getting-started">
+                {t.getStarted}
+                <ArrowRight aria-hidden />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="xl">
+              <Link to="/charts">
+                <LayoutGrid aria-hidden />
+                {t.browseCharts(CHARTS.length)}
+              </Link>
+            </Button>
           </div>
           <div className="soft-up mt-6 flex max-w-full items-center gap-1 rounded-xl border border-border bg-code py-1 pr-1 pl-3.5 font-mono text-[0.8125rem] shadow-sm [--delay:0.34s]">
             <span aria-hidden className="mr-1 text-muted-foreground select-none">
@@ -733,18 +734,24 @@ export function Home() {
             ))}
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link to="/charts" className={buttonVariants({ variant: 'outline', size: 'md' })}>
-              {t.allCharts}
-              <ArrowRight aria-hidden />
-            </Link>
-            <Link to="/examples" className={buttonVariants({ variant: 'ghost', size: 'md' })}>
-              {t.dashboard}
-              <ArrowRight aria-hidden />
-            </Link>
-            <Link to="/playground" className={buttonVariants({ variant: 'ghost', size: 'md' })}>
-              {t.openPlayground}
-              <ArrowRight aria-hidden />
-            </Link>
+            <Button asChild variant="outline" size="md">
+              <Link to="/charts">
+                {t.allCharts}
+                <ArrowRight aria-hidden />
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="md">
+              <Link to="/examples">
+                {t.dashboard}
+                <ArrowRight aria-hidden />
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="md">
+              <Link to="/playground">
+                {t.openPlayground}
+                <ArrowRight aria-hidden />
+              </Link>
+            </Button>
           </div>
         </section>
       </Container>

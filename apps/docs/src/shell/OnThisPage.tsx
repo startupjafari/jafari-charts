@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useState } from 'react';
 import { useT } from '../i18n';
 import { cn } from '../lib/cn';
 import { Link, useLocation } from '../lib/router';
+import { Button } from '../ui/button';
 
 interface Heading {
   id: string;
@@ -115,17 +116,19 @@ export function OnThisPage({
           </li>
         ))}
       </ul>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="sm"
         onClick={() => {
           window.scrollTo({ top: 0 });
           document.querySelector<HTMLElement>('main h1')?.focus({ preventScroll: true });
         }}
-        className="inline-flex w-fit items-center gap-1.5 rounded-lg px-1 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+        className="-ml-3 w-fit text-muted-foreground"
       >
-        <ArrowUp className="size-3.5" aria-hidden />
+        <ArrowUp aria-hidden />
         {t.a11y.backToTop}
-      </button>
+      </Button>
     </nav>
   );
 }

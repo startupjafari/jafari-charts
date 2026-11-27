@@ -2,6 +2,7 @@ import { Check, Copy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '../lib/cn';
 import { useT } from '../i18n';
+import { Button } from './button';
 
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -52,21 +53,23 @@ export function CopyButton({
   };
   const Icon = state === 'copied' ? Check : Copy;
   return (
-    <button
+    // StudentHub's Button: ghost in a panel header, outline when it floats over the code.
+    <Button
       type="button"
+      variant={floating ? 'outline' : 'ghost'}
+      size="sm"
       onClick={onClick}
       data-state={state}
       className={cn(
-        'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/20 data-[state=copied]:text-success',
-        floating &&
-          'absolute top-2 right-2 z-[1] border border-border bg-background/85 backdrop-blur-sm',
+        'text-muted-foreground data-[state=copied]:text-success',
+        floating && 'absolute top-2 right-2 z-[1]',
         className,
       )}
     >
-      <Icon className="size-3.5" aria-hidden />
+      <Icon aria-hidden />
       <span aria-live="polite">
         {state === 'copied' ? t.copied : state === 'failed' ? t.copyFailed : (label ?? t.copy)}
       </span>
-    </button>
+    </Button>
   );
 }
