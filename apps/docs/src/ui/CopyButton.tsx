@@ -1,4 +1,6 @@
+import { Check, Copy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { cn } from '../lib/cn';
 import { useT } from '../i18n';
 
 async function copyText(text: string): Promise<boolean> {
@@ -31,10 +33,12 @@ export function CopyButton({
   text,
   floating = false,
   label,
+  className,
 }: {
   text: string;
   floating?: boolean;
   label?: string;
+  className?: string;
 }) {
   const t = useT().code;
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
@@ -46,38 +50,20 @@ export function CopyButton({
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setState('idle'), 1600);
   };
+  const Icon = state === 'copied' ? Check : Copy;
   return (
     <button
       type="button"
-      className={`copy-button${floating ? ' copy-floating' : ''}`}
       onClick={onClick}
       data-state={state}
+      className={cn(
+        'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/20 data-[state=copied]:text-success',
+        floating &&
+          'absolute top-2 right-2 z-[1] border border-border bg-background/85 backdrop-blur-sm',
+        className,
+      )}
     >
-      <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-        {state === 'copied' ? (
-          <path d="M5 12l5 5L20 7" fill="none" stroke="currentColor" strokeWidth="2.2" />
-        ) : (
-          <>
-            <rect
-              x="9"
-              y="9"
-              width="11"
-              height="11"
-              rx="2"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <path
-              d="M5 15V6a2 2 0 0 1 2-2h8"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </>
-        )}
-      </svg>
+      <Icon className="size-3.5" aria-hidden />
       <span aria-live="polite">
         {state === 'copied' ? t.copied : state === 'failed' ? t.copyFailed : (label ?? t.copy)}
       </span>

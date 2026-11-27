@@ -17,6 +17,8 @@
 | Unit + component + SSR tests       | `pnpm test` (`pnpm test:watch`)               |
 | Coverage                           | `pnpm test:coverage`                          |
 | E2E / visual / a11y                | `pnpm test:e2e`                               |
+| Docs site E2E / a11y               | `pnpm test:e2e:docs`                          |
+| Docs site visual baselines         | `pnpm test:visual:docs` (`…:update`, Docker)  |
 | Type check                         | `pnpm typecheck`                              |
 | Lint / format                      | `pnpm lint`, `pnpm format`                    |
 | Build packages                     | `pnpm build`                                  |

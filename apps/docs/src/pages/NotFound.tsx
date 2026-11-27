@@ -1,3 +1,4 @@
+import { SearchX } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useT, useText, type L } from '../i18n';
 import { Link, useLocation } from '../lib/router';
@@ -36,7 +37,13 @@ export function NotFound() {
   return (
     <article>
       <PageHeader title={ui.pages.notFound} lead={t.lead(path)} />
-      <p>{t.links}</p>
+      {/* StudentHub EmptyState: icon, one line, the way out. */}
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-10 text-center">
+        <span className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <SearchX className="size-6" aria-hidden />
+        </span>
+        <p className="m-0 max-w-md text-sm text-muted-foreground">{t.links}</p>
+      </div>
     </article>
   );
 }

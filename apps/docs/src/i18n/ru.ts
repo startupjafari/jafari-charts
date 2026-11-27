@@ -19,7 +19,34 @@ export const ru: Messages = {
     prevNext: 'Предыдущая и следующая страницы',
     onThisPage: 'На этой странице',
     language: 'Язык',
-    switchTheme: (theme) => (theme === 'dark' ? 'Включить тёмную тему' : 'Включить светлую тему'),
+    breadcrumb: 'Навигационная цепочка',
+    backToTop: 'Наверх',
+    sectionLink: (title) => `Ссылка на раздел «${title}»`,
+  },
+  theme: {
+    label: 'Цветовая тема',
+    light: 'Светлая',
+    dark: 'Тёмная',
+    system: 'Системная',
+  },
+  search: {
+    label: 'Фильтр страниц',
+    placeholder: 'Найти страницу…',
+    clear: 'Очистить фильтр',
+    empty: (query) => `Нет страниц по запросу «${query}».`,
+    results: (count) => {
+      const n = count % 100;
+      const last = n % 10;
+      const word =
+        n > 10 && n < 20
+          ? 'страниц'
+          : last === 1
+            ? 'страница'
+            : last >= 2 && last <= 4
+              ? 'страницы'
+              : 'страниц';
+      return `${count} ${word}`;
+    },
   },
   top: {
     docs: 'Документация',
@@ -55,6 +82,11 @@ export const ru: Messages = {
     notFound: 'Страница не найдена',
   },
   pager: { previous: 'Предыдущая', next: 'Следующая' },
+  chartPage: {
+    whenToUse: 'Когда использовать',
+    import: 'Импорт',
+    install: 'Установка',
+  },
   footer: {
     rendered:
       'Все диаграммы на этом сайте построены с помощью Jafari Charts. © Mehman Jafari · MIT (планируется).',
@@ -73,6 +105,9 @@ export const ru: Messages = {
     widthFill: 'Полная',
     previewTheme: (title) => `Тема превью: ${title}`,
     previewWidth: (title) => `Ширина превью: ${title}`,
+    preview: 'Превью',
+    code: 'Код',
+    views: (title) => `${title}: превью или код`,
     showCode: 'Показать код',
     hideCode: 'Скрыть код',
     loadingCode: 'Загрузка кода…',

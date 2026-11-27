@@ -3,8 +3,13 @@ import { useEffect, useSyncExternalStore } from 'react';
 /**
  * Global colour scheme of the docs site. A `dark` class on `<html>` drives both the
  * site styles and every chart rendered with `theme="auto"`.
+ *
+ * The visitor picks `light`, `dark` or `system`; `system` (the default) follows the
+ * OS and keeps following it while the page is open. Only an explicit light/dark
+ * choice is stored.
  */
 export type SiteTheme = 'light' | 'dark';
+export type ThemePreference = SiteTheme | 'system';
 
 const STORAGE_KEY = 'jc-docs-theme';
 const listeners = new Set<() => void>();
@@ -31,6 +36,10 @@ function osPrefersDark(): boolean {
   return typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
+/** In-memory preference, so the choice works even when storage is blocked. */
+let preference: ThemePreference =
+  typeof window === 'undefined' ? 'system' : (readStored() ?? 'system');
+
 function current(): SiteTheme {
   return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
 }
@@ -42,9 +51,16 @@ function apply(theme: SiteTheme): void {
   listeners.forEach((l) => l());
 }
 
+/** Applies and remembers the visitor's choice (`system` forgets the stored one). */
+export function setThemePreference(next: ThemePreference): void {
+  preference = next;
+  writeStored(next === 'system' ? null : next);
+  apply(next === 'system' ? (osPrefersDark() ? 'dark' : 'light') : next);
+}
+
+/** Explicit light/dark switch (kept for callers that only toggle). */
 export function setSiteTheme(theme: SiteTheme): void {
-  writeStored(theme);
-  apply(theme);
+  setThemePreference(theme);
 }
 
 function subscribe(listener: () => void): () => void {
@@ -52,9 +68,18 @@ function subscribe(listener: () => void): () => void {
   return () => listeners.delete(listener);
 }
 
-/** Current site theme; re-renders on change. */
+/** Current resolved site theme; re-renders on change. */
 export function useSiteTheme(): SiteTheme {
   return useSyncExternalStore(subscribe, current, () => 'light');
+}
+
+/** The visitor's choice: light, dark or system. */
+export function useThemePreference(): ThemePreference {
+  return useSyncExternalStore(
+    subscribe,
+    () => preference,
+    () => 'system',
+  );
 }
 
 /** Follows OS changes for visitors who never picked a theme explicitly. */
@@ -63,7 +88,7 @@ export function useFollowOsTheme(): void {
     if (typeof matchMedia !== 'function') return;
     const mq = matchMedia('(prefers-color-scheme: dark)');
     const onChange = () => {
-      if (readStored() === null) apply(osPrefersDark() ? 'dark' : 'light');
+      if (preference === 'system') apply(osPrefersDark() ? 'dark' : 'light');
     };
     mq.addEventListener('change', onChange);
     return () => mq.removeEventListener('change', onChange);
