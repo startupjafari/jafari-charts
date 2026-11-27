@@ -21,13 +21,15 @@ export interface ResolvedRoute {
   /** Used for `document.title`; null on the home page. */
   title: string | null;
   element: ReactNode;
-  /** Wide pages use the full content width. */
+  /** Wide pages use the full content width (and no “On this page” rail). */
   wide?: boolean;
+  /** Edge-to-edge page that lays out its own containers (the home page). */
+  bleed?: boolean;
 }
 
 /** Routes are language-neutral paths; titles come from the UI strings. */
 const STATIC: Record<string, (t: Messages) => ResolvedRoute> = {
-  '/': () => ({ title: null, element: <Home />, wide: true }),
+  '/': () => ({ title: null, element: <Home />, bleed: true }),
   '/getting-started': (t) => ({ title: t.pages.introduction, element: <GettingStarted /> }),
   '/installation': (t) => ({ title: t.pages.installation, element: <Installation /> }),
   '/quick-start': (t) => ({ title: t.pages.quickStart, element: <QuickStart /> }),

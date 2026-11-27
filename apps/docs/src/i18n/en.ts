@@ -26,7 +26,24 @@ export const en = {
     prevNext: 'Previous and next page',
     onThisPage: 'On this page',
     language: 'Language',
-    switchTheme: (theme: 'light' | 'dark') => `Switch to ${theme} theme`,
+    breadcrumb: 'Breadcrumb',
+    backToTop: 'Back to top',
+    sectionLink: (title: string) => `Link to “${title}”`,
+  },
+  /** Colour theme switch in the top bar. */
+  theme: {
+    label: 'Colour theme',
+    light: 'Light',
+    dark: 'Dark',
+    system: 'System',
+  },
+  /** Sidebar filter. */
+  search: {
+    label: 'Filter pages',
+    placeholder: 'Filter pages…',
+    clear: 'Clear filter',
+    empty: (query: string) => `No pages match “${query}”.`,
+    results: (count: number) => (count === 1 ? '1 page' : `${count} pages`),
   },
   top: {
     docs: 'Docs',
@@ -63,6 +80,11 @@ export const en = {
     notFound: 'Page not found',
   },
   pager: { previous: 'Previous', next: 'Next' },
+  chartPage: {
+    whenToUse: 'When to use it',
+    import: 'Import',
+    install: 'Install',
+  },
   footer: {
     rendered:
       'Every chart on this site is rendered with Jafari Charts. © Mehman Jafari · MIT (proposed).',
@@ -81,6 +103,9 @@ export const en = {
     widthFill: 'Fill',
     previewTheme: (title: string) => `Preview theme for ${title}`,
     previewWidth: (title: string) => `Preview width for ${title}`,
+    preview: 'Preview',
+    code: 'Code',
+    views: (title: string) => `${title}: preview or code`,
     showCode: 'Show code',
     hideCode: 'Hide code',
     loadingCode: 'Loading code…',

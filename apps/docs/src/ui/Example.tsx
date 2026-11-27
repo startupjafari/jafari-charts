@@ -1,6 +1,9 @@
+import * as Tabs from '@radix-ui/react-tabs';
+import { Code2, Eye, Monitor, Moon, Sun } from 'lucide-react';
 import { Suspense, use, useState, type ReactNode } from 'react';
 import { loadCode, loadExample } from '../examples';
 import { useT } from '../i18n';
+import { cn } from '../lib/cn';
 import { CodeBlock } from './CodeBlock';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Segmented } from './Segmented';
@@ -15,23 +18,29 @@ export interface ExampleProps {
   description?: ReactNode;
   /** Initial preview width. */
   width?: PreviewWidth;
-  /** Show the code panel initially. */
+  /** Show the code under the preview (no tabs): for guides where the code is the point. */
   codeOpen?: boolean;
   /** Anchor id for deep links. */
   anchor?: string;
   /** Hide the width switcher (examples that manage their own layout). */
   fixedWidth?: boolean;
+  /** Without the title row (when the surrounding section already names it). */
+  hideTitle?: boolean;
+  className?: string;
 }
 
 /** The example's source files (loaded on demand). */
 function ExampleCode({ id }: { id: string }) {
   const files = use(loadCode(id));
-  return <CodeBlock files={files} className="example-codeblock" />;
+  return <CodeBlock files={files} bare />;
 }
 
+const TRIGGER =
+  'inline-flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-[0.8125rem] font-medium whitespace-nowrap text-muted-foreground outline-none hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/25 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm dark:data-[state=active]:bg-input/50';
+
 /**
- * A live example: the component rendered in a themable, resizable frame, with
- * its exact source code underneath.
+ * A live example: the component rendered in a themable, resizable preview, with
+ * its exact source code one tab away.
  */
 export function Example({
   id,
@@ -41,13 +50,15 @@ export function Example({
   codeOpen = false,
   anchor,
   fixedWidth = false,
+  hideTitle = false,
+  className,
 }: ExampleProps) {
   const { Component } = loadExample(id);
   const t = useT();
   const themes = [
-    { value: 'auto', label: t.example.themeAuto },
-    { value: 'light', label: t.example.themeLight },
-    { value: 'dark', label: t.example.themeDark },
+    { value: 'auto', label: t.example.themeAuto, icon: Monitor },
+    { value: 'light', label: t.example.themeLight, icon: Sun },
+    { value: 'dark', label: t.example.themeDark, icon: Moon },
   ] as const;
   const widths = [
     { value: 'fill', label: t.example.widthFill },
@@ -56,82 +67,133 @@ export function Example({
   ] as const;
   const [theme, setTheme] = useState<PreviewTheme>('auto');
   const [w, setW] = useState<PreviewWidth>(width);
-  const [open, setOpen] = useState(codeOpen);
-  const codeId = `${anchor ?? id.replace(/\W/g, '-')}-code`;
+  const [tab, setTab] = useState('preview');
+  const titleId = anchor ? `${anchor}-title` : undefined;
+  const controls = (
+    <div className="ml-auto flex flex-wrap items-center gap-2">
+      <Segmented
+        label={t.example.previewTheme(title)}
+        hideLabel
+        size="sm"
+        options={themes}
+        value={theme}
+        onChange={setTheme}
+      />
+      {fixedWidth ? null : (
+        <Segmented
+          label={t.example.previewWidth(title)}
+          hideLabel
+          size="sm"
+          options={widths}
+          value={w}
+          onChange={setW}
+        />
+      )}
+    </div>
+  );
+  const preview = (
+    <div
+      className={cn(
+        'example-preview bg-preview px-3 pt-4 pb-3.5 text-foreground sm:px-5 sm:pt-6 sm:pb-5',
+        theme !== 'auto' && theme,
+      )}
+      data-preview-theme={theme}
+    >
+      <div
+        className={cn(
+          'example-stage mx-auto min-w-0 [container-type:inline-size]',
+          w !== 'fill' && 'rounded-sm outline-1 outline-offset-8 outline-border outline-dashed',
+        )}
+        style={w === 'fill' ? undefined : { maxWidth: w }}
+        data-width={w}
+      >
+        <ErrorBoundary label={t.errors.example(title)}>
+          <Component />
+        </ErrorBoundary>
+      </div>
+    </div>
+  );
+  const code = (
+    <ErrorBoundary label={t.errors.code}>
+      <Suspense
+        fallback={
+          <p className="m-0 px-4 py-3.5 text-[0.8125rem] text-muted-foreground">
+            {t.example.loadingCode}
+          </p>
+        }
+      >
+        <ExampleCode id={id} />
+      </Suspense>
+    </ErrorBoundary>
+  );
   return (
     <section
-      className="example"
+      className={cn('example my-8', className)}
       id={anchor}
-      aria-labelledby={anchor ? `${anchor}-title` : undefined}
+      aria-labelledby={hideTitle ? undefined : titleId}
+      aria-label={hideTitle ? title : undefined}
     >
-      <div className="example-head">
-        <h3 id={anchor ? `${anchor}-title` : undefined}>{title}</h3>
-        {description ? <div className="example-desc">{description}</div> : null}
-      </div>
-      <div className="example-frame">
-        <div className="example-toolbar">
-          <Segmented
-            label={t.example.previewTheme(title)}
-            hideLabel
-            size="sm"
-            options={themes}
-            value={theme}
-            onChange={setTheme}
-          />
-          {fixedWidth ? null : (
-            <Segmented
-              label={t.example.previewWidth(title)}
-              hideLabel
-              size="sm"
-              options={widths}
-              value={w}
-              onChange={setW}
-            />
-          )}
-          <button
-            type="button"
-            className="btn btn-ghost btn-sm example-code-toggle"
-            aria-expanded={open}
-            aria-controls={codeId}
-            onClick={() => setOpen((o) => !o)}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M8 6l-6 6 6 6M16 6l6 6-6 6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            {open ? t.example.hideCode : t.example.showCode}
-          </button>
-        </div>
-        <div
-          className={`example-preview${theme === 'auto' ? '' : ` ${theme}`}`}
-          data-preview-theme={theme}
-        >
-          <div
-            className="example-stage"
-            style={w === 'fill' ? undefined : { maxWidth: w }}
-            data-width={w}
-          >
-            <ErrorBoundary label={t.errors.example(title)}>
-              <Component />
-            </ErrorBoundary>
-          </div>
-        </div>
-        <div id={codeId} hidden={!open}>
-          {open ? (
-            <ErrorBoundary label={t.errors.code}>
-              <Suspense fallback={<p className="code-loading">{t.example.loadingCode}</p>}>
-                <ExampleCode id={id} />
-              </Suspense>
-            </ErrorBoundary>
+      {hideTitle ? null : (
+        <div className="mb-3">
+          <h3 id={titleId} className="m-0 text-base font-semibold">
+            {title}
+          </h3>
+          {description ? (
+            <div className="mt-1 text-[0.9375rem] text-muted-foreground [&>:last-child]:mb-0">
+              {description}
+            </div>
           ) : null}
         </div>
-      </div>
+      )}
+      {codeOpen ? (
+        // Guides: the code is the point, so preview and code are shown together.
+        <div className="overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10">
+          <div className="flex flex-wrap items-center gap-2 border-b border-border bg-muted/30 px-3 py-1.5">
+            <span className="inline-flex h-7 items-center gap-1.5 text-[0.8125rem] font-medium text-muted-foreground">
+              <Eye className="size-3.5" aria-hidden />
+              {t.example.preview}
+            </span>
+            {controls}
+          </div>
+          {preview}
+          <div className="border-t border-border">{code}</div>
+        </div>
+      ) : (
+        <Tabs.Root
+          value={tab}
+          onValueChange={setTab}
+          className="overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10"
+        >
+          <div className="flex flex-wrap items-center gap-2 border-b border-border bg-muted/30 px-2 py-1.5">
+            <Tabs.List
+              aria-label={t.example.views(title)}
+              className="inline-flex gap-0.5 rounded-xl border border-border bg-muted/50 p-0.5"
+            >
+              <Tabs.Trigger value="preview" className={TRIGGER}>
+                <Eye className="size-3.5" aria-hidden />
+                {t.example.preview}
+              </Tabs.Trigger>
+              <Tabs.Trigger value="code" className={TRIGGER}>
+                <Code2 className="size-3.5" aria-hidden />
+                {t.example.code}
+              </Tabs.Trigger>
+            </Tabs.List>
+            {tab === 'preview' ? controls : null}
+          </div>
+          {/* The preview stays mounted while the code is shown: switching back is instant. */}
+          <Tabs.Content
+            value="preview"
+            forceMount
+            tabIndex={-1}
+            className="outline-none data-[state=inactive]:hidden"
+          >
+            {preview}
+          </Tabs.Content>
+          <Tabs.Content value="code" tabIndex={-1} className="outline-none">
+            {code}
+          </Tabs.Content>
+        </Tabs.Root>
+      )}
     </section>
   );
 }

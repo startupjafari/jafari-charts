@@ -1,3 +1,4 @@
+import { TriangleAlert } from 'lucide-react';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { useT } from '../i18n';
 
@@ -44,9 +45,15 @@ export class ErrorBoundary extends Component<Props, State> {
 function ErrorMessage({ label, message }: { label: string | undefined; message: string }) {
   const t = useT().errors;
   return (
-    <div className="error-box" role="alert">
-      <strong>{t.failed(label ?? t.thisExample)}</strong>
-      <span>{message}</span>
+    <div
+      className="flex gap-3 rounded-xl border border-dashed border-warning/40 bg-warning/[0.06] px-4 py-3 text-sm"
+      role="alert"
+    >
+      <TriangleAlert className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden />
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <strong className="font-semibold">{t.failed(label ?? t.thisExample)}</strong>
+        <span className="text-muted-foreground [overflow-wrap:anywhere]">{message}</span>
+      </div>
     </div>
   );
 }
