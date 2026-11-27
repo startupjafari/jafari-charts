@@ -1,15 +1,11 @@
 import { ChartReferenceLine, ScatterChart } from '@startupjafari/charts';
-import { useMemo, useState, type ReactNode } from 'react';
+import { Keyboard, MousePointer2, MousePointerClick } from '../ui/icons';
+import { useMemo, useState } from 'react';
 import { rng } from '../data';
-
-function Card({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="card" data-testid={title}>
-      <h3>{title}</h3>
-      {children}
-    </section>
-  );
-}
+import { useAnimation } from '../shell/playground';
+import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
+import { ChartCard as Card, Readout } from '../ui/card';
+import { Kbd } from '../ui/kbd';
 
 /** Box–Muller normal sample from a uniform generator. */
 function normal(r: () => number): number {
@@ -85,95 +81,140 @@ const messy = [
 ];
 
 export function Scatter() {
-  const animation = new URLSearchParams(location.search).get('animation') !== 'off';
+  const animation = useAnimation();
+  const [show, filter] = useCaseFilter();
   const [hovered, setHovered] = useState('—');
   const bigData = useMemo(() => big, []);
   return (
-    <div className="grid">
-      <Card title="Scatter chart (groups)">
-        <ScatterChart
-          data={students}
-          xKey="hours"
-          yKey="score"
-          groupKey="level"
-          labelKey="id"
-          xLabel="Study hours / week"
-          yLabel="Exam score"
-          animation={animation}
-        />
-      </Card>
-      <Card title="Bubble chart (log x, size = population)">
-        <ScatterChart
-          data={countries}
-          xKey="gdp"
-          yKey="life"
-          sizeKey="pop"
-          groupKey="region"
-          labelKey="name"
-          xAxis={{ scale: 'log', title: 'GDP per capita, $' }}
-          yAxis={{ title: 'Life expectancy' }}
-          sizeLabel="Population, M"
-          xFormatter={(v) => `$${Math.round(v).toLocaleString('en')}`}
-          animation={animation}
-        />
-      </Card>
-      <Card title="Negative values + reference lines">
-        <ScatterChart
-          data={changes}
-          xKey="enrolment"
-          yKey="results"
-          labelKey="school"
-          xLabel="Enrolment change, %"
-          yLabel="Results change, pts"
-          animation={animation}
+    <ScenePage
+      scene="scatter"
+      actions={filter}
+      hints={
+        <>
+          <Hint icon={MousePointer2}>Hover near a point to pick it up</Hint>
+          <Hint icon={MousePointerClick}>Click legend items to hide groups</Hint>
+          <Hint icon={Keyboard}>
+            Focus, then <Kbd>←</Kbd>
+            <Kbd>→</Kbd> through the points
+          </Hint>
+        </>
+      }
+    >
+      {show !== 'edge' && (
+        <SceneSection
+          title="Showcase"
+          count={5}
+          description="Two measures per point: groups, bubble sizes, log scales, quadrants and many points."
         >
-          <ChartReferenceLine y={5} label="Target" />
-          <ChartReferenceLine x={10} />
-        </ScatterChart>
-      </Card>
-      <Card title={`10 000 points (renderer auto → canvas) · hover: ${hovered}`}>
-        <ScatterChart
-          data={bigData}
-          xKey="x"
-          yKey="y"
-          groupKey="cluster"
-          renderer="auto"
-          animation={animation}
-          onHover={(e) => setHovered(e ? `${e.series} #${e.index}` : '—')}
-        />
-      </Card>
-      <Card title="Wide data (series) + differentiate">
-        <ScatterChart
-          data={wide}
-          xKey="month"
-          series={[
-            { key: 'enrolled', label: 'Enrolled' },
-            { key: 'graduated', label: 'Graduated' },
-          ]}
-          differentiate
-          xLabel="Month"
-          animation={animation}
-        />
-      </Card>
-      <Card title="Edge cases: NaN/null, duplicates, single point, empty">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          <ScatterChart data={messy} xKey="x" yKey="y" height={180} animation={animation} />
-          <ScatterChart
-            data={[{ x: 5, y: 42 }]}
-            xKey="x"
-            yKey="y"
-            height={180}
-            animation={animation}
-          />
-          <ScatterChart
-            data={[] as { x: number; y: number }[]}
-            xKey="x"
-            yKey="y"
-            height={120}
-            animation={animation}
-          />
-        </div>
-      </Card>
-    </div>
+          <Card
+            title="Scatter chart (groups)"
+            description="Study hours against exam score, coloured by degree."
+          >
+            <ScatterChart
+              data={students}
+              xKey="hours"
+              yKey="score"
+              groupKey="level"
+              labelKey="id"
+              xLabel="Study hours / week"
+              yLabel="Exam score"
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Bubble chart (log x, size = population)"
+            description="Log-scaled GDP; bubble area encodes population."
+          >
+            <ScatterChart
+              data={countries}
+              xKey="gdp"
+              yKey="life"
+              sizeKey="pop"
+              groupKey="region"
+              labelKey="name"
+              xAxis={{ scale: 'log', title: 'GDP per capita, $' }}
+              yAxis={{ title: 'Life expectancy' }}
+              sizeLabel="Population, M"
+              xFormatter={(v) => `$${Math.round(v).toLocaleString('en')}`}
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Negative values + reference lines"
+            description="Quadrants around zero with target lines."
+          >
+            <ScatterChart
+              data={changes}
+              xKey="enrolment"
+              yKey="results"
+              labelKey="school"
+              xLabel="Enrolment change, %"
+              yLabel="Results change, pts"
+              animation={animation}
+            >
+              <ChartReferenceLine y={5} label="Target" />
+              <ChartReferenceLine x={10} />
+            </ScatterChart>
+          </Card>
+          <Card
+            title="10 000 points (renderer auto → canvas)"
+            description="Past a threshold the chart switches to canvas by itself."
+            footer={<Readout label="Hovered">{hovered}</Readout>}
+          >
+            <ScatterChart
+              data={bigData}
+              xKey="x"
+              yKey="y"
+              groupKey="cluster"
+              renderer="auto"
+              animation={animation}
+              onHover={(e) => setHovered(e ? `${e.series} #${e.index}` : '—')}
+            />
+          </Card>
+          <Card
+            title="Wide data (series) + differentiate"
+            description="Two series from one row each; marker shapes differ."
+          >
+            <ScatterChart
+              data={wide}
+              xKey="month"
+              series={[
+                { key: 'enrolled', label: 'Enrolled' },
+                { key: 'graduated', label: 'Graduated' },
+              ]}
+              differentiate
+              xLabel="Month"
+              animation={animation}
+            />
+          </Card>
+        </SceneSection>
+      )}
+      {show !== 'showcase' && (
+        <SceneSection title="Edge cases" count={1} description="Dirty and degenerate input.">
+          <Card
+            title="Edge cases: NaN/null, duplicates, single point, empty"
+            description="NaN and null are skipped; duplicates, one point, no data."
+          >
+            <div className="grid grid-cols-2 gap-3">
+              <ScatterChart data={messy} xKey="x" yKey="y" height={180} animation={animation} />
+              <ScatterChart
+                data={[{ x: 5, y: 42 }]}
+                xKey="x"
+                yKey="y"
+                height={180}
+                animation={animation}
+              />
+              <ScatterChart
+                data={[] as { x: number; y: number }[]}
+                xKey="x"
+                yKey="y"
+                height={120}
+                animation={animation}
+              />
+            </div>
+          </Card>
+        </SceneSection>
+      )}
+    </ScenePage>
   );
 }

@@ -1,5 +1,8 @@
 import { BarChart, HorizontalBarChart } from '@startupjafari/charts';
-import type { ReactNode } from 'react';
+import { MousePointer2, WrapText } from '../ui/icons';
+import { useAnimation } from '../shell/playground';
+import { Hint, ScenePage } from '../shell/scene-page';
+import { ChartCard as Card, CardGrid } from '../ui/card';
 
 // Long Russian/Kazakh university names: wrapped category labels, per-bar colours, integer
 // counts and orientation-independent axis props (?scene=universities).
@@ -25,57 +28,67 @@ const universities = [
 ];
 const OWN = 'Казахский национальный университет имени аль-Фараби';
 
-function Card({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="card" data-testid={title}>
-      <h3>{title}</h3>
-      {children}
-    </section>
-  );
-}
-
 export function Universities() {
-  const animation = new URLSearchParams(location.search).get('animation') !== 'off';
+  const animation = useAnimation();
   return (
-    <div className="grid">
-      <Card title="Users by university">
-        <HorizontalBarChart
-          data={universities}
-          xKey="name"
-          series={[
-            {
-              key: 'users',
-              label: 'Пользователи',
-              colorBy: (d) => (d.name === OWN ? 'var(--jc-series-2)' : undefined),
-            },
-          ]}
-          locale="ru"
-          animation={animation}
-        />
-      </Card>
-      <Card title="Complaints (value axis hidden)">
-        <HorizontalBarChart
-          data={universities}
-          xKey="name"
-          yKey="complaints"
-          label="Жалобы"
-          yAxis={{ hidden: true }}
-          locale="ru"
-          animation={animation}
-        />
-      </Card>
-      <Card title="Complaints (integer ticks)">
-        <BarChart
-          data={universities}
-          xKey="name"
-          yKey="complaints"
-          label="Жалобы"
-          yAxis={{ integer: true }}
-          height={300}
-          locale="ru"
-          animation={animation}
-        />
-      </Card>
-    </div>
+    <ScenePage
+      scene="universities"
+      hints={
+        <>
+          <Hint icon={WrapText}>Resize the window: labels wrap instead of being cut off</Hint>
+          <Hint icon={MousePointer2}>Hover a bar for the full name</Hint>
+        </>
+      }
+    >
+      <CardGrid>
+        <Card
+          title="Users by university"
+          description="Wrapped names; our university is highlighted with colorBy."
+        >
+          <HorizontalBarChart
+            data={universities}
+            xKey="name"
+            series={[
+              {
+                key: 'users',
+                label: 'Пользователи',
+                colorBy: (d) => (d.name === OWN ? 'var(--jc-series-2)' : undefined),
+              },
+            ]}
+            locale="ru"
+            animation={animation}
+          />
+        </Card>
+        <Card
+          title="Complaints (value axis hidden)"
+          description="Bars only: the value axis is hidden."
+        >
+          <HorizontalBarChart
+            data={universities}
+            xKey="name"
+            yKey="complaints"
+            label="Жалобы"
+            yAxis={{ hidden: true }}
+            locale="ru"
+            animation={animation}
+          />
+        </Card>
+        <Card
+          title="Complaints (integer ticks)"
+          description="Vertical bars, wrapped labels and whole-number ticks."
+        >
+          <BarChart
+            data={universities}
+            xKey="name"
+            yKey="complaints"
+            label="Жалобы"
+            yAxis={{ integer: true }}
+            height={300}
+            locale="ru"
+            animation={animation}
+          />
+        </Card>
+      </CardGrid>
+    </ScenePage>
   );
 }

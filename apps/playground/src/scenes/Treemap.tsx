@@ -1,5 +1,9 @@
 import { TreemapChart, type TreemapDatum } from '@startupjafari/charts';
-import type { ReactNode } from 'react';
+import { Keyboard, MousePointerClick } from '../ui/icons';
+import { useAnimation } from '../shell/playground';
+import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
+import { ChartCard as Card } from '../ui/card';
+import { Kbd } from '../ui/kbd';
 
 const budget: TreemapDatum = {
   name: 'University budget',
@@ -95,65 +99,105 @@ let deep: TreemapDatum = { name: 'Level 8', value: 30 };
 for (let d = 7; d >= 1; d--)
   deep = { name: `Level ${d}`, children: [deep, { name: `Side ${d}`, value: 40 + d * 15 }] };
 
-function Card({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="card" data-testid={title}>
-      <h3>{title}</h3>
-      {children}
-    </section>
-  );
-}
-
 export function Treemap() {
-  const animation = new URLSearchParams(location.search).get('animation') !== 'off';
+  const animation = useAnimation();
+  const [show, filter] = useCaseFilter();
   return (
-    <div className="grid">
-      <Card title="Treemap (hierarchy, click to drill down)">
-        <TreemapChart
-          data={budget}
-          drilldown
-          title="University budget"
-          valueFormatter={(v) => `$${v.toLocaleString('en')}k`}
-          animation={animation}
-        />
-      </Card>
-      <Card title="Treemap (flat rows: region › city › product)">
-        <TreemapChart
-          data={sales}
-          groupKey="region"
-          subgroupKey="city"
-          labelKey="product"
-          valueKey="amount"
-          animation={animation}
-        />
-      </Card>
-      <Card title="Treemap (rows summed per region)">
-        <TreemapChart
-          data={sales}
-          groupKey="region"
-          valueKey="amount"
-          height={240}
-          animation={animation}
-        />
-      </Card>
-      <Card title="Treemap (2,000 leaves)">
-        <TreemapChart data={big} height={420} animation={animation} />
-      </Card>
-      <Card title="Treemap (deep tree, depth shading)">
-        <TreemapChart data={deep} depthShading animation={animation} />
-      </Card>
-      <Card title="Treemap (single node)">
-        <TreemapChart data={{ name: 'Tuition', value: 1 }} height={160} animation={animation} />
-      </Card>
-      <Card title="Treemap (zero and negative only)">
-        <TreemapChart
-          data={[
-            { name: 'Refunds', value: -20 },
-            { name: 'Grants', value: 0 },
-          ]}
-          height={160}
-        />
-      </Card>
-    </div>
+    <ScenePage
+      scene="treemap"
+      actions={filter}
+      hints={
+        <>
+          <Hint icon={MousePointerClick}>
+            Click a group to drill in; use the breadcrumb to go back
+          </Hint>
+          <Hint icon={Keyboard}>
+            Focus, then <Kbd>←</Kbd>
+            <Kbd>→</Kbd> to move, <Kbd>Enter</Kbd> to drill in, <Kbd>⌫</Kbd> to go back
+          </Hint>
+        </>
+      }
+    >
+      {show !== 'edge' && (
+        <SceneSection
+          title="Showcase"
+          count={5}
+          description="Nested trees and grouped flat rows, from a handful of tiles to two thousand."
+        >
+          <Card
+            title="Treemap (hierarchy, click to drill down)"
+            description="A university budget, three levels deep, with drill-down."
+          >
+            <TreemapChart
+              data={budget}
+              drilldown
+              title="University budget"
+              valueFormatter={(v) => `$${v.toLocaleString('en')}k`}
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Treemap (flat rows: region › city › product)"
+            description="Grouped from flat rows; the negative amount is skipped."
+          >
+            <TreemapChart
+              data={sales}
+              groupKey="region"
+              subgroupKey="city"
+              labelKey="product"
+              valueKey="amount"
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Treemap (rows summed per region)"
+            description="One tile per region, rows summed."
+          >
+            <TreemapChart
+              data={sales}
+              groupKey="region"
+              valueKey="amount"
+              height={240}
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Treemap (2,000 leaves)"
+            description="Stress test: 8 faculties × 10 courses × 25 students."
+          >
+            <TreemapChart data={big} height={420} animation={animation} />
+          </Card>
+          <Card
+            title="Treemap (deep tree, depth shading)"
+            description="Eight nested levels shaded by depth."
+          >
+            <TreemapChart data={deep} depthShading animation={animation} />
+          </Card>
+        </SceneSection>
+      )}
+      {show !== 'showcase' && (
+        <SceneSection
+          title="Edge cases"
+          count={2}
+          description="Degenerate trees: a single node and nothing positive to draw."
+        >
+          <Card title="Treemap (single node)" description="One tile filling the plot.">
+            <TreemapChart data={{ name: 'Tuition', value: 1 }} height={160} animation={animation} />
+          </Card>
+          <Card
+            title="Treemap (zero and negative only)"
+            description="Nothing positive to draw, so the empty state shows."
+          >
+            <TreemapChart
+              data={[
+                { name: 'Refunds', value: -20 },
+                { name: 'Grants', value: 0 },
+              ]}
+              height={160}
+            />
+          </Card>
+        </SceneSection>
+      )}
+    </ScenePage>
   );
 }
