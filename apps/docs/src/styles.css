@@ -447,7 +447,7 @@
 
   /* A pressed toggle in an example's button row: StudentHub's "selected" recipe. */
   .btn[aria-pressed='true'] {
-    @apply border-primary/40 bg-primary/10 text-primary;
+    @apply border-primary/40 bg-primary/10 text-primary-ink;
   }
 
   .badge {
