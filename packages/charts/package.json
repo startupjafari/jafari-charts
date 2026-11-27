@@ -18,12 +18,12 @@
   "description": "Jafari Charts — engineered for performance. Beautiful charts. Zero compromise.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mehmanaseventhills/jafari-charts.git",
+    "url": "git+https://github.com/startupjafari/jafari-charts.git",
     "directory": "packages/charts"
   },
-  "homepage": "https://github.com/mehmanaseventhills/jafari-charts#readme",
+  "homepage": "https://github.com/startupjafari/jafari-charts#readme",
   "bugs": {
-    "url": "https://github.com/mehmanaseventhills/jafari-charts/issues"
+    "url": "https://github.com/startupjafari/jafari-charts/issues"
   },
   "exports": {
     ".": {

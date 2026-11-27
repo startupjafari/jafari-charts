@@ -16,12 +16,12 @@
   "description": "Canvas 2D renderer for Jafari Charts scenes (HiDPI, layered, hit-testable).",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mehmanaseventhills/jafari-charts.git",
+    "url": "git+https://github.com/startupjafari/jafari-charts.git",
     "directory": "packages/canvas"
   },
-  "homepage": "https://github.com/mehmanaseventhills/jafari-charts#readme",
+  "homepage": "https://github.com/startupjafari/jafari-charts#readme",
   "bugs": {
-    "url": "https://github.com/mehmanaseventhills/jafari-charts/issues"
+    "url": "https://github.com/startupjafari/jafari-charts/issues"
   },
   "exports": {
     ".": {

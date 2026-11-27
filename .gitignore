@@ -17,3 +17,7 @@ benchmarks/results/*.raw.json
 *.log
 benchmarks/.size-tmp/
 packages/charts/README.md
+
+# Output of screenshot scripts run with a URL in place of the file path
+/http:/
+/https:/
