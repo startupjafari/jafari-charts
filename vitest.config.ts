@@ -39,6 +39,15 @@ export default defineConfig({
       {
         ...resolveSource,
         test: {
+          name: 'playground',
+          environment: 'jsdom',
+          include: ['apps/playground/src/**/*.test.{ts,tsx}'],
+          setupFiles: ['packages/react/src/test/setup.ts'],
+        },
+      },
+      {
+        ...resolveSource,
+        test: {
           name: 'ssr',
           environment: 'node',
           include: [
