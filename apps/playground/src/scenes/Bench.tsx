@@ -342,10 +342,68 @@ export function Bench() {
         </>
       }
     >
-      <section
-        aria-label="Results"
-        className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4"
-      >
+      <Card className="flex flex-wrap items-center gap-2 px-4 py-3">
+        <span className="mr-1 text-xs font-medium text-muted-foreground">Measure</span>
+        <Button size="sm" disabled={busy} onClick={() => void step(runAll)}>
+          <Play aria-hidden />
+          Run all
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={busy || mounted}
+          onClick={() => void step(mount)}
+        >
+          Mount
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={busy || !mounted}
+          onClick={() => void step(update)}
+        >
+          Update
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={busy || !mounted}
+          onClick={() => void step(stream)}
+        >
+          Stream
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={busy || !mounted}
+          onClick={() => void step(hover)}
+        >
+          Hover sweep
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={busy || !mounted}
+          onClick={() => void step(resize)}
+        >
+          Resize to 600 px
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={busy || !mounted}
+          onClick={() => void step(unmount)}
+        >
+          <Trash2 aria-hidden />
+          Unmount
+        </Button>
+        <Button variant="ghost" size="sm" disabled={busy} onClick={reset} className="ml-auto">
+          <RotateCcw aria-hidden />
+          Reset
+        </Button>
+      </Card>
+
+      <section aria-label="Results" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <MetricTile
           icon={Play}
           label="Mount"
@@ -407,67 +465,6 @@ export function Bench() {
           tone="text-warning"
         />
       </section>
-
-      <Card className="flex flex-wrap items-center gap-2 px-4 py-3">
-        <span className="mr-1 text-xs font-medium text-muted-foreground">Measure</span>
-        <Button size="sm" disabled={busy} onClick={() => void step(runAll)}>
-          <Play aria-hidden />
-          Run all
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={busy || mounted}
-          onClick={() => void step(mount)}
-        >
-          Mount
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={busy || !mounted}
-          onClick={() => void step(update)}
-        >
-          Update
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={busy || !mounted}
-          onClick={() => void step(stream)}
-        >
-          Stream
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={busy || !mounted}
-          onClick={() => void step(hover)}
-        >
-          Hover sweep
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={busy || !mounted}
-          onClick={() => void step(resize)}
-        >
-          Resize to 600 px
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={busy || !mounted}
-          onClick={() => void step(unmount)}
-        >
-          <Trash2 aria-hidden />
-          Unmount
-        </Button>
-        <Button variant="ghost" size="sm" disabled={busy} onClick={reset} className="ml-auto">
-          <RotateCcw aria-hidden />
-          Reset
-        </Button>
-      </Card>
 
       <ChartCard
         title="Bench area"

@@ -12,6 +12,7 @@ import type { MouseEvent, ReactNode } from 'react';
 import { GROUPS, SCENES, type SceneInfo } from '../catalog';
 import { sceneHref, usePlayground } from '../shell/playground';
 import { Hint, Hints, ScenePage } from '../shell/scene-page';
+import { cn } from '../lib/utils';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 
@@ -84,6 +85,28 @@ const PARAMS: ReadonlyArray<[string, string]> = [
   ['chart · points · charts · renderer', 'Benchmark set-up, e.g. chart=line&points=10000.'],
 ];
 
+/** On wide screens beside the introduction, on narrow ones after the scene list. */
+function UrlParameters({ className }: { className?: string }) {
+  return (
+    <Card className={cn('flex flex-col gap-3 p-5', className)}>
+      <div className="flex items-center gap-2">
+        <Link2 className="size-4 text-primary" aria-hidden />
+        <h2 className="text-base font-semibold">URL parameters</h2>
+      </div>
+      <dl className="flex flex-col divide-y divide-border">
+        {PARAMS.map(([name, text]) => (
+          <div key={name} className="flex flex-col gap-0.5 py-2 first:pt-0 last:pb-0">
+            <dt>
+              <code className="font-mono text-xs font-medium text-foreground">{name}</code>
+            </dt>
+            <dd className="text-xs text-muted-foreground">{text}</dd>
+          </div>
+        ))}
+      </dl>
+    </Card>
+  );
+}
+
 /** Landing page: what the playground is and what every scene demonstrates. */
 export function Overview() {
   return (
@@ -114,22 +137,7 @@ export function Overview() {
             </Step>
           </ul>
         </Card>
-        <Card className="flex flex-col gap-3 p-5">
-          <div className="flex items-center gap-2">
-            <Link2 className="size-4 text-primary" aria-hidden />
-            <h2 className="text-base font-semibold">URL parameters</h2>
-          </div>
-          <dl className="flex flex-col divide-y divide-border">
-            {PARAMS.map(([name, text]) => (
-              <div key={name} className="flex flex-col gap-0.5 py-2 first:pt-0 last:pb-0">
-                <dt>
-                  <code className="font-mono text-xs font-medium text-foreground">{name}</code>
-                </dt>
-                <dd className="text-xs text-muted-foreground">{text}</dd>
-              </div>
-            ))}
-          </dl>
-        </Card>
+        <UrlParameters className="hidden xl:flex" />
       </div>
 
       <Hints>
@@ -160,6 +168,7 @@ export function Overview() {
           </section>
         );
       })}
+      <UrlParameters className="xl:hidden" />
     </ScenePage>
   );
 }
