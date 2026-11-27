@@ -4,7 +4,7 @@
  */
 export type Lang = 'en' | 'ru' | 'kk';
 
-/** Every site language, in switcher order. English is the default (unprefixed URLs). */
+/** Every site language; English is the default (unprefixed URLs). */
 export const LANGS: readonly Lang[] = ['en', 'ru', 'kk'];
 
 /** A value in every site language. TypeScript reports a missing translation. */

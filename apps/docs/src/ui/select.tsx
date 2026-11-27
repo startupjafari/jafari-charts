@@ -1,0 +1,107 @@
+import * as SelectPrimitive from '@radix-ui/react-select';
+import { Check, ChevronDown } from 'lucide-react';
+import * as React from 'react';
+import { useT } from '../i18n';
+import { cn } from '../lib/cn';
+import { FIELD_SIZE, type ControlSize } from './control-size';
+
+// StudentHub's Select (`shared/ui/select.tsx`, Radix): the trigger follows Input, a soft
+// focus, a rounded animated popover and a blue check on the chosen item.
+const Select = SelectPrimitive.Root;
+const SelectGroup = SelectPrimitive.Group;
+const SelectValue = SelectPrimitive.Value;
+
+function SelectTrigger({
+  className,
+  children,
+  size = 'lg',
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Trigger> & { size?: ControlSize }) {
+  return (
+    <SelectPrimitive.Trigger
+      data-slot="select-trigger"
+      className={cn(
+        // Height from the shared control scale: a select lines up with a button and a
+        // field of the same size.
+        'flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-input bg-background py-2 transition-[color,box-shadow,border-color] outline-none hover:border-ring/50 focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-ring/15 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-4 aria-invalid:ring-destructive/15 data-[placeholder]:text-muted-foreground/70 dark:bg-input/30 [&>span]:truncate',
+        FIELD_SIZE[size],
+        className,
+      )}
+      {...props}
+    >
+      {children}
+      <SelectPrimitive.Icon asChild>
+        <ChevronDown className="size-4 shrink-0 opacity-60" aria-hidden />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+  );
+}
+
+/**
+ * The list popover. An empty list says so («Empty») — an open frame without a single row
+ * reads as a failure, not as "nothing to choose". Emptiness is counted on the rendered
+ * children, so `{items.map(...)}` over an empty array and `{cond && <SelectItem/>}` work.
+ */
+function SelectContent({
+  className,
+  children,
+  position = 'popper',
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Content>) {
+  const t = useT();
+  const isEmpty = React.Children.toArray(children).length === 0;
+  return (
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
+        data-slot="select-content"
+        position={position}
+        className={cn(
+          'relative z-[200] max-h-[var(--radix-select-content-available-height)] min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-xl border border-border bg-popover p-1 text-popover-foreground data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+          position === 'popper' &&
+            'data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
+          className,
+        )}
+        {...props}
+      >
+        <SelectPrimitive.Viewport
+          className={cn(
+            position === 'popper' && 'w-full min-w-[var(--radix-select-trigger-width)]',
+          )}
+        >
+          {isEmpty ? (
+            // Not a `SelectItem`: the line is a state caption, not an option to pick.
+            <p className="px-2.5 py-2 text-sm text-muted-foreground">{t.select.empty}</p>
+          ) : (
+            children
+          )}
+        </SelectPrimitive.Viewport>
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  );
+}
+
+function SelectItem({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Item>) {
+  return (
+    <SelectPrimitive.Item
+      data-slot="select-item"
+      className={cn(
+        'relative flex w-full cursor-pointer items-center gap-2 rounded-lg py-2 pr-8 pl-2.5 text-sm outline-none select-none focus:bg-muted focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        className,
+      )}
+      {...props}
+    >
+      <span className="absolute right-2.5 flex size-4 items-center justify-center">
+        <SelectPrimitive.ItemIndicator>
+          <Check className="size-4 text-primary" aria-hidden />
+        </SelectPrimitive.ItemIndicator>
+      </span>
+      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+    </SelectPrimitive.Item>
+  );
+}
+
+export { Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectItem };

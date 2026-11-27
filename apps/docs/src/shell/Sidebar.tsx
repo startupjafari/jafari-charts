@@ -3,6 +3,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useT } from '../i18n';
 import { Link, useLocation } from '../lib/router';
 import { navigation, type NavGroup } from '../nav';
+import { Input } from '../ui/input';
 
 export const VERSION = '0.1.0';
 
@@ -107,9 +108,10 @@ export function Sidebar({
             className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />
-          <input
+          <Input
             ref={input}
             type="search"
+            size="md"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
@@ -122,7 +124,7 @@ export function Sidebar({
             placeholder={t.search.placeholder}
             aria-label={t.search.label}
             aria-describedby={statusId}
-            className="h-9 w-full rounded-xl border border-input bg-background pr-9 pl-9 text-base text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-ring/15 sm:text-sm dark:bg-input/20 [&::-webkit-search-cancel-button]:appearance-none"
+            className="pr-9 pl-9 [&::-webkit-search-cancel-button]:appearance-none"
           />
           {query ? (
             <button
@@ -131,10 +133,13 @@ export function Sidebar({
                 setQuery('');
                 input.current?.focus();
               }}
-              className="absolute top-1/2 right-1.5 flex size-6 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+              // StudentHub's clear button for fields (SelectClearButton): a 24px target
+              // over the field's right padding.
+              className="absolute top-1/2 right-1.5 flex size-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/40"
               aria-label={t.search.clear}
+              title={t.search.clear}
             >
-              <X className="size-3.5" aria-hidden />
+              <X className="size-4" aria-hidden />
             </button>
           ) : shortcut ? (
             <kbd

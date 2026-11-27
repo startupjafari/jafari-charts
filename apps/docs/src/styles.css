@@ -11,6 +11,9 @@
  * which is shown verbatim) → Tailwind utilities, which always win.
  */
 @import 'tailwindcss';
+/* Enter/exit utilities (`animate-in`, `fade-in-0`, `zoom-in-95`…) used by the StudentHub
+   controls ported to `src/ui` (Select popover, SegmentedTabs island). */
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -72,6 +75,16 @@
   --ease-out: var(--motion-ease);
   --default-transition-timing-function: var(--motion-ease);
   --default-transition-duration: var(--motion-control);
+  /* The same strings as tw-animate-css with StudentHub's fallbacks: a floating layer enters
+     as long as a menu, and leaves faster than it came. */
+  --animate-in: enter var(--tw-animation-duration, var(--tw-duration, var(--motion-menu)))
+    var(--tw-ease, var(--motion-ease)) var(--tw-animation-delay, 0s)
+    var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
+    var(--tw-animation-fill-mode, none);
+  --animate-out: exit var(--tw-animation-duration, var(--tw-duration, var(--motion-exit)))
+    var(--tw-ease, var(--motion-ease)) var(--tw-animation-delay, 0s)
+    var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
+    var(--tw-animation-fill-mode, none);
 }
 
 /* ─── Tokens ─────────────────────────────────────────────────────────────── */
@@ -199,6 +212,9 @@
   --motion-modal: 220ms;
   --motion-panel: 260ms;
   --motion-large: 320ms;
+  /* Where SegmentedTabs drops its collapsed list on phones. StudentHub lifts it above its
+     bottom navigation; the docs have none, so it sits at the screen's bottom edge. */
+  --bottom-nav-offset: calc(0.75rem + env(safe-area-inset-bottom));
 }
 
 /* ─── Base ───────────────────────────────────────────────────────────────── */
@@ -411,25 +427,27 @@
     }
   }
 
-  /* Buttons — same recipe as StudentHub's Button (rounded-xl, ring focus, 1px press). */
+  /* Buttons in example sources (shown verbatim, so they use class names, not the React
+     component): StudentHub's Button, `outline` variant, at the control scale's heights. */
   .btn {
-    @apply inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-input bg-background px-4 text-sm font-medium whitespace-nowrap text-foreground outline-none select-none hover:border-ring/50 hover:bg-muted focus-visible:ring-4 focus-visible:ring-ring/20 active:translate-y-px disabled:pointer-events-none disabled:opacity-50 dark:bg-input/20 dark:hover:bg-input/40;
+    @apply inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-input bg-background px-4 text-sm font-medium whitespace-nowrap no-underline transition-[color,background-color,border-color,box-shadow,opacity] duration-150 outline-none select-none hover:border-ring/50 hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/20 active:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30 dark:hover:bg-input/50;
   }
 
   .btn-primary {
-    @apply border-transparent bg-primary text-primary-foreground hover:border-transparent hover:bg-primary/90 dark:bg-primary dark:hover:bg-primary/90;
+    @apply border-0 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground dark:bg-primary dark:hover:bg-primary/90;
   }
 
   .btn-ghost {
-    @apply border-transparent bg-transparent text-muted-foreground hover:border-transparent hover:text-foreground dark:bg-transparent;
+    @apply border-0 bg-transparent hover:bg-muted dark:bg-transparent dark:hover:bg-muted;
   }
 
   .btn-sm {
-    @apply h-8 gap-1.5 rounded-lg px-3 text-[0.8rem];
+    @apply h-8 gap-1.5 px-3 text-[0.8rem];
   }
 
+  /* A pressed toggle in an example's button row: StudentHub's "selected" recipe. */
   .btn[aria-pressed='true'] {
-    @apply border-primary/40 bg-primary/10 text-primary-ink;
+    @apply border-primary/40 bg-primary/10 text-primary;
   }
 
   .badge {
@@ -680,17 +698,7 @@
     @apply m-0 text-xs leading-normal text-muted-foreground;
   }
 
-  .pg-controls select,
-  .pg-controls input[type='range'] {
-    width: 100%;
-  }
-
-  select {
-    @apply h-9 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-ring/15 dark:bg-input/20;
-  }
-
-  input[type='range'],
-  input[type='checkbox'] {
+  input[type='range'] {
     accent-color: var(--primary);
   }
 
@@ -698,25 +706,31 @@
     @apply grid gap-1 text-[0.8125rem] text-muted-foreground;
   }
 
-  .check {
-    @apply flex cursor-pointer items-center gap-2 text-sm;
-  }
-
-  .check input {
-    width: 16px;
-    height: 16px;
-  }
-
-  .check-disabled {
-    opacity: 0.5;
+  .pg-controls input[type='range'] {
+    width: 100%;
   }
 
   .color-row {
     @apply -mt-2 flex flex-wrap items-center gap-2;
   }
 
+  /* Colour swatch: a native colour input dressed as a StudentHub icon control (sm). */
   .color-input input {
-    @apply h-7 w-9 cursor-pointer rounded-lg border border-input bg-background p-0.5;
+    @apply size-8 cursor-pointer rounded-xl border border-input bg-background p-1 transition-[color,box-shadow,border-color] outline-none hover:border-ring/50 focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-ring/15 dark:bg-input/30;
+  }
+
+  .color-input input::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  .color-input input::-webkit-color-swatch {
+    border: 0;
+    border-radius: 0.375rem;
+  }
+
+  .color-input input::-moz-color-swatch {
+    border: 0;
+    border-radius: 0.375rem;
   }
 
   .pg-main {
@@ -1013,5 +1027,101 @@
 
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* ─── StudentHub controls: shared rules (ported from its globals.css) ─────── */
+
+/* Frosted island under SegmentedTabs' collapsed list on phones. */
+.material-island {
+  background: color-mix(in oklch, var(--background) 88%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .material-island {
+    background: var(--background);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .material-island {
+    background: var(--background);
+  }
+}
+
+/* Field error on the label row (FieldError): a field column whose first child is a label
+   and which holds an error becomes a "label | error" grid, so the error adds no line and
+   the form does not jump. Outside @layer: Tailwind's `flex`/`flex-col` would win there. */
+:where(div, fieldset, section):has(> label:first-child):has(> [data-field-error]):not(
+    :has(> label:first-child + [data-field-error])
+  ) {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(6rem, 1fr);
+  align-items: center;
+  column-gap: 0.75rem;
+}
+:where(div, fieldset, section):has(> label:first-child):has(> [data-field-error]):not(
+    :has(> label:first-child + [data-field-error])
+  )
+  > * {
+  grid-column: 1 / -1;
+}
+:where(div, fieldset, section):has(> label:first-child):has(> [data-field-error]):not(
+    :has(> label:first-child + [data-field-error])
+  )
+  > label:first-child {
+  grid-column: 1;
+  grid-row: 1;
+}
+:where(div, fieldset, section):has(> label:first-child):has(> [data-field-error]):not(
+    :has(> label:first-child + [data-field-error])
+  )
+  > [data-field-error] {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: right;
+}
+
+/* An error that does not fit scrolls: pause, to the end, pause, back. */
+@keyframes sh-marquee {
+  0%,
+  15% {
+    transform: translateX(0);
+  }
+  85%,
+  100% {
+    transform: translateX(var(--sh-marquee-shift, 0));
+  }
+}
+[data-marquee] {
+  animation: sh-marquee var(--sh-marquee-duration, 6s) ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Reduced motion is a softer motion, not none: enter/exit keep their cross-fade but lose
+   movement, scale and blur (through tw-animate-css's variables). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    --tw-enter-translate-x: 0 !important;
+    --tw-enter-translate-y: 0 !important;
+    --tw-exit-translate-x: 0 !important;
+    --tw-exit-translate-y: 0 !important;
+    --tw-enter-scale: 1 !important;
+    --tw-exit-scale: 1 !important;
+    --tw-enter-rotate: 0 !important;
+    --tw-exit-rotate: 0 !important;
+    --tw-enter-blur: 0 !important;
+    --tw-exit-blur: 0 !important;
+  }
+
+  [data-marquee] {
+    animation: none;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
