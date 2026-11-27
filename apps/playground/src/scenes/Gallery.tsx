@@ -22,7 +22,7 @@ import { Hint, ScenePage } from '../shell/scene-page';
 import { ChartCard as Card, CardGrid } from '../ui/card';
 import { Field } from '../ui/field';
 import { Kbd } from '../ui/kbd';
-import { Segmented } from '../ui/segmented';
+import { SegmentedTabs } from '../ui/segmented-tabs';
 
 const series90 = timeSeries(90);
 const series30 = timeSeries(30, { keys: ['active'] as const });
@@ -207,9 +207,14 @@ export function Gallery() {
     <ScenePage
       scene="gallery"
       actions={
-        <Field label={t.controls.renderer} inline>
-          {(id) => (
-            <Segmented items={RENDERERS} value={renderer} onChange={setRenderer} labelledBy={id} />
+        <Field label={t.controls.renderer} group inline>
+          {() => (
+            <SegmentedTabs
+              items={RENDERERS}
+              value={renderer}
+              onChange={setRenderer}
+              aria-label={t.controls.renderer}
+            />
           )}
         </Field>
       }

@@ -4,7 +4,7 @@ import type { SceneId } from '../catalog';
 import { useT } from '../i18n';
 import { CardGrid, CardHeadingLevel } from '../ui/card';
 import { Field } from '../ui/field';
-import { Segmented } from '../ui/segmented';
+import { SegmentedTabs } from '../ui/segmented-tabs';
 
 /**
  * StudentHub PageHeader: a full-bleed band in the sidebar's material with an accent bar,
@@ -130,8 +130,15 @@ export function useCaseFilter() {
     label: t.filter[value],
   }));
   const control = (
-    <Field label={t.filter.label} inline>
-      {(id) => <Segmented items={cases} value={filter} onChange={setFilter} labelledBy={id} />}
+    <Field label={t.filter.label} group inline>
+      {() => (
+        <SegmentedTabs
+          items={cases}
+          value={filter}
+          onChange={setFilter}
+          aria-label={t.filter.label}
+        />
+      )}
     </Field>
   );
   return [filter, control] as const;

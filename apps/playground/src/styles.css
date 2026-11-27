@@ -46,10 +46,22 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 
   --ease-out: var(--motion-ease);
   --default-transition-timing-function: var(--motion-ease);
   --default-transition-duration: var(--motion-control);
+  /* tw-animate-css with StudentHub's fallbacks: a floating layer enters at menu speed and
+     leaves faster than it came. */
+  --animate-in: enter var(--tw-animation-duration, var(--tw-duration, var(--motion-menu)))
+    var(--tw-ease, var(--motion-ease)) var(--tw-animation-delay, 0s)
+    var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
+    var(--tw-animation-fill-mode, none);
+  --animate-out: exit var(--tw-animation-duration, var(--tw-duration, var(--motion-exit)))
+    var(--tw-ease, var(--motion-ease)) var(--tw-animation-delay, 0s)
+    var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
+    var(--tw-animation-fill-mode, none);
 }
 
 :root {
@@ -89,8 +101,15 @@
   --motion-menu: 180ms;
   --motion-exit: 150ms;
   --motion-page: 200ms;
+  --motion-modal: 220ms;
   --motion-panel: 260ms;
   --motion-large: 320ms;
+
+  /* Bottom edge for layers that float up from the bottom (the collapsed SegmentedTabs
+     list). StudentHub lifts them over its mobile bottom navigation; the playground has
+     none, so it uses StudentHub's desktop value on every width. */
+  --kb-inset: 0px;
+  --bottom-nav-offset: calc(0.75rem + env(safe-area-inset-bottom));
 }
 
 .dark {
@@ -171,6 +190,7 @@
 button:not(:disabled):not([aria-disabled='true']),
 a[href],
 [role='button']:not([aria-disabled='true']),
+[role='menuitem'],
 label[for],
 summary {
   cursor: pointer;
@@ -179,10 +199,30 @@ summary {
 button,
 a,
 [role='button'],
+[role='menuitem'],
 summary {
-  transition-property: background-color, color, border-color, box-shadow, opacity;
+  transition-property: background-color, color, border-color, box-shadow, transform, opacity;
   transition-duration: var(--motion-control);
   transition-timing-function: var(--motion-ease);
+}
+
+/* Floating islands (the collapsed SegmentedTabs list): StudentHub's dense frosted material. */
+.material-island {
+  background: color-mix(in oklch, var(--background) 88%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .material-island {
+    background: var(--background);
+  }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .material-island {
+    background: var(--background);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

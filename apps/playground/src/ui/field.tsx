@@ -1,37 +1,43 @@
 import { useId, type ReactNode } from 'react';
 import { cn } from '../lib/utils';
+import { Label } from './label';
 
 /**
- * A labelled control: a small caption above (or beside, `inline`) the control.
- * `children` receives the caption's id; the control names itself with `aria-labelledby`.
+ * A StudentHub `Label` and its control (DESIGN_SYSTEM §10.3): the caption above the control,
+ * or beside it with `inline` (header toolbars). `children` receives the control id for
+ * `<SelectTrigger id>`, which the label names and focuses. A `group` control (SegmentedTabs)
+ * is not labelable: it names itself with `aria-label`, and the caption is only visual.
  */
 export function Field({
   label,
-  hint,
+  group = false,
   inline = false,
   className,
   children,
 }: {
   label: string;
-  hint?: ReactNode;
+  group?: boolean;
   inline?: boolean;
   className?: string;
-  children: (labelId: string) => ReactNode;
+  children: (id: string) => ReactNode;
 }) {
   const id = useId();
   return (
     <div
       className={cn(
         'flex min-w-0',
-        inline ? 'flex-row flex-wrap items-center gap-x-2 gap-y-1' : 'flex-col gap-1.5',
+        inline ? 'flex-row flex-wrap items-center gap-x-2.5 gap-y-1.5' : 'flex-col gap-2',
         className,
       )}
     >
-      <span id={id} className="text-xs font-medium text-muted-foreground">
-        {label}
-      </span>
+      {group ? (
+        <Label asChild>
+          <span aria-hidden>{label}</span>
+        </Label>
+      ) : (
+        <Label htmlFor={id}>{label}</Label>
+      )}
       {children(id)}
-      {hint && <span className="text-[0.6875rem] text-muted-foreground">{hint}</span>}
     </div>
   );
 }

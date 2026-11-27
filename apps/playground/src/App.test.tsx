@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { App } from './App';
 import { LANG_STORAGE_KEY } from './i18n';
 
@@ -9,12 +9,26 @@ function open(search: string) {
 }
 
 const title = () => screen.getByRole('heading', { level: 1 }).textContent;
-/** The interface language switch (EN / RU / ҚАЗ) in the sidebar. */
-const langButton = (name: string) =>
-  within(screen.getAllByRole('group', { name: /language|язык|тілі/i })[0] as HTMLElement).getByRole(
-    'button',
-    { name },
-  );
+
+// Radix Select scrolls the chosen option into view and captures the pointer: jsdom has
+// neither API.
+beforeAll(() => {
+  Element.prototype.scrollIntoView ??= () => {};
+  Element.prototype.hasPointerCapture ??= () => false;
+  Element.prototype.releasePointerCapture ??= () => {};
+});
+
+/** The interface language select (StudentHub's: flags and endonyms) in the sidebar. */
+const langSelect = () =>
+  screen.getAllByRole('combobox', {
+    name: /^(Interface language|Язык интерфейса|Интерфейс тілі)$/,
+  })[0] as HTMLElement;
+
+/** Opens the language select from the keyboard and picks a language by its endonym. */
+function chooseLang(name: string) {
+  act(() => fireEvent.keyDown(langSelect(), { key: 'Enter' }));
+  act(() => fireEvent.click(screen.getByRole('option', { name })));
+}
 
 describe('interface language switch', () => {
   beforeEach(() => localStorage.clear());
@@ -28,12 +42,12 @@ describe('interface language switch', () => {
     expect(title()).toBe('Overview');
     expect(document.documentElement.lang).toBe('en');
     expect(document.title).toBe('Overview · Jafari Charts Playground');
-    expect(langButton('EN').getAttribute('aria-pressed')).toBe('true');
+    expect(langSelect().textContent).toBe('English');
   });
 
   it('switches the chrome, <html lang> and the title, and remembers the choice', () => {
     open('?scene=overview');
-    act(() => fireEvent.click(langButton('RU')));
+    chooseLang('Русский');
     expect(title()).toBe('Обзор');
     expect(document.documentElement.lang).toBe('ru');
     expect(document.title).toBe('Обзор · Песочница Jafari Charts');
@@ -41,7 +55,7 @@ describe('interface language switch', () => {
     expect(screen.getByRole('navigation', { name: 'Сцены' })).toBeTruthy();
     expect(screen.getAllByText('Перейти к содержимому').length).toBeGreaterThan(0);
 
-    act(() => fireEvent.click(langButton('ҚАЗ')));
+    chooseLang('Қазақша');
     expect(title()).toBe('Шолу');
     expect(document.documentElement.lang).toBe('kk');
     expect(localStorage.getItem(LANG_STORAGE_KEY)).toBe('kk');
@@ -59,7 +73,7 @@ describe('interface language switch', () => {
     localStorage.setItem(LANG_STORAGE_KEY, 'kk');
     open('?scene=overview&lang=ru');
     expect(title()).toBe('Обзор');
-    act(() => fireEvent.click(langButton('EN')));
+    chooseLang('English');
     expect(title()).toBe('Overview');
     expect(new URLSearchParams(location.search).has('lang')).toBe(false);
     expect(new URLSearchParams(location.search).get('scene')).toBe('overview');
@@ -75,12 +89,56 @@ describe('interface language switch', () => {
 
   it('chart locale follows the interface language unless ?locale= is set', () => {
     open('?scene=overview&lang=kk');
-    expect(screen.getByRole('combobox').textContent).toContain('Интерфейстегідей');
+    expect(langSelect().textContent).toBe('Қазақша');
+    expect(screen.getByRole('combobox', { name: 'Сандар мен күндер пішімі' }).textContent).toBe(
+      'Интерфейстегідей',
+    );
   });
 
   it('an explicit ?locale= is shown and kept', () => {
     open('?scene=overview&lang=ru&locale=kk');
-    expect(screen.getByRole('combobox').textContent).toContain('Қазақша');
+    expect(screen.getByRole('combobox', { name: 'Локаль чисел и дат' }).textContent).toBe(
+      'Қазақша',
+    );
     expect(new URLSearchParams(location.search).get('locale')).toBe('kk');
+  });
+});
+
+describe('preview controls (StudentHub components)', () => {
+  beforeEach(() => localStorage.clear());
+  afterEach(() => {
+    localStorage.clear();
+    document.documentElement.classList.remove('dark');
+  });
+
+  const optionNames = () => screen.getAllByRole('option').map((o) => o.textContent);
+
+  it('lists languages in StudentHub order, each with its flag', () => {
+    open('?scene=overview');
+    act(() => fireEvent.keyDown(langSelect(), { key: 'Enter' }));
+    expect(optionNames()).toEqual(['Русский', 'Қазақша', 'English']);
+    for (const option of screen.getAllByRole('option')) {
+      expect(option.querySelector('[lang] > svg')).toBeTruthy();
+    }
+  });
+
+  it('switches the theme from a select of System, Light and Dark', () => {
+    open('?scene=overview&theme=light');
+    const theme = screen.getByRole('combobox', { name: 'Theme' });
+    expect(theme.textContent).toBe('Light');
+    act(() => fireEvent.keyDown(theme, { key: 'Enter' }));
+    expect(optionNames()).toEqual(['System', 'Light', 'Dark']);
+    act(() => fireEvent.click(screen.getByRole('option', { name: 'Dark' })));
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    expect(new URLSearchParams(location.search).has('theme')).toBe(false);
+  });
+
+  it('turns entry animations off with a switch', () => {
+    open('?scene=overview');
+    const toggle = screen.getByRole('switch', { name: 'Entry animations' });
+    expect(toggle.getAttribute('aria-checked')).toBe('true');
+    act(() => fireEvent.click(toggle));
+    expect(toggle.getAttribute('aria-checked')).toBe('false');
+    expect(new URLSearchParams(location.search).get('animation')).toBe('off');
   });
 });

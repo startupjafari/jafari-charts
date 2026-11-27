@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { openScene } from './helpers';
 
 /** Product names and formats that stay as they are in every language. */
@@ -30,15 +30,28 @@ async function latinWordsInChrome(page: Page): Promise<string[]> {
   return [...new Set(words)].filter((w) => !ALLOWED.has(w));
 }
 
+/** The interface language select (StudentHub's: flags and endonyms), by its label in any language. */
+const languageSelect = (scope: Page | Locator) =>
+  scope.getByRole('combobox', { name: /^(Interface language|Язык интерфейса|Интерфейс тілі)$/ });
+
+/** Opens the language select and picks a language by its endonym. */
+async function chooseLanguage(page: Page, scope: Page | Locator, endonym: string) {
+  await languageSelect(scope).click();
+  await page.getByRole('option', { name: endonym, exact: true }).click();
+}
+
 test.describe('interface languages', () => {
   test('English by default, with no stored choice', async ({ page }) => {
     await openScene(page, 'gallery');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Gallery');
-    await expect(page.getByRole('button', { name: 'EN', exact: true })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+    await expect(languageSelect(page)).toHaveText('English');
+    // StudentHub order, each language in its own name with its flag.
+    await languageSelect(page).click();
+    await expect(page.getByRole('option')).toHaveText(['Русский', 'Қазақша', 'English']);
+    await expect(page.getByRole('option').locator('[lang] > svg')).toHaveCount(3);
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('option')).toHaveCount(0);
   });
 
   for (const [lang, titles] of [
@@ -63,7 +76,7 @@ test.describe('interface languages', () => {
     page,
   }) => {
     await openScene(page, 'gallery');
-    await page.getByRole('button', { name: 'RU', exact: true }).click();
+    await chooseLanguage(page, page, 'Русский');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Галерея');
     await expect(page.locator('html')).toHaveAttribute('lang', 'ru');
     // Card test ids stay English; titles are translated.
@@ -74,7 +87,7 @@ test.describe('interface languages', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Галерея');
     await page.getByRole('link', { name: 'Тепловая карта' }).click();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Тепловая карта');
-    await page.getByRole('button', { name: 'ҚАЗ', exact: true }).click();
+    await chooseLanguage(page, page, 'Қазақша');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Жылу картасы');
     await openScene(page, 'gallery', '&lang=en');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Gallery');
@@ -103,7 +116,7 @@ test.describe('interface languages', () => {
     await openScene(page, 'polar');
     await page.getByRole('button', { name: 'Open navigation' }).click();
     const drawer = page.getByRole('dialog', { name: 'Navigation' });
-    await drawer.getByRole('button', { name: 'ҚАЗ', exact: true }).click();
+    await chooseLanguage(page, drawer, 'Қазақша');
     const translated = page.getByRole('dialog', { name: 'Навигация' });
     await expect(translated).toBeVisible();
     await expect(translated.getByRole('link', { name: 'Полярлық диаграмма' })).toBeVisible();

@@ -5,24 +5,19 @@ import { GROUPS, SCENES } from '../catalog';
 import { LANG_LABELS, LANGS, useLang, useT, type Lang } from '../i18n';
 import type { ThemePreference } from '../lib/theme';
 import { cn } from '../lib/utils';
+import { Button } from '../ui/button';
 import { Field } from '../ui/field';
-import { Segmented } from '../ui/segmented';
-import { Select } from '../ui/select';
-import { Switch } from '../ui/switch';
+import { Flag } from '../ui/flag';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { ToggleSwitch } from '../ui/toggle-switch';
 import { LOCALES, sceneHref, usePlayground, type Locale } from './playground';
 
-const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor } as const satisfies Record<
-  ThemePreference,
-  typeof Sun
->;
-
-/** EN / RU / ҚАЗ, each with its native name as the tooltip and its own `lang`. */
-const LANG_ITEMS = LANGS.map((value) => ({
-  value,
-  label: LANG_LABELS[value].short,
-  title: LANG_LABELS[value].native,
-  lang: value,
-}));
+/** StudentHub's theme select: System, Light, Dark, each with its icon. */
+const THEME_OPTIONS = [
+  { value: 'system', icon: Monitor },
+  { value: 'light', icon: Sun },
+  { value: 'dark', icon: Moon },
+] as const satisfies ReadonlyArray<{ value: ThemePreference; icon: typeof Sun }>;
 
 function Logo() {
   const t = useT();
@@ -91,66 +86,85 @@ type LocaleChoice = Locale | 'auto';
 
 /**
  * Settings that apply to every scene: interface language, colour theme, chart locale
- * (follows the interface language until one is picked) and entry animations.
+ * (follows the interface language until one is picked) and entry animations. The selects
+ * are StudentHub's appearance settings: endonyms with flags, and the theme with its icon.
  */
 function PreviewSettings() {
   const { theme, setTheme, localeOverride, setLocaleOverride, animation, setAnimation } =
     usePlayground();
   const { lang, setLang } = useLang();
   const t = useT();
-  const themes = (['light', 'dark', 'system'] as const).map((value) => ({
-    value,
-    label: t.preview[value],
-    icon: THEME_ICONS[value],
-  }));
-  const localeOptions: ReadonlyArray<{ value: LocaleChoice; label: string }> = [
-    { value: 'auto', label: t.preview.localeAuto },
-    ...LOCALES,
-  ];
   const localeChoice: LocaleChoice = LOCALES.some((l) => l.value === localeOverride)
     ? (localeOverride as Locale)
     : 'auto';
   return (
-    <div className="flex flex-col gap-3 border-t border-sidebar-border px-4 pt-3 pb-4">
+    <div className="flex flex-col gap-4 border-t border-sidebar-border px-4 pt-3 pb-4">
       <p className="text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase">
         {t.preview.heading}
       </p>
       <Field label={t.preview.language}>
         {(id) => (
-          <Segmented<Lang>
-            items={LANG_ITEMS}
-            value={lang}
-            onChange={setLang}
-            labelledBy={id}
-            stretch
-          />
+          <Select value={lang} onValueChange={(v) => setLang(v as Lang)}>
+            <SelectTrigger id={id} className="gap-1.5">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {LANGS.map((value) => (
+                <SelectItem key={value} value={value}>
+                  <span className="flex items-center gap-2" lang={value}>
+                    <Flag code={LANG_LABELS[value].flag} />
+                    {LANG_LABELS[value].native}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
       </Field>
       <Field label={t.preview.theme}>
         {(id) => (
-          <Segmented
-            items={themes}
-            value={theme}
-            onChange={setTheme}
-            labelledBy={id}
-            stretch
-            stacked
-          />
+          <Select value={theme} onValueChange={(v) => setTheme(v as ThemePreference)}>
+            <SelectTrigger id={id} className="gap-1.5">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {THEME_OPTIONS.map(({ value, icon: Icon }) => (
+                <SelectItem key={value} value={value}>
+                  <span className="flex items-center gap-2">
+                    <Icon className="size-4" aria-hidden />
+                    {t.preview[value]}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
       </Field>
       <Field label={t.preview.locale}>
         {(id) => (
           <Select
             value={localeChoice}
-            onChange={(v) => setLocaleOverride(v === 'auto' ? null : v)}
-            options={localeOptions}
-            labelledBy={id}
-          />
+            onValueChange={(v) => setLocaleOverride(v === 'auto' ? null : v)}
+          >
+            <SelectTrigger id={id}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="auto">{t.preview.localeAuto}</SelectItem>
+              {LOCALES.map((l) => (
+                <SelectItem key={l.value} value={l.value}>
+                  <span lang={l.value}>{l.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
       </Field>
-      <Field label={t.preview.animation} inline className="justify-between">
-        {(id) => <Switch checked={animation} onChange={setAnimation} labelledBy={id} />}
-      </Field>
+      {/* StudentHub SettingRow: the setting's name on the left, the switch on the right. */}
+      <div className="flex items-center justify-between gap-4">
+        <p className="min-w-0 text-sm font-medium">{t.preview.animation}</p>
+        <ToggleSwitch checked={animation} onChange={setAnimation} label={t.preview.animation} />
+      </div>
     </div>
   );
 }
@@ -178,11 +192,10 @@ function MobileBar() {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <header className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-sidebar-border bg-sidebar px-3 lg:hidden">
-        <Dialog.Trigger
-          aria-label={t.a11y.openNavigation}
-          className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/25"
-        >
-          <Menu className="size-5" aria-hidden />
+        <Dialog.Trigger asChild>
+          <Button variant="ghost" icon aria-label={t.a11y.openNavigation}>
+            <Menu className="size-5" aria-hidden />
+          </Button>
         </Dialog.Trigger>
         <Logo />
       </header>
@@ -207,11 +220,15 @@ function MobileBar() {
               setOpen(false);
             }}
           />
-          <Dialog.Close
-            aria-label={t.a11y.closeNavigation}
-            className="absolute top-3 right-3 flex size-10 items-center justify-center rounded-xl text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/25"
-          >
-            <X className="size-5" aria-hidden />
+          <Dialog.Close asChild>
+            <Button
+              variant="ghost"
+              icon
+              aria-label={t.a11y.closeNavigation}
+              className="absolute top-3 right-3"
+            >
+              <X className="size-5" aria-hidden />
+            </Button>
           </Dialog.Close>
         </Dialog.Content>
       </Dialog.Portal>

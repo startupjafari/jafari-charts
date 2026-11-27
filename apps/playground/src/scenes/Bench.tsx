@@ -24,8 +24,8 @@ import { Card, ChartCard } from '../ui/card';
 import { EmptyState } from '../ui/empty-state';
 import { Field } from '../ui/field';
 import { MetricTile } from '../ui/metric-tile';
-import { Segmented } from '../ui/segmented';
-import { Select } from '../ui/select';
+import { SegmentedTabs } from '../ui/segmented-tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 /**
  * Benchmark fixture. Query params: chart, points, charts, renderer.
@@ -460,13 +460,13 @@ export function Bench() {
 
   const settings = (
     <>
-      <Field label={text.chart} inline>
-        {(id) => (
-          <Segmented
+      <Field label={text.chart} group inline>
+        {() => (
+          <SegmentedTabs
             items={chartTypes}
             value={config.chart as ChartType}
             onChange={(chart) => configure({ chart })}
-            labelledBy={id}
+            aria-label={text.chart}
           />
         )}
       </Field>
@@ -474,31 +474,47 @@ export function Bench() {
         {(id) => (
           <Select
             value={String(config.points)}
-            onChange={(v) => configure({ points: Number(v) })}
-            options={pointOptions}
-            labelledBy={id}
-            className="w-32"
-          />
+            onValueChange={(v) => configure({ points: Number(v) })}
+          >
+            <SelectTrigger id={id} className="w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {pointOptions.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
       </Field>
       <Field label={text.charts} inline>
         {(id) => (
           <Select
             value={String(config.count)}
-            onChange={(v) => configure({ count: Number(v) })}
-            options={countOptions}
-            labelledBy={id}
-            className="w-28 min-w-fit"
-          />
+            onValueChange={(v) => configure({ count: Number(v) })}
+          >
+            <SelectTrigger id={id} className="w-32 min-w-fit">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {countOptions.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
       </Field>
-      <Field label={t.controls.renderer} inline>
-        {(id) => (
-          <Segmented
+      <Field label={t.controls.renderer} group inline>
+        {() => (
+          <SegmentedTabs
             items={renderers}
             value={config.renderer as (typeof renderers)[number]['value']}
             onChange={(renderer) => configure({ renderer })}
-            labelledBy={id}
+            aria-label={t.controls.renderer}
           />
         )}
       </Field>
@@ -518,13 +534,13 @@ export function Bench() {
     >
       <Card className="flex flex-wrap items-center gap-2 px-4 py-3">
         <span className="mr-1 text-xs font-medium text-muted-foreground">{text.measure}</span>
-        <Button size="sm" disabled={busy} onClick={() => void step(runAll)}>
+        <Button size="md" disabled={busy} onClick={() => void step(runAll)}>
           <Play aria-hidden />
           {text.runAll}
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="md"
           disabled={busy || mounted}
           onClick={() => void step(mount)}
         >
@@ -532,7 +548,7 @@ export function Bench() {
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="md"
           disabled={busy || !mounted}
           onClick={() => void step(update)}
         >
@@ -540,7 +556,7 @@ export function Bench() {
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="md"
           disabled={busy || !mounted}
           onClick={() => void step(stream)}
         >
@@ -548,7 +564,7 @@ export function Bench() {
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="md"
           disabled={busy || !mounted}
           onClick={() => void step(hover)}
         >
@@ -556,7 +572,7 @@ export function Bench() {
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="md"
           disabled={busy || !mounted}
           onClick={() => void step(resize)}
         >
@@ -564,14 +580,14 @@ export function Bench() {
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="md"
           disabled={busy || !mounted}
           onClick={() => void step(unmount)}
         >
           <Trash2 aria-hidden />
           {text.unmount}
         </Button>
-        <Button variant="ghost" size="sm" disabled={busy} onClick={reset} className="ml-auto">
+        <Button variant="ghost" size="md" disabled={busy} onClick={reset} className="ml-auto">
           <RotateCcw aria-hidden />
           {text.reset}
         </Button>

@@ -9,7 +9,7 @@ import { Hint, ScenePage } from '../shell/scene-page';
 import { Button } from '../ui/button';
 import { ChartCard, CardGrid } from '../ui/card';
 import { Field } from '../ui/field';
-import { Segmented } from '../ui/segmented';
+import { SegmentedTabs } from '../ui/segmented-tabs';
 
 const series = timeSeries(30);
 
@@ -219,16 +219,23 @@ export function Export() {
       scene="export"
       actions={
         <>
-          <Field label={text.scale} inline>
-            {(id) => <Segmented items={SCALES} value={scale} onChange={setScale} labelledBy={id} />}
+          <Field label={text.scale} group inline>
+            {() => (
+              <SegmentedTabs
+                items={SCALES}
+                value={scale}
+                onChange={setScale}
+                aria-label={text.scale}
+              />
+            )}
           </Field>
-          <Field label={text.background} inline>
-            {(id) => (
-              <Segmented
+          <Field label={text.background} group inline>
+            {() => (
+              <SegmentedTabs
                 items={backgrounds}
                 value={background}
                 onChange={setBackground}
-                labelledBy={id}
+                aria-label={text.background}
               />
             )}
           </Field>
