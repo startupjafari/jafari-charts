@@ -1,5 +1,5 @@
 import { TreemapChart, type TreemapDatum } from '@startupjafari/charts';
-import { Keyboard, MousePointerClick } from 'lucide-react';
+import { Keyboard, MousePointerClick } from '../ui/icons';
 import { useAnimation } from '../shell/playground';
 import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
 import { ChartCard as Card } from '../ui/card';

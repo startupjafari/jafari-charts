@@ -8,7 +8,7 @@ import {
   WaterfallChart,
   type TreemapDatum,
 } from '@startupjafari/charts';
-import { Hand, Keyboard, MousePointerClick, SquareDashedMousePointer, ZoomIn } from 'lucide-react';
+import { Hand, Keyboard, MousePointerClick, SquareDashedMousePointer, ZoomIn } from '../ui/icons';
 import { useState, type ReactNode } from 'react';
 import { months, rng } from '../data';
 import { useAnimation } from '../shell/playground';

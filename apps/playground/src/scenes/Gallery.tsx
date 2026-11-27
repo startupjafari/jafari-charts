@@ -13,7 +13,7 @@ import {
   WaterfallChart,
   type Renderer,
 } from '@startupjafari/charts';
-import { Keyboard, MousePointer2, MousePointerClick } from 'lucide-react';
+import { Keyboard, MousePointer2, MousePointerClick } from '../ui/icons';
 import { useState } from 'react';
 import { cashflow, complaints, profit, registrations, timeSeries, universities } from '../data';
 import { useAnimation } from '../shell/playground';

@@ -12,7 +12,7 @@ import {
   Timer,
   Trash2,
   Waves,
-} from 'lucide-react';
+} from '../ui/icons';
 import { useEffect, useState, type ComponentType } from 'react';
 import { flushSync } from 'react-dom';
 import { rng } from '../data';

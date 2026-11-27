@@ -1,5 +1,5 @@
 import { ChartReferenceLine, ScatterChart } from '@startupjafari/charts';
-import { Keyboard, MousePointer2, MousePointerClick } from 'lucide-react';
+import { Keyboard, MousePointer2, MousePointerClick } from '../ui/icons';
 import { useMemo, useState } from 'react';
 import { rng } from '../data';
 import { useAnimation } from '../shell/playground';

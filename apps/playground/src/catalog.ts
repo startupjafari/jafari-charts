@@ -13,7 +13,7 @@ import {
   Radar,
   ZoomIn,
   type LucideIcon,
-} from 'lucide-react';
+} from './ui/icons';
 
 export type SceneGroup = 'start' | 'charts' | 'behaviour' | 'performance';
 

@@ -1,5 +1,5 @@
 import { BarChart, HorizontalBarChart } from '@startupjafari/charts';
-import { MousePointer2, WrapText } from 'lucide-react';
+import { MousePointer2, WrapText } from '../ui/icons';
 import { useAnimation } from '../shell/playground';
 import { Hint, ScenePage } from '../shell/scene-page';
 import { ChartCard as Card, CardGrid } from '../ui/card';

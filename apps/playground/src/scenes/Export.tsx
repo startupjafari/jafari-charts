@@ -1,7 +1,7 @@
 import { BarChart, LineChart } from '@startupjafari/charts';
 import * as exporter from '@startupjafari/charts/export';
 import type { ExportBackground, ExportFormat } from '@startupjafari/charts/export';
-import { Check, Download, FileCode, FileImage, FileSpreadsheet, Info } from 'lucide-react';
+import { Check, Download, FileCode, FileImage, FileSpreadsheet, Info } from '../ui/icons';
 import { useRef, useState, type ReactNode } from 'react';
 import { registrations, timeSeries } from '../data';
 import { Hint, ScenePage } from '../shell/scene-page';

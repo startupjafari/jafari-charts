@@ -1,5 +1,5 @@
-import { ChartNoAxesCombined, Menu, Monitor, Moon, Sun, X } from 'lucide-react';
-import { Dialog } from 'radix-ui';
+import { ChartNoAxesCombined, Menu, Monitor, Moon, Sun, X } from '../ui/icons';
+import * as Dialog from '@radix-ui/react-dialog';
 import { useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { GROUPS, SCENES } from '../catalog';
 import type { ThemePreference } from '../lib/theme';
@@ -128,7 +128,7 @@ function MobileBar() {
   const navigated = useRef(false);
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <header className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-sidebar-border bg-sidebar/90 px-3 backdrop-blur supports-[backdrop-filter]:bg-sidebar/75 lg:hidden">
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-sidebar-border bg-sidebar px-3 lg:hidden">
         <Dialog.Trigger
           aria-label="Open navigation"
           className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/25"

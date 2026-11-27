@@ -1,5 +1,5 @@
 import { DonutChart, GaugeChart, PieChart, RadialProgressChart } from '@startupjafari/charts';
-import { MousePointer2, MousePointerClick } from 'lucide-react';
+import { MousePointer2, MousePointerClick } from '../ui/icons';
 import { useAnimation } from '../shell/playground';
 import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
 import { ChartCard as Card } from '../ui/card';

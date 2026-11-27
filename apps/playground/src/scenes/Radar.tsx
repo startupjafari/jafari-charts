@@ -1,5 +1,5 @@
 import { RadarChart } from '@startupjafari/charts';
-import { Keyboard, MousePointer2, MousePointerClick } from 'lucide-react';
+import { Keyboard, MousePointer2, MousePointerClick } from '../ui/icons';
 import { useAnimation } from '../shell/playground';
 import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
 import { ChartCard as Card } from '../ui/card';

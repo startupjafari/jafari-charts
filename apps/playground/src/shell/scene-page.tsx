@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '../ui/icons';
 import { useState, type ReactNode } from 'react';
 import { sceneInfo } from '../catalog';
 import { CardGrid, CardHeadingLevel } from '../ui/card';

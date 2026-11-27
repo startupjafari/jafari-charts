@@ -7,7 +7,7 @@ import {
   PanelTop,
   SlidersHorizontal,
   type LucideIcon,
-} from 'lucide-react';
+} from '../ui/icons';
 import type { MouseEvent, ReactNode } from 'react';
 import { GROUPS, SCENES, type SceneInfo } from '../catalog';
 import { sceneHref, usePlayground } from '../shell/playground';

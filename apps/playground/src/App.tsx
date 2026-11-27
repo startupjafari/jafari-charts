@@ -1,5 +1,4 @@
 import { ChartProvider } from '@startupjafari/charts';
-import { Tooltip } from 'radix-ui';
 import {
   createElement,
   useCallback,
@@ -78,25 +77,23 @@ export function App() {
   return (
     <PlaygroundContext.Provider value={state}>
       <ChartProvider locale={locale}>
-        <Tooltip.Provider delayDuration={300}>
-          <AppShell>
-            {Scene ? (
-              // Remount on the animation switch so entry animations replay (or stop).
-              createElement(Scene, { key: `${scene}:${animation}` })
-            ) : (
-              <>
-                <PageHeader
-                  title="Scene not found"
-                  subtitle={`There is no scene called “${scene}”.`}
-                />
-                <EmptyState
-                  title="Nothing to show here"
-                  description="Pick a scene in the navigation, or open ?scene=overview."
-                />
-              </>
-            )}
-          </AppShell>
-        </Tooltip.Provider>
+        <AppShell>
+          {Scene ? (
+            // Remount on the animation switch so entry animations replay (or stop).
+            createElement(Scene, { key: `${scene}:${animation}` })
+          ) : (
+            <>
+              <PageHeader
+                title="Scene not found"
+                subtitle={`There is no scene called “${scene}”.`}
+              />
+              <EmptyState
+                title="Nothing to show here"
+                description="Pick a scene in the navigation, or open ?scene=overview."
+              />
+            </>
+          )}
+        </AppShell>
       </ChartProvider>
     </PlaygroundContext.Provider>
   );

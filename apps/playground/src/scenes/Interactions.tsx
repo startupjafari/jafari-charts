@@ -5,7 +5,7 @@ import {
   MousePointerClick,
   SquareDashedMousePointer,
   ZoomIn,
-} from 'lucide-react';
+} from '../ui/icons';
 import { useState } from 'react';
 import { registrations, timeSeries } from '../data';
 import { Hint, ScenePage } from '../shell/scene-page';
