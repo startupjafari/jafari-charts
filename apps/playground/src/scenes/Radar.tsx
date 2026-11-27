@@ -1,5 +1,7 @@
 import { RadarChart } from '@startupjafari/charts';
 import { Keyboard, MousePointer2, MousePointerClick } from '../ui/icons';
+import type { ReactNode } from 'react';
+import { defineCards, useCards, useT, useText, type L } from '../i18n';
 import { useAnimation } from '../shell/playground';
 import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
 import { ChartCard as Card } from '../ui/card';
@@ -47,34 +49,137 @@ const three = [
   { k: 'Cost', v: 4, w: 7 },
 ];
 
+const CARDS = defineCards({
+  en: {
+    radar: {
+      title: 'Radar chart',
+      description: 'Two students and the class average on a 0–100 scale.',
+    },
+    circle: {
+      title: 'Circle grid, 6 datasets, differentiate',
+      description: 'A circular grid; marker shapes tell six teams apart.',
+    },
+    negative: {
+      title: 'Negative values + missing value',
+      description: 'Year-over-year change around zero; one value is missing.',
+    },
+    long: {
+      title: 'Long labels, 8 metrics',
+      description: 'Eight long axis labels wrapped around the chart.',
+    },
+    minimum: {
+      title: 'Three metrics · two metrics · one dataset',
+      description: 'The minimum: three axes, two axes, a single series.',
+    },
+    narrow: { title: 'Narrow (260px)', description: 'Still readable in a 260 px container.' },
+  },
+  ru: {
+    radar: {
+      title: 'Лепестковая диаграмма',
+      description: 'Два студента и среднее по группе на шкале 0–100.',
+    },
+    circle: {
+      title: 'Круговая сетка, 6 наборов данных, differentiate',
+      description: 'Круговая сетка; формы маркеров различают шесть команд.',
+    },
+    negative: {
+      title: 'Отрицательные значения и пропуск',
+      description: 'Изменение год к году вокруг нуля; одного значения нет.',
+    },
+    long: {
+      title: 'Длинные подписи, 8 метрик',
+      description: 'Восемь длинных подписей осей с переносом вокруг диаграммы.',
+    },
+    minimum: {
+      title: 'Три метрики · две метрики · один набор',
+      description: 'Минимум: три оси, две оси, один ряд.',
+    },
+    narrow: {
+      title: 'Узкий контейнер (260 px)',
+      description: 'Читается даже в контейнере шириной 260 px.',
+    },
+  },
+  kk: {
+    radar: {
+      title: 'Радар диаграммасы',
+      description: 'Екі студент және топ бойынша орташа мән, 0–100 шкаласында.',
+    },
+    circle: {
+      title: 'Шеңберлі тор, 6 деректер жиыны, differentiate',
+      description: 'Шеңберлі тор; маркер пішіндері алты команданы ажыратады.',
+    },
+    negative: {
+      title: 'Теріс мәндер және бос мән',
+      description: 'Нөл маңындағы жылдан жылға өзгеріс; бір мән жоқ.',
+    },
+    long: {
+      title: 'Ұзын жазулар, 8 метрика',
+      description: 'Диаграмма айналасында тасымалданған сегіз ұзын ось жазуы.',
+    },
+    minimum: {
+      title: 'Үш метрика · екі метрика · бір жиын',
+      description: 'Ең аз жағдай: үш ось, екі ось, бір қатар.',
+    },
+    narrow: { title: 'Тар контейнер (260 px)', description: '260 px контейнерде де оқылады.' },
+  },
+});
+
+interface RadarText {
+  hover: string;
+  keyboard: (keys: ReactNode) => ReactNode;
+  showcase: string;
+  edge: string;
+}
+
+const TEXT: L<RadarText> = {
+  en: {
+    hover: 'Hover an axis for every series’ value',
+    keyboard: (keys) => <>Focus, then {keys} between axes</>,
+    showcase: 'Profiles compared across several metrics.',
+    edge: 'Few axes and narrow containers.',
+  },
+  ru: {
+    hover: 'Наведите указатель на ось — появятся значения всех рядов',
+    keyboard: (keys) => <>В фокусе: {keys} — переход между осями</>,
+    showcase: 'Сравнение профилей по нескольким метрикам.',
+    edge: 'Мало осей и узкие контейнеры.',
+  },
+  kk: {
+    hover: 'Барлық қатардың мәнін көру үшін меңзерді оське апарыңыз',
+    keyboard: (keys) => <>Фокус қойылғанда: {keys} — осьтер арасында жылжу</>,
+    showcase: 'Бірнеше метрика бойынша профильдерді салыстыру.',
+    edge: 'Аз ось және тар контейнерлер.',
+  },
+};
+
 export function Radar() {
   const animation = useAnimation();
   const [show, filter] = useCaseFilter();
+  const t = useT();
+  const text = useText(TEXT);
+  const card = useCards(CARDS);
   return (
     <ScenePage
       scene="radar"
       actions={filter}
       hints={
         <>
-          <Hint icon={MousePointer2}>Hover an axis for every series’ value</Hint>
-          <Hint icon={MousePointerClick}>Click legend items to hide series</Hint>
+          <Hint icon={MousePointer2}>{text.hover}</Hint>
+          <Hint icon={MousePointerClick}>{t.hints.legendSeries}</Hint>
           <Hint icon={Keyboard}>
-            Focus, then <Kbd>←</Kbd>
-            <Kbd>→</Kbd> between axes
+            {text.keyboard(
+              <>
+                <Kbd>←</Kbd>
+                <Kbd>→</Kbd>
+              </>,
+            )}
           </Hint>
         </>
       }
     >
       {show !== 'edge' && (
-        <SceneSection
-          title="Showcase"
-          count={4}
-          description="Profiles compared across several metrics."
-        >
-          <Card
-            title="Radar chart"
-            description="Two students and the class average on a 0–100 scale."
-          >
+        <SceneSection title={t.sections.showcase} count={4} description={text.showcase}>
+          <Card {...card('radar')}>
             <RadarChart
               data={skills}
               labelKey="skill"
@@ -87,10 +192,7 @@ export function Radar() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Circle grid, 6 datasets, differentiate"
-            description="A circular grid; marker shapes tell six teams apart."
-          >
+          <Card {...card('circle')}>
             <RadarChart
               data={teams}
               labelKey="metric"
@@ -105,10 +207,7 @@ export function Radar() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Negative values + missing value"
-            description="Year-over-year change around zero; one value is missing."
-          >
+          <Card {...card('negative')}>
             <RadarChart
               data={deltas}
               labelKey="area"
@@ -121,10 +220,7 @@ export function Radar() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Long labels, 8 metrics"
-            description="Eight long axis labels wrapped around the chart."
-          >
+          <Card {...card('long')}>
             <RadarChart
               data={longLabels}
               labelKey="m"
@@ -138,11 +234,8 @@ export function Radar() {
         </SceneSection>
       )}
       {show !== 'showcase' && (
-        <SceneSection title="Edge cases" count={2} description="Few axes and narrow containers.">
-          <Card
-            title="Three metrics · two metrics · one dataset"
-            description="The minimum: three axes, two axes, a single series."
-          >
+        <SceneSection title={t.sections.edgeCases} count={2} description={text.edge}>
+          <Card {...card('minimum')}>
             <div className="grid grid-cols-2 gap-3">
               <RadarChart
                 data={three}
@@ -163,7 +256,7 @@ export function Radar() {
               />
             </div>
           </Card>
-          <Card title="Narrow (260px)" description="Still readable in a 260 px container.">
+          <Card {...card('narrow')}>
             <div className="w-[260px]">
               <RadarChart
                 data={skills}

@@ -1,5 +1,6 @@
 import { BarChart, HorizontalBarChart } from '@startupjafari/charts';
 import { MousePointer2, WrapText } from '../ui/icons';
+import { defineCards, useCards, useText, type L } from '../i18n';
 import { useAnimation } from '../shell/playground';
 import { Hint, ScenePage } from '../shell/scene-page';
 import { ChartCard as Card, CardGrid } from '../ui/card';
@@ -28,23 +29,82 @@ const universities = [
 ];
 const OWN = 'Казахский национальный университет имени аль-Фараби';
 
+const CARDS = defineCards({
+  en: {
+    users: {
+      title: 'Users by university',
+      description: 'Wrapped names; our university is highlighted with colorBy.',
+    },
+    hiddenAxis: {
+      title: 'Complaints (value axis hidden)',
+      description: 'Bars only: the value axis is hidden.',
+    },
+    integer: {
+      title: 'Complaints (integer ticks)',
+      description: 'Vertical bars, wrapped labels and whole-number ticks.',
+    },
+  },
+  ru: {
+    users: {
+      title: 'Пользователи по университетам',
+      description: 'Названия переносятся; наш университет выделен через colorBy.',
+    },
+    hiddenAxis: {
+      title: 'Жалобы (ось значений скрыта)',
+      description: 'Только столбцы: ось значений скрыта.',
+    },
+    integer: {
+      title: 'Жалобы (целочисленные деления)',
+      description: 'Вертикальные столбцы, перенос подписей и только целые деления.',
+    },
+  },
+  kk: {
+    users: {
+      title: 'Университеттер бойынша пайдаланушылар',
+      description: 'Атаулар тасымалданады; біздің университет colorBy арқылы ерекшеленген.',
+    },
+    hiddenAxis: {
+      title: 'Шағымдар (мән осі жасырылған)',
+      description: 'Тек бағаналар: мән осі жасырылған.',
+    },
+    integer: {
+      title: 'Шағымдар (бүтін сан белгілері)',
+      description: 'Тік бағаналар, тасымалданатын жазулар және тек бүтін сан белгілері.',
+    },
+  },
+});
+
+const TEXT: L<{ resize: string; hover: string }> = {
+  en: {
+    resize: 'Resize the window: labels wrap instead of being cut off',
+    hover: 'Hover a bar for the full name',
+  },
+  ru: {
+    resize: 'Измените размер окна: подписи переносятся, а не обрезаются',
+    hover: 'Наведите указатель на столбец, чтобы увидеть полное название',
+  },
+  kk: {
+    resize: 'Терезе өлшемін өзгертіңіз: жазулар қиылмай, келесі жолға тасымалданады',
+    hover: 'Толық атауын көру үшін меңзерді бағанаға апарыңыз',
+  },
+};
+
 export function Universities() {
   const animation = useAnimation();
+  const text = useText(TEXT);
+  const card = useCards(CARDS);
   return (
     <ScenePage
       scene="universities"
       hints={
         <>
-          <Hint icon={WrapText}>Resize the window: labels wrap instead of being cut off</Hint>
-          <Hint icon={MousePointer2}>Hover a bar for the full name</Hint>
+          <Hint icon={WrapText}>{text.resize}</Hint>
+          <Hint icon={MousePointer2}>{text.hover}</Hint>
         </>
       }
     >
       <CardGrid>
-        <Card
-          title="Users by university"
-          description="Wrapped names; our university is highlighted with colorBy."
-        >
+        <Card {...card('users')}>
           <HorizontalBarChart
             data={universities}
             xKey="name"
@@ -59,10 +119,7 @@ export function Universities() {
             animation={animation}
           />
         </Card>
-        <Card
-          title="Complaints (value axis hidden)"
-          description="Bars only: the value axis is hidden."
-        >
+        <Card {...card('hiddenAxis')}>
           <HorizontalBarChart
             data={universities}
             xKey="name"
@@ -73,10 +130,7 @@ export function Universities() {
             animation={animation}
           />
         </Card>
-        <Card
-          title="Complaints (integer ticks)"
-          description="Vertical bars, wrapped labels and whole-number ticks."
-        >
+        <Card {...card('integer')}>
           <BarChart
             data={universities}
             xKey="name"

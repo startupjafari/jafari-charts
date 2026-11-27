@@ -1,5 +1,7 @@
 import { TreemapChart, type TreemapDatum } from '@startupjafari/charts';
 import { Keyboard, MousePointerClick } from '../ui/icons';
+import type { ReactNode } from 'react';
+import { defineCards, useCards, useT, useText, type L } from '../i18n';
 import { useAnimation } from '../shell/playground';
 import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
 import { ChartCard as Card } from '../ui/card';
@@ -99,35 +101,169 @@ let deep: TreemapDatum = { name: 'Level 8', value: 30 };
 for (let d = 7; d >= 1; d--)
   deep = { name: `Level ${d}`, children: [deep, { name: `Side ${d}`, value: 40 + d * 15 }] };
 
+const CARDS = defineCards({
+  en: {
+    budget: {
+      title: 'Treemap (hierarchy, click to drill down)',
+      description: 'A university budget, three levels deep, with drill-down.',
+    },
+    flat: {
+      title: 'Treemap (flat rows: region › city › product)',
+      description: 'Grouped from flat rows; the negative amount is skipped.',
+    },
+    summed: {
+      title: 'Treemap (rows summed per region)',
+      description: 'One tile per region, rows summed.',
+    },
+    big: {
+      title: 'Treemap (2,000 leaves)',
+      description: 'Stress test: 8 faculties × 10 courses × 25 students.',
+    },
+    deep: {
+      title: 'Treemap (deep tree, depth shading)',
+      description: 'Eight nested levels shaded by depth.',
+    },
+    single: { title: 'Treemap (single node)', description: 'One tile filling the plot.' },
+    nonPositive: {
+      title: 'Treemap (zero and negative only)',
+      description: 'Nothing positive to draw, so the empty state shows.',
+    },
+  },
+  ru: {
+    budget: {
+      title: 'Древовидная карта (иерархия, щелчок — детализация)',
+      description: 'Бюджет университета на три уровня вглубь, с детализацией.',
+    },
+    flat: {
+      title: 'Древовидная карта (плоские строки: регион › город › товар)',
+      description: 'Группировка из плоских строк; отрицательная сумма пропускается.',
+    },
+    summed: {
+      title: 'Древовидная карта (строки суммируются по регионам)',
+      description: 'По одной плитке на регион, строки суммируются.',
+    },
+    big: {
+      title: 'Древовидная карта (2 000 листьев)',
+      description: 'Стресс-тест: 8 факультетов × 10 курсов × 25 студентов.',
+    },
+    deep: {
+      title: 'Древовидная карта (глубокое дерево, оттенок по глубине)',
+      description: 'Восемь вложенных уровней, оттенок зависит от глубины.',
+    },
+    single: {
+      title: 'Древовидная карта (один узел)',
+      description: 'Одна плитка на всю область построения.',
+    },
+    nonPositive: {
+      title: 'Древовидная карта (только нули и отрицательные)',
+      description: 'Положительных значений нет, поэтому показано пустое состояние.',
+    },
+  },
+  kk: {
+    budget: {
+      title: 'Ағаштық карта (иерархия, басу — ішіне үңілу)',
+      description: 'Үш деңгейлі университет бюджеті, ішіне үңілу мүмкіндігімен.',
+    },
+    flat: {
+      title: 'Ағаштық карта (жазық жолдар: өңір › қала › өнім)',
+      description: 'Жазық жолдардан топтастырылған; теріс сома ескерілмейді.',
+    },
+    summed: {
+      title: 'Ағаштық карта (жолдар өңір бойынша қосылады)',
+      description: 'Әр өңірге бір плитка, жолдар қосылады.',
+    },
+    big: {
+      title: 'Ағаштық карта (2 000 жапырақ)',
+      description: 'Стресс-тест: 8 факультет × 10 курс × 25 студент.',
+    },
+    deep: {
+      title: 'Ағаштық карта (терең ағаш, тереңдік бойынша реңк)',
+      description: 'Сегіз кірістірілген деңгей, реңкі тереңдікке байланысты.',
+    },
+    single: {
+      title: 'Ағаштық карта (жалғыз түйін)',
+      description: 'Сызу аймағын толтыратын бір плитка.',
+    },
+    nonPositive: {
+      title: 'Ағаштық карта (тек нөл және теріс мәндер)',
+      description: 'Оң мән жоқ, сондықтан бос күй көрсетіледі.',
+    },
+  },
+});
+
+interface TreemapText {
+  drill: string;
+  keyboard: (keys: { move: ReactNode; enter: ReactNode; back: ReactNode }) => ReactNode;
+  showcase: string;
+  edge: string;
+}
+
+const TEXT: L<TreemapText> = {
+  en: {
+    drill: 'Click a group to drill in; use the breadcrumb to go back',
+    keyboard: ({ move, enter, back }) => (
+      <>
+        Focus, then {move} to move, {enter} to drill in, {back} to go back
+      </>
+    ),
+    showcase: 'Nested trees and grouped flat rows, from a handful of tiles to two thousand.',
+    edge: 'Degenerate trees: a single node and nothing positive to draw.',
+  },
+  ru: {
+    drill: 'Щёлкните группу, чтобы перейти внутрь; назад — по цепочке навигации',
+    keyboard: ({ move, enter, back }) => (
+      <>
+        В фокусе: {move} — перемещение, {enter} — внутрь, {back} — назад
+      </>
+    ),
+    showcase:
+      'Вложенные деревья и сгруппированные плоские строки — от нескольких плиток до двух тысяч.',
+    edge: 'Вырожденные деревья: один узел и ни одного положительного значения.',
+  },
+  kk: {
+    drill: 'Ішіне өту үшін топты басыңыз; кері оралу үшін навигация тізбегін пайдаланыңыз',
+    keyboard: ({ move, enter, back }) => (
+      <>
+        Фокус қойылғанда: {move} — жылжу, {enter} — ішіне өту, {back} — артқа
+      </>
+    ),
+    showcase:
+      'Кірістірілген ағаштар мен топтастырылған жазық жолдар — бірнеше плиткадан екі мыңға дейін.',
+    edge: 'Азғындалған ағаштар: жалғыз түйін және бірде-бір оң мән жоқ.',
+  },
+};
+
 export function Treemap() {
   const animation = useAnimation();
   const [show, filter] = useCaseFilter();
+  const t = useT();
+  const text = useText(TEXT);
+  const card = useCards(CARDS);
   return (
     <ScenePage
       scene="treemap"
       actions={filter}
       hints={
         <>
-          <Hint icon={MousePointerClick}>
-            Click a group to drill in; use the breadcrumb to go back
-          </Hint>
+          <Hint icon={MousePointerClick}>{text.drill}</Hint>
           <Hint icon={Keyboard}>
-            Focus, then <Kbd>←</Kbd>
-            <Kbd>→</Kbd> to move, <Kbd>Enter</Kbd> to drill in, <Kbd>⌫</Kbd> to go back
+            {text.keyboard({
+              move: (
+                <>
+                  <Kbd>←</Kbd>
+                  <Kbd>→</Kbd>
+                </>
+              ),
+              enter: <Kbd>Enter</Kbd>,
+              back: <Kbd>⌫</Kbd>,
+            })}
           </Hint>
         </>
       }
     >
       {show !== 'edge' && (
-        <SceneSection
-          title="Showcase"
-          count={5}
-          description="Nested trees and grouped flat rows, from a handful of tiles to two thousand."
-        >
-          <Card
-            title="Treemap (hierarchy, click to drill down)"
-            description="A university budget, three levels deep, with drill-down."
-          >
+        <SceneSection title={t.sections.showcase} count={5} description={text.showcase}>
+          <Card {...card('budget')}>
             <TreemapChart
               data={budget}
               drilldown
@@ -136,10 +272,7 @@ export function Treemap() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Treemap (flat rows: region › city › product)"
-            description="Grouped from flat rows; the negative amount is skipped."
-          >
+          <Card {...card('flat')}>
             <TreemapChart
               data={sales}
               groupKey="region"
@@ -149,10 +282,7 @@ export function Treemap() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Treemap (rows summed per region)"
-            description="One tile per region, rows summed."
-          >
+          <Card {...card('summed')}>
             <TreemapChart
               data={sales}
               groupKey="region"
@@ -161,33 +291,20 @@ export function Treemap() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Treemap (2,000 leaves)"
-            description="Stress test: 8 faculties × 10 courses × 25 students."
-          >
+          <Card {...card('big')}>
             <TreemapChart data={big} height={420} animation={animation} />
           </Card>
-          <Card
-            title="Treemap (deep tree, depth shading)"
-            description="Eight nested levels shaded by depth."
-          >
+          <Card {...card('deep')}>
             <TreemapChart data={deep} depthShading animation={animation} />
           </Card>
         </SceneSection>
       )}
       {show !== 'showcase' && (
-        <SceneSection
-          title="Edge cases"
-          count={2}
-          description="Degenerate trees: a single node and nothing positive to draw."
-        >
-          <Card title="Treemap (single node)" description="One tile filling the plot.">
+        <SceneSection title={t.sections.edgeCases} count={2} description={text.edge}>
+          <Card {...card('single')}>
             <TreemapChart data={{ name: 'Tuition', value: 1 }} height={160} animation={animation} />
           </Card>
-          <Card
-            title="Treemap (zero and negative only)"
-            description="Nothing positive to draw, so the empty state shows."
-          >
+          <Card {...card('nonPositive')}>
             <TreemapChart
               data={[
                 { name: 'Refunds', value: -20 },

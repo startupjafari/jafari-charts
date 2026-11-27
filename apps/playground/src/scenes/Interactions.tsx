@@ -6,8 +6,9 @@ import {
   SquareDashedMousePointer,
   ZoomIn,
 } from '../ui/icons';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { registrations, timeSeries } from '../data';
+import { defineCards, useCards, useT, useText, type L } from '../i18n';
 import { Hint, ScenePage } from '../shell/scene-page';
 import { ChartCard, CardGrid, Readout } from '../ui/card';
 import { Kbd } from '../ui/kbd';
@@ -17,8 +18,103 @@ const series = timeSeries(60);
 
 const placeholder = "empty:before:text-muted-foreground empty:before:content-['—']";
 
+const CARDS = defineCards({
+  en: {
+    zoom: {
+      title: 'Zoom & pan',
+      description: '2,000 hourly points. A plain wheel still scrolls the page.',
+    },
+    brush: { title: 'Brush', description: 'Drag across the chart to select a range of days.' },
+    controlled: {
+      title: 'Controlled legend + active index',
+      description: 'Hidden series, the active bar and clicks live in React state.',
+    },
+  },
+  ru: {
+    zoom: {
+      title: 'Масштаб и панорамирование',
+      description: '2 000 почасовых точек. Обычное колесо мыши по-прежнему прокручивает страницу.',
+    },
+    brush: {
+      title: 'Выделение диапазона',
+      description: 'Протяните указатель по диаграмме, чтобы выделить диапазон дней.',
+    },
+    controlled: {
+      title: 'Контролируемая легенда и активный индекс',
+      description: 'Скрытые ряды, активный столбец и щелчки хранятся в состоянии React.',
+    },
+  },
+  kk: {
+    zoom: {
+      title: 'Масштаб және жылжыту',
+      description: '2 000 сағаттық нүкте. Жай дөңгелек бұрынғыдай бетті айналдырады.',
+    },
+    brush: {
+      title: 'Аралықты таңдау',
+      description: 'Күндер аралығын таңдау үшін диаграмма бойымен сүйреңіз.',
+    },
+    controlled: {
+      title: 'Басқарылатын шартты белгілер және белсенді индекс',
+      description: 'Жасырылған қатарлар, белсенді бағана және басулар React күйінде сақталады.',
+    },
+  },
+});
+
+interface InteractionsText {
+  wheel: (mod: ReactNode) => ReactNode;
+  drag: string;
+  brush: string;
+  zoomFooter: (mod: ReactNode) => ReactNode;
+  selected: string;
+  controlledFooter: string;
+  state: string;
+}
+
+const TEXT: L<InteractionsText> = {
+  en: {
+    wheel: (mod) => <>{mod} + wheel zooms</>,
+    drag: 'Drag pans a zoomed chart',
+    brush: 'Drag across a brush chart to select',
+    zoomFooter: (mod) => <>{mod} + wheel to zoom · drag to pan · double-click to reset</>,
+    selected: 'Selected indices',
+    controlledFooter: 'Toggle the legend, hover or click a bar',
+    state: 'State',
+  },
+  ru: {
+    wheel: (mod) => <>{mod} + колесо — масштаб</>,
+    drag: 'Перетаскивание сдвигает увеличенную диаграмму',
+    brush: 'Протяните указатель по диаграмме с brush, чтобы выделить диапазон',
+    zoomFooter: (mod) => (
+      <>{mod} + колесо — масштаб · перетаскивание — панорамирование · двойной щелчок — сброс</>
+    ),
+    selected: 'Выбранные индексы',
+    controlledFooter: 'Переключайте легенду, наводите указатель или щёлкайте по столбцу',
+    state: 'Состояние',
+  },
+  kk: {
+    wheel: (mod) => <>{mod} + дөңгелек — масштаб</>,
+    drag: 'Сүйреу үлкейтілген диаграмманы жылжытады',
+    brush: 'Аралықты таңдау үшін brush диаграммасы бойымен сүйреңіз',
+    zoomFooter: (mod) => (
+      <>{mod} + дөңгелек — масштаб · сүйреу — жылжыту · екі рет басу — қалпына келтіру</>
+    ),
+    selected: 'Таңдалған индекстер',
+    controlledFooter: 'Шартты белгілерді ауыстырыңыз, меңзерді апарыңыз немесе бағананы басыңыз',
+    state: 'Күй',
+  },
+};
+
+const MOD = (
+  <>
+    <Kbd>Ctrl</Kbd>/<Kbd>⌘</Kbd>
+  </>
+);
+
 /** Deterministic fixture for e2e interaction tests (zoom, brush, controlled state, touch). */
 export function Interactions() {
+  const t = useT();
+  const text = useText(TEXT);
+  const card = useCards(CARDS);
   const [brush, setBrush] = useState('');
   const [clicked, setClicked] = useState('');
   const [hidden, setHidden] = useState<string[]>([]);
@@ -28,34 +124,30 @@ export function Interactions() {
       scene="interactions"
       hints={
         <>
-          <Hint icon={ZoomIn}>
-            <Kbd>Ctrl</Kbd>/<Kbd>⌘</Kbd> + wheel zooms
-          </Hint>
-          <Hint icon={Hand}>Drag pans a zoomed chart</Hint>
-          <Hint icon={MousePointerClick}>Double-click resets</Hint>
-          <Hint icon={SquareDashedMousePointer}>Drag across a brush chart to select</Hint>
+          <Hint icon={ZoomIn}>{text.wheel(MOD)}</Hint>
+          <Hint icon={Hand}>{text.drag}</Hint>
+          <Hint icon={MousePointerClick}>{t.hints.doubleClickResets}</Hint>
+          <Hint icon={SquareDashedMousePointer}>{text.brush}</Hint>
         </>
       }
     >
       <CardGrid>
         <ChartCard
+          {...card('zoom')}
           id="zoom"
-          title="Zoom & pan"
-          description="2,000 hourly points. A plain wheel still scrolls the page."
           footer={
             <span className="flex flex-wrap items-center gap-1 text-muted-foreground">
-              <Kbd>Ctrl</Kbd>/<Kbd>⌘</Kbd> + wheel to zoom · drag to pan · double-click to reset
+              {text.zoomFooter(MOD)}
             </span>
           }
         >
           <LineChart data={big} xKey="date" yKey="value" zoom animation={false} height={240} />
         </ChartCard>
         <ChartCard
+          {...card('brush')}
           id="brush"
-          title="Brush"
-          description="Drag across the chart to select a range of days."
           footer={
-            <Readout label="Selected indices">
+            <Readout label={text.selected}>
               <output data-testid="brush-result" className={placeholder}>
                 {brush}
               </output>
@@ -73,16 +165,15 @@ export function Interactions() {
           />
         </ChartCard>
         <ChartCard
+          {...card('controlled')}
           id="controlled"
-          title="Controlled legend + active index"
-          description="Hidden series, the active bar and clicks live in React state."
           footer={
             <>
               <span className="flex items-center gap-1.5 text-muted-foreground">
                 <MousePointer2 className="size-3.5" aria-hidden />
-                Toggle the legend, hover or click a bar
+                {text.controlledFooter}
               </span>
-              <Readout label="State">
+              <Readout label={text.state}>
                 <output data-testid="state">{`hidden=${hidden.join(',')};active=${active ?? ''};clicked=${clicked}`}</output>
               </Readout>
             </>
