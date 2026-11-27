@@ -55,7 +55,40 @@ scripts           build helpers (vite-lib, size, pack-check, screenshots)
 - Prefer measured optimisations: add a benchmark or size scenario with the change.
 - Commit messages: conventional style (`feat(core): …`, `fix(react): …`).
 
+## Releasing
+
+The six packages in `packages/*` share one version. Apps and benchmarks are private.
+
+1. Bump `version` in every `packages/*/package.json` (and the root/apps for
+   consistency); move the `[Unreleased]` notes in `CHANGELOG.md` under the new
+   version with the date and update the compare links at the bottom.
+2. Verify from a clean tree: `pnpm release:check` (clean, format, lint, types,
+   tests, build, size budgets, `pack:check` with the consumer smoke test).
+3. Commit `chore(release): x.y.z`, tag `vx.y.z` (annotated), push both; wait for CI.
+4. Publish (npm account with publish rights in the `jafari` org):
+
+   ```bash
+   npm whoami                                   # must print the owner's account
+   pnpm -r publish --access public --dry-run    # list what would be published
+   pnpm -r publish --access public              # add --otp=123456 if 2FA asks
+   ```
+
+   `pnpm -r publish` rewrites `workspace:*` to the real version, applies
+   `publishConfig.exports` (drops the `@jafari/source` condition), publishes in
+   dependency order and skips versions already on npm — rerun it if a one-time
+   password expires halfway. It refuses to run with uncommitted changes or off `main`.
+
+5. Check: `npm view @jafari/charts version`, then install the package in a fresh
+   app. Create the GitHub release from the tag with the changelog section.
+
 ## Progress log
+
+### 2026-11-27 — release 0.1.0 prepared
+
+- Repository moved to github.com/startupjafari/jafari-charts (history authored by
+  startupjafari). CI green: quality, React 18, browser suite.
+- `CHANGELOG.md` 0.1.0, tag `v0.1.0`; npm publish is done by the owner (see
+  "Releasing").
 
 ### 2026-11-26 (later) — owner approved publishing and integration
 

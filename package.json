@@ -28,6 +28,7 @@
     "pack:check": "node scripts/pack-check.mjs",
     "bench": "node benchmarks/run.mjs",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm size && pnpm pack:check",
+    "release:check": "pnpm clean && pnpm format:check && pnpm check",
     "clean": "pnpm -r exec rm -rf dist .turbo && rm -rf coverage test-results playwright-report",
     "test:visual": "scripts/e2e-docker.sh --project desktop --grep @visual",
     "test:visual:update": "scripts/e2e-docker.sh --project desktop --grep @visual --update-snapshots",

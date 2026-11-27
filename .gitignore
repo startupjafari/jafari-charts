@@ -21,3 +21,6 @@ packages/charts/README.md
 # Output of screenshot scripts run with a URL in place of the file path
 /http:/
 /https:/
+
+# Release tarballs (pnpm pack output for GitHub releases)
+/release/

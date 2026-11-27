@@ -6,7 +6,8 @@ A self-contained data visualisation library for React with its own math core,
 SVG and Canvas renderers and a consistent visual language. No third-party chart
 libraries — every scale, curve, layout and interaction is implemented here.
 
-> Status: `0.1.0` (development). Not yet published to npm.
+> Status: `0.1.0`, the first public release. Until 1.0 a minor version may change
+> the API; see [CHANGELOG.md](CHANGELOG.md).
 
 ## Install
 

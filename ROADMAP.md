@@ -68,23 +68,18 @@ SVG/Canvas toggle, performance panel), Storybook, export module, npm packaging.
 **Done criteria:** docs built only with Jafari Charts; `pnpm pack` contents verified;
 `@jafari/charts` installable from a tarball in a fresh Vite app and a Next.js app.
 
-## Phase 7 — StudentHub integration ⏸ waiting for the owner's decision
+## Phase 7 — StudentHub integration 🟡 done on a branch, waiting for npm 0.1.0
 
-Read-only analysis is done (see DEVELOPMENT.md → "StudentHub analysis"). Two
-blockers are decisions, not engineering: StudentHub's `AGENTS.md` makes any new
-dependency a stop point requiring human approval, and `docs/FRONTEND_RULES.md`
-§1 mandates Recharts and forbids a second chart engine — replacing it means
-changing those rules. Also needed: how StudentHub consumes the package (npm
-publish of `@jafari/*` — the npm org must belong to the owner — or a tarball /
-workspace link).
+StudentHub's charts (`shared/ui/chart`, dashboard sparklines, the career funnel) run
+on Jafari Charts on the local branch `feat/jafari-charts`, with no changes to
+business logic, API contracts or permissions; Recharts is removed. Measured with
+StudentHub's own build: chart chunks 124.8 → 51.6 KB gzip, long tasks while hovering
+107 ms → 0, hover p95 33.3 → 16.8 ms at 4× CPU slowdown. Report:
+`docs/reports/jafari-charts-migration.md` in StudentHub.
 
-Analysis of StudentHub analytics, replacement of existing charts, visual review,
-before/after performance comparison.
-
-**Done criteria:** no business logic/API/permission changes; all replaced charts
-covered by StudentHub's own tests; measured bundle and interaction comparison.
-Requires the owner's decision on how StudentHub consumes the package (npm
-publish vs. local tarball/workspace link).
+Remaining: once `0.1.0` is on npm, replace the temporary tarball install with
+`@jafari/charts@^0.1.0` (StudentHub's 7-day `minimumReleaseAge` needs either the wait
+or an exception for `@jafari/*`) before the branch is merged.
 
 ## Later
 
