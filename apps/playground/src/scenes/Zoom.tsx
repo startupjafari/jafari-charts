@@ -8,8 +8,14 @@ import {
   WaterfallChart,
   type TreemapDatum,
 } from '@startupjafari/charts';
+import { Hand, Keyboard, MousePointerClick, SquareDashedMousePointer, ZoomIn } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { months, rng } from '../data';
+import { useAnimation } from '../shell/playground';
+import { Hint, ScenePage } from '../shell/scene-page';
+import { Button } from '../ui/button';
+import { ChartCard, CardGrid, Readout } from '../ui/card';
+import { Kbd } from '../ui/kbd';
 
 /** Deterministic fixtures for zoom / brush / controlled-state demos and e2e tests. */
 
@@ -102,24 +108,52 @@ const fmt = (d: readonly [number, number] | null) =>
 const day = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-function Card(props: { id: string; title: string; wide?: boolean; children: ReactNode }) {
+function Card(props: {
+  id: string;
+  title: string;
+  description: ReactNode;
+  wide?: boolean;
+  presets?: ReactNode;
+  readouts: ReactNode;
+  children: ReactNode;
+}) {
   return (
-    <section
-      className="card"
-      data-testid={props.id}
-      style={props.wide ? { gridColumn: '1 / -1' } : undefined}
+    <ChartCard
+      id={props.id}
+      title={props.title}
+      description={props.description}
+      wide={props.wide}
+      footer={
+        <>
+          {props.presets && (
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="text-muted-foreground">Presets</span>
+              {props.presets}
+            </span>
+          )}
+          <span className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
+            {props.readouts}
+          </span>
+        </>
+      }
     >
-      <h3>{props.title}</h3>
       {props.children}
-    </section>
+    </ChartCard>
   );
 }
 
-const out = { fontSize: 12, color: '#64748b', display: 'block', marginTop: 6 } as const;
-const row = { display: 'flex', gap: 8, marginTop: 6, flexWrap: 'wrap' } as const;
+function Preset({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+  return (
+    <Button variant="outline" size="sm" onClick={onClick}>
+      {children}
+    </Button>
+  );
+}
+
+const placeholder = "empty:before:text-muted-foreground empty:before:content-['—']";
 
 export function Zoom() {
-  const animation = new URLSearchParams(location.search).get('animation') !== 'off';
+  const animation = useAnimation();
   const [xDomain, setXDomain] = useState<readonly [number, number] | null>(null);
   const [yDomain, setYDomain] = useState<readonly [number, number] | null>(null);
   const [picked, setPicked] = useState('');
@@ -131,172 +165,237 @@ export function Zoom() {
   const [path, setPath] = useState<string[]>([]);
 
   return (
-    <div className="grid">
-      <Card id="scatter" title="Scatter: Ctrl/⌘ + wheel zooms both axes, drag selects points">
-        <ScatterChart
-          data={students}
-          xKey="hours"
-          yKey="score"
-          groupKey="level"
-          labelKey="id"
-          xLabel="Study hours"
-          yLabel="Score"
-          zoom
-          brush
-          xDomain={xDomain}
-          yDomain={yDomain}
-          onXDomainChange={setXDomain}
-          onYDomainChange={setYDomain}
-          onBrush={(s) => setPicked(`${s.indices.length}`)}
-          animation={animation}
-          height={300}
-        />
-        <div style={row}>
-          <button
-            type="button"
-            onClick={() => {
-              setXDomain([10, 20]);
-              setYDomain([60, 100]);
-            }}
-          >
-            Zoom to top performers
-          </button>
-        </div>
-        <output style={out} data-testid="scatter-domain">
-          {`x ${fmt(xDomain)}; y ${fmt(yDomain)}`}
-        </output>
-        <output style={out} data-testid="scatter-brush">
-          {picked}
-        </output>
-      </Card>
+    <ScenePage
+      scene="zoom"
+      hints={
+        <>
+          <Hint icon={ZoomIn}>
+            <Kbd>Ctrl</Kbd>/<Kbd>⌘</Kbd> + wheel zooms
+          </Hint>
+          <Hint icon={Hand}>Drag pans when zoomed</Hint>
+          <Hint icon={SquareDashedMousePointer}>Drag selects on brush charts</Hint>
+          <Hint icon={MousePointerClick}>Double-click resets</Hint>
+          <Hint icon={Keyboard}>
+            Focused: <Kbd>+</Kbd>
+            <Kbd>−</Kbd>
+            <Kbd>0</Kbd> zoom, <Kbd>⇧</Kbd>+<Kbd>←</Kbd>
+            <Kbd>→</Kbd> pan
+          </Hint>
+        </>
+      }
+    >
+      <CardGrid>
+        <Card
+          id="scatter"
+          title="Scatter: zoom both axes, brush points"
+          description="Ctrl/⌘ + wheel zooms x and y together; dragging a rectangle selects points and zooms into them."
+          presets={
+            <Preset
+              onClick={() => {
+                setXDomain([10, 20]);
+                setYDomain([60, 100]);
+              }}
+            >
+              Zoom to top performers
+            </Preset>
+          }
+          readouts={
+            <>
+              <Readout label="Domain">
+                <output data-testid="scatter-domain">{`x ${fmt(xDomain)}; y ${fmt(yDomain)}`}</output>
+              </Readout>
+              <Readout label="Brushed points">
+                <output data-testid="scatter-brush" className={placeholder}>
+                  {picked}
+                </output>
+              </Readout>
+            </>
+          }
+        >
+          <ScatterChart
+            data={students}
+            xKey="hours"
+            yKey="score"
+            groupKey="level"
+            labelKey="id"
+            xLabel="Study hours"
+            yLabel="Score"
+            zoom
+            brush
+            xDomain={xDomain}
+            yDomain={yDomain}
+            onXDomainChange={setXDomain}
+            onYDomainChange={setYDomain}
+            onBrush={(s) => setPicked(`${s.indices.length}`)}
+            animation={animation}
+            height={300}
+          />
+        </Card>
 
-      <Card id="bars" title="Bar chart: category window (Ctrl/⌘ + wheel, drag, + − 0, ⇧ + arrows)">
-        <BarChart
-          data={monthly}
-          xKey="month"
-          series={[
-            { key: 'online', label: 'Online' },
-            { key: 'campus', label: 'Campus' },
-          ]}
-          zoom
-          categoryRange={range}
-          onCategoryRangeChange={setRange}
-          animation={animation}
-          height={300}
-        />
-        <div style={row}>
-          <button type="button" onClick={() => setRange([18, 23])}>
-            Last 6 months
-          </button>
-        </div>
-        <output style={out} data-testid="bars-range">
-          {range ? range.join('-') : 'all'}
-        </output>
-      </Card>
+        <Card
+          id="bars"
+          title="Bar chart: category window"
+          description="Zoom into whole months: Ctrl/⌘ + wheel, drag to pan, + − 0 and ⇧ + arrows when focused."
+          presets={<Preset onClick={() => setRange([18, 23])}>Last 6 months</Preset>}
+          readouts={
+            <Readout label="Window">
+              <output data-testid="bars-range">{range ? range.join('-') : 'all'}</output>
+            </Readout>
+          }
+        >
+          <BarChart
+            data={monthly}
+            xKey="month"
+            series={[
+              { key: 'online', label: 'Online' },
+              { key: 'campus', label: 'Campus' },
+            ]}
+            zoom
+            categoryRange={range}
+            onCategoryRangeChange={setRange}
+            animation={animation}
+            height={300}
+          />
+        </Card>
 
-      <Card id="bar-brush" title="Stacked bars: drag to select a category range">
-        <StackedBarChart
-          data={monthly}
-          xKey="month"
-          series={[
-            { key: 'online', label: 'Online' },
-            { key: 'campus', label: 'Campus' },
-          ]}
-          brush
-          onBrush={(r) => setBrushed(`${r.from}–${r.to} (${r.startIndex}-${r.endIndex})`)}
-          animation={animation}
-          height={260}
-        />
-        <output style={out} data-testid="bar-brush-result">
-          {brushed}
-        </output>
-      </Card>
+        <Card
+          id="bar-brush"
+          title="Stacked bars: select a range"
+          description="Drag across the bars to select a run of months."
+          readouts={
+            <Readout label="Selection">
+              <output data-testid="bar-brush-result" className={placeholder}>
+                {brushed}
+              </output>
+            </Readout>
+          }
+        >
+          <StackedBarChart
+            data={monthly}
+            xKey="month"
+            series={[
+              { key: 'online', label: 'Online' },
+              { key: 'campus', label: 'Campus' },
+            ]}
+            brush
+            onBrush={(r) => setBrushed(`${r.from}–${r.to} (${r.startIndex}-${r.endIndex})`)}
+            animation={animation}
+            height={260}
+          />
+        </Card>
 
-      <Card id="combo" title="Combo chart: brush zooms into the selected months">
-        <ComboChart
-          data={monthly}
-          xKey="month"
-          series={[
-            { key: 'online', label: 'Online' },
-            { key: 'rate', label: 'Pass rate', type: 'line', axis: 'right' },
-          ]}
-          zoom
-          brush
-          categoryRange={comboRange}
-          onCategoryRangeChange={setComboRange}
-          animation={animation}
-          height={260}
-        />
-        <output style={out} data-testid="combo-range">
-          {comboRange ? comboRange.join('-') : 'all'}
-        </output>
-      </Card>
+        <Card
+          id="combo"
+          title="Combo chart: brush to zoom"
+          description="Bars and a pass-rate line on a second axis; brushing zooms into the months."
+          readouts={
+            <Readout label="Window">
+              <output data-testid="combo-range">{comboRange ? comboRange.join('-') : 'all'}</output>
+            </Readout>
+          }
+        >
+          <ComboChart
+            data={monthly}
+            xKey="month"
+            series={[
+              { key: 'online', label: 'Online' },
+              { key: 'rate', label: 'Pass rate', type: 'line', axis: 'right' },
+            ]}
+            zoom
+            brush
+            categoryRange={comboRange}
+            onCategoryRangeChange={setComboRange}
+            animation={animation}
+            height={260}
+          />
+        </Card>
 
-      <Card id="waterfall" title="Waterfall: zoom into a window of steps">
-        <WaterfallChart
-          data={budget}
-          xKey="step"
-          yKey="amount"
-          isTotal={(d) => d.step === 'Total'}
-          zoom
-          animation={animation}
-          height={260}
-        />
-      </Card>
+        <Card
+          id="waterfall"
+          title="Waterfall: zoom into steps"
+          description="Running totals stay correct inside a zoomed window."
+          readouts={
+            <span className="text-muted-foreground">
+              Uncontrolled: the chart keeps its own window
+            </span>
+          }
+        >
+          <WaterfallChart
+            data={budget}
+            xKey="step"
+            yKey="amount"
+            isTotal={(d) => d.step === 'Total'}
+            zoom
+            animation={animation}
+            height={260}
+          />
+        </Card>
 
-      <Card id="treemap" title="Treemap: controlled drill-down path">
-        <TreemapChart
-          data={faculties}
-          drilldownPath={path}
-          onDrilldownPathChange={setPath}
-          animation={animation}
-          height={260}
-        />
-        <div style={row}>
-          <button type="button" onClick={() => setPath(['Academics', 'Engineering'])}>
-            Show Engineering
-          </button>
-          <button type="button" onClick={() => setPath([])}>
-            Whole university
-          </button>
-        </div>
-        <output style={out} data-testid="treemap-path">
-          {path.length ? path.join(' / ') : 'root'}
-        </output>
-      </Card>
+        <Card
+          id="treemap"
+          title="Treemap: controlled drill-down"
+          description="The drill-down path is React state; clicks report back, buttons set it."
+          presets={
+            <>
+              <Preset onClick={() => setPath(['Academics', 'Engineering'])}>
+                Show Engineering
+              </Preset>
+              <Preset onClick={() => setPath([])}>Whole university</Preset>
+            </>
+          }
+          readouts={
+            <Readout label="Path">
+              <output data-testid="treemap-path">{path.length ? path.join(' / ') : 'root'}</output>
+            </Readout>
+          }
+        >
+          <TreemapChart
+            data={faculties}
+            drilldownPath={path}
+            onDrilldownPathChange={setPath}
+            animation={animation}
+            height={260}
+          />
+        </Card>
 
-      <Card
-        id="calendar"
-        title="Calendar: drag (or ⇧ + arrows) selects days; controlled active day"
-        wide
-      >
-        <CalendarHeatmap
-          data={days}
-          dateKey="date"
-          valueKey="count"
-          valueLabel="Submissions"
-          brush
-          onBrush={(r) => setSelection(`${day(r.from)}..${day(r.to)}`)}
-          activeDate={activeDate}
-          onActiveDateChange={setActiveDate}
-          animation={animation}
-        />
-        <div style={row}>
-          <button type="button" onClick={() => setActiveDate('2025-06-01')}>
-            Highlight Jun 1
-          </button>
-        </div>
-        <output style={out} data-testid="calendar-range">
-          {selection}
-        </output>
-        <output style={out} data-testid="calendar-active">
-          {activeDate === null
-            ? 'none'
-            : typeof activeDate === 'string'
-              ? activeDate
-              : day(activeDate)}
-        </output>
-      </Card>
-    </div>
+        <Card
+          id="calendar"
+          title="Calendar: select days"
+          description="Drag, or ⇧ + arrows when focused, to select a range of days; the active day is controlled."
+          wide
+          presets={<Preset onClick={() => setActiveDate('2025-06-01')}>Highlight Jun 1</Preset>}
+          readouts={
+            <>
+              <Readout label="Selection">
+                <output data-testid="calendar-range" className={placeholder}>
+                  {selection}
+                </output>
+              </Readout>
+              <Readout label="Active day">
+                <output data-testid="calendar-active">
+                  {activeDate === null
+                    ? 'none'
+                    : typeof activeDate === 'string'
+                      ? activeDate
+                      : day(activeDate)}
+                </output>
+              </Readout>
+            </>
+          }
+        >
+          <CalendarHeatmap
+            data={days}
+            dateKey="date"
+            valueKey="count"
+            valueLabel="Submissions"
+            brush
+            onBrush={(r) => setSelection(`${day(r.from)}..${day(r.to)}`)}
+            activeDate={activeDate}
+            onActiveDateChange={setActiveDate}
+            animation={animation}
+          />
+        </Card>
+      </CardGrid>
+    </ScenePage>
   );
 }

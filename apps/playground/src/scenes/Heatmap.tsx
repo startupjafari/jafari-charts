@@ -1,5 +1,9 @@
 import { CalendarHeatmap, HeatmapChart } from '@startupjafari/charts';
-import type { ReactNode } from 'react';
+import { Keyboard, MousePointer2 } from 'lucide-react';
+import { useAnimation } from '../shell/playground';
+import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
+import { ChartCard as Card } from '../ui/card';
+import { Kbd } from '../ui/kbd';
 import { rng } from '../data';
 
 const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -87,133 +91,177 @@ const commits = [
   { date: '2026-01-05', count: 15 },
 ];
 
-function Card({ title, wide, children }: { title: string; wide?: boolean; children: ReactNode }) {
-  return (
-    <section
-      className="card"
-      data-testid={title}
-      style={wide ? { gridColumn: '1 / -1' } : undefined}
-    >
-      <h3>{title}</h3>
-      {children}
-    </section>
-  );
-}
-
 export function Heatmap() {
-  const animation = new URLSearchParams(location.search).get('animation') !== 'off';
+  const animation = useAnimation();
+  const [show, filter] = useCaseFilter();
   return (
-    <div className="grid">
-      <Card title="Calendar heatmap (last 12 months)" wide>
-        <CalendarHeatmap
-          data={lastYear}
-          dateKey="date"
-          valueKey="count"
-          valueLabel="Submissions"
-          animation={animation}
-        />
-      </Card>
-      <Card title="Logins by weekday and hour">
-        <HeatmapChart
-          data={logins}
-          xKey="hour"
-          yKey="day"
-          valueKey="logins"
-          valueLabel="Logins"
-          height={240}
-          xFormatter={(h) => `${String(h).padStart(2, '0')}`}
-          animation={animation}
-        />
-      </Card>
-      <Card title="Average score by subject and group (labels)">
-        <HeatmapChart
-          data={grades}
-          xKey="group"
-          yKey="subject"
-          valueKey="score"
-          labels
-          buckets={4}
-          color="var(--jc-series-3)"
-          height={240}
-          animation={animation}
-        />
-      </Card>
-      <Card title="Enrolment change, % (diverging, missing cell, long labels)">
-        <HeatmapChart
-          data={change}
-          xKey="quarter"
-          yKey="faculty"
-          valueKey="delta"
-          colorScale="diverging"
-          labels
-          valueFormatter={(v) => `${v > 0 ? '+' : ''}${v}%`}
-          height={260}
-          animation={animation}
-        />
-      </Card>
-      <Card title="50 × 50 grid (custom colour ramp)">
-        <HeatmapChart
-          data={big}
-          xKey="x"
-          yKey="y"
-          valueKey="v"
-          colors={['#fff7ed', '#fb923c', '#7c2d12']}
-          buckets={7}
-          height={320}
-          animation={animation}
-        />
-      </Card>
-      <Card title="Календарь активности (ru, month gaps)" wide>
-        <CalendarHeatmap
-          data={lastYear}
-          dateKey="date"
-          valueKey="count"
-          locale="ru"
-          monthGap
-          animation={animation}
-        />
-      </Card>
-      <Card title="Two years, stacked by year" wide>
-        <CalendarHeatmap
-          data={twoYears}
-          dateKey="date"
-          valueKey="count"
-          thresholds={[1, 4, 8, 12]}
-          color="var(--jc-series-2)"
-          animation={animation}
-        />
-      </Card>
-      <Card title="Calendar (narrow, explicit range, duplicates summed)">
-        <div style={{ maxWidth: 320 }}>
-          <CalendarHeatmap
-            data={commits}
-            dateKey="date"
-            valueKey="count"
-            from="2026-01-01"
-            to="2026-06-30"
-            weekStartsOn={1}
-            animation={animation}
-          />
-        </div>
-      </Card>
-      <Card title="Calendar (kk, Q1, all weekday labels)">
-        <CalendarHeatmap
-          data={commits}
-          dateKey="date"
-          valueKey="count"
-          from="2026-01-01"
-          to="2026-03-31"
-          locale="kk"
-          weekdayLabels="all"
-          animation={animation}
-        />
-      </Card>
-      <Card title="Empty heatmap">
-        <HeatmapChart data={[] as typeof grades} xKey="group" yKey="subject" valueKey="score" />
-      </Card>
-      <Card title="Empty calendar">
-        <CalendarHeatmap data={[] as typeof lastYear} dateKey="date" valueKey="count" />
-      </Card>
-    </div>
+    <ScenePage
+      scene="heatmap"
+      actions={filter}
+      hints={
+        <>
+          <Hint icon={MousePointer2}>Hover a cell for its value</Hint>
+          <Hint icon={Keyboard}>
+            Focus a chart, then move between cells with <Kbd>←</Kbd>
+            <Kbd>↑</Kbd>
+            <Kbd>→</Kbd>
+            <Kbd>↓</Kbd>
+          </Hint>
+        </>
+      }
+    >
+      {show !== 'edge' && (
+        <SceneSection
+          title="Showcase"
+          count={9}
+          description="Value matrices and daily calendars with sequential, bucketed and diverging scales."
+        >
+          <Card
+            title="Calendar heatmap (last 12 months)"
+            description="Daily submissions over a year, GitHub-style."
+            wide
+          >
+            <CalendarHeatmap
+              data={lastYear}
+              dateKey="date"
+              valueKey="count"
+              valueLabel="Submissions"
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Logins by weekday and hour"
+            description="A 7 × 24 matrix on a continuous scale."
+          >
+            <HeatmapChart
+              data={logins}
+              xKey="hour"
+              yKey="day"
+              valueKey="logins"
+              valueLabel="Logins"
+              height={240}
+              xFormatter={(h) => `${String(h).padStart(2, '0')}`}
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Average score by subject and group (labels)"
+            description="Four colour buckets, values printed in the cells."
+          >
+            <HeatmapChart
+              data={grades}
+              xKey="group"
+              yKey="subject"
+              valueKey="score"
+              labels
+              buckets={4}
+              color="var(--jc-series-3)"
+              height={240}
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Enrolment change, % (diverging, missing cell, long labels)"
+            description="Diverging scale around zero; one cell has no data."
+          >
+            <HeatmapChart
+              data={change}
+              xKey="quarter"
+              yKey="faculty"
+              valueKey="delta"
+              colorScale="diverging"
+              labels
+              valueFormatter={(v) => `${v > 0 ? '+' : ''}${v}%`}
+              height={260}
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="50 × 50 grid (custom colour ramp)"
+            description="2,500 cells with a custom orange ramp."
+          >
+            <HeatmapChart
+              data={big}
+              xKey="x"
+              yKey="y"
+              valueKey="v"
+              colors={['#fff7ed', '#fb923c', '#7c2d12']}
+              buckets={7}
+              height={320}
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Календарь активности (ru, month gaps)"
+            description="Russian month and weekday names, gaps between months."
+            wide
+          >
+            <CalendarHeatmap
+              data={lastYear}
+              dateKey="date"
+              valueKey="count"
+              locale="ru"
+              monthGap
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Two years, stacked by year"
+            description="Custom thresholds, one row of weeks per year."
+            wide
+          >
+            <CalendarHeatmap
+              data={twoYears}
+              dateKey="date"
+              valueKey="count"
+              thresholds={[1, 4, 8, 12]}
+              color="var(--jc-series-2)"
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Calendar (narrow, explicit range, duplicates summed)"
+            description="A 320 px box, weeks from Monday, duplicate days summed."
+          >
+            <div style={{ maxWidth: 320 }}>
+              <CalendarHeatmap
+                data={commits}
+                dateKey="date"
+                valueKey="count"
+                from="2026-01-01"
+                to="2026-06-30"
+                weekStartsOn={1}
+                animation={animation}
+              />
+            </div>
+          </Card>
+          <Card
+            title="Calendar (kk, Q1, all weekday labels)"
+            description="Kazakh locale, one quarter, every weekday labelled."
+          >
+            <CalendarHeatmap
+              data={commits}
+              dateKey="date"
+              valueKey="count"
+              from="2026-01-01"
+              to="2026-03-31"
+              locale="kk"
+              weekdayLabels="all"
+              animation={animation}
+            />
+          </Card>
+        </SceneSection>
+      )}
+      {show !== 'showcase' && (
+        <SceneSection title="Edge cases" count={2} description="Empty data sets.">
+          <Card title="Empty heatmap" description="No rows: the matrix shows its empty state.">
+            <HeatmapChart data={[] as typeof grades} xKey="group" yKey="subject" valueKey="score" />
+          </Card>
+          <Card title="Empty calendar" description="No rows: the calendar shows its empty state.">
+            <CalendarHeatmap data={[] as typeof lastYear} dateKey="date" valueKey="count" />
+          </Card>
+        </SceneSection>
+      )}
+    </ScenePage>
   );
 }

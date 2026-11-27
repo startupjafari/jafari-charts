@@ -1,14 +1,9 @@
 import { RadarChart } from '@startupjafari/charts';
-import type { ReactNode } from 'react';
-
-function Card({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="card" data-testid={title}>
-      <h3>{title}</h3>
-      {children}
-    </section>
-  );
-}
+import { Keyboard, MousePointer2, MousePointerClick } from 'lucide-react';
+import { useAnimation } from '../shell/playground';
+import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
+import { ChartCard as Card } from '../ui/card';
+import { Kbd } from '../ui/kbd';
 
 const skills = [
   { skill: 'Mathematics', alice: 92, bob: 64, class: 71 },
@@ -53,96 +48,137 @@ const three = [
 ];
 
 export function Radar() {
-  const animation = new URLSearchParams(location.search).get('animation') !== 'off';
+  const animation = useAnimation();
+  const [show, filter] = useCaseFilter();
   return (
-    <div className="grid">
-      <Card title="Radar chart">
-        <RadarChart
-          data={skills}
-          labelKey="skill"
-          series={[
-            { key: 'alice', label: 'Alice' },
-            { key: 'bob', label: 'Bob' },
-            { key: 'class', label: 'Class average' },
-          ]}
-          max={100}
-          animation={animation}
-        />
-      </Card>
-      <Card title="Circle grid, 6 datasets, differentiate">
-        <RadarChart
-          data={teams}
-          labelKey="metric"
-          series={(['a', 'b', 'c', 'd', 'e', 'f'] as const).map((k) => ({
-            key: k,
-            label: `Team ${k.toUpperCase()}`,
-          }))}
-          shape="circle"
-          max={10}
-          levels={5}
-          differentiate
-          animation={animation}
-        />
-      </Card>
-      <Card title="Negative values + missing value">
-        <RadarChart
-          data={deltas}
-          labelKey="area"
-          series={[
-            { key: 'y2024', label: '2024' },
-            { key: 'y2025', label: '2025' },
-          ]}
-          valueFormatter={(v) => `${v > 0 ? '+' : ''}${v}%`}
-          tickFormatter={(v) => `${v}%`}
-          animation={animation}
-        />
-      </Card>
-      <Card title="Long labels, 8 metrics">
-        <RadarChart
-          data={longLabels}
-          labelKey="m"
-          series={[
-            { key: 'v', label: 'Our university' },
-            { key: 'w', label: 'Peer median' },
-          ]}
-          animation={animation}
-        />
-      </Card>
-      <Card title="Three metrics · two metrics · one dataset">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          <RadarChart
-            data={three}
-            labelKey="k"
-            series={[
-              { key: 'v', label: 'Model A' },
-              { key: 'w', label: 'Model B' },
-            ]}
-            height={220}
-            animation={animation}
-          />
-          <RadarChart
-            data={three.slice(0, 2)}
-            labelKey="k"
-            series={[{ key: 'v', label: 'Model A' }]}
-            height={220}
-            animation={animation}
-          />
-        </div>
-      </Card>
-      <Card title="Narrow (260px)">
-        <div style={{ width: 260 }}>
-          <RadarChart
-            data={skills}
-            labelKey="skill"
-            series={[
-              { key: 'alice', label: 'Alice' },
-              { key: 'bob', label: 'Bob' },
-            ]}
-            height={240}
-            animation={animation}
-          />
-        </div>
-      </Card>
-    </div>
+    <ScenePage
+      scene="radar"
+      actions={filter}
+      hints={
+        <>
+          <Hint icon={MousePointer2}>Hover an axis for every series’ value</Hint>
+          <Hint icon={MousePointerClick}>Click legend items to hide series</Hint>
+          <Hint icon={Keyboard}>
+            Focus, then <Kbd>←</Kbd>
+            <Kbd>→</Kbd> between axes
+          </Hint>
+        </>
+      }
+    >
+      {show !== 'edge' && (
+        <SceneSection
+          title="Showcase"
+          count={4}
+          description="Profiles compared across several metrics."
+        >
+          <Card
+            title="Radar chart"
+            description="Two students and the class average on a 0–100 scale."
+          >
+            <RadarChart
+              data={skills}
+              labelKey="skill"
+              series={[
+                { key: 'alice', label: 'Alice' },
+                { key: 'bob', label: 'Bob' },
+                { key: 'class', label: 'Class average' },
+              ]}
+              max={100}
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Circle grid, 6 datasets, differentiate"
+            description="A circular grid; marker shapes tell six teams apart."
+          >
+            <RadarChart
+              data={teams}
+              labelKey="metric"
+              series={(['a', 'b', 'c', 'd', 'e', 'f'] as const).map((k) => ({
+                key: k,
+                label: `Team ${k.toUpperCase()}`,
+              }))}
+              shape="circle"
+              max={10}
+              levels={5}
+              differentiate
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Negative values + missing value"
+            description="Year-over-year change around zero; one value is missing."
+          >
+            <RadarChart
+              data={deltas}
+              labelKey="area"
+              series={[
+                { key: 'y2024', label: '2024' },
+                { key: 'y2025', label: '2025' },
+              ]}
+              valueFormatter={(v) => `${v > 0 ? '+' : ''}${v}%`}
+              tickFormatter={(v) => `${v}%`}
+              animation={animation}
+            />
+          </Card>
+          <Card
+            title="Long labels, 8 metrics"
+            description="Eight long axis labels wrapped around the chart."
+          >
+            <RadarChart
+              data={longLabels}
+              labelKey="m"
+              series={[
+                { key: 'v', label: 'Our university' },
+                { key: 'w', label: 'Peer median' },
+              ]}
+              animation={animation}
+            />
+          </Card>
+        </SceneSection>
+      )}
+      {show !== 'showcase' && (
+        <SceneSection title="Edge cases" count={2} description="Few axes and narrow containers.">
+          <Card
+            title="Three metrics · two metrics · one dataset"
+            description="The minimum: three axes, two axes, a single series."
+          >
+            <div className="grid grid-cols-2 gap-3">
+              <RadarChart
+                data={three}
+                labelKey="k"
+                series={[
+                  { key: 'v', label: 'Model A' },
+                  { key: 'w', label: 'Model B' },
+                ]}
+                height={220}
+                animation={animation}
+              />
+              <RadarChart
+                data={three.slice(0, 2)}
+                labelKey="k"
+                series={[{ key: 'v', label: 'Model A' }]}
+                height={220}
+                animation={animation}
+              />
+            </div>
+          </Card>
+          <Card title="Narrow (260px)" description="Still readable in a 260 px container.">
+            <div className="w-[260px]">
+              <RadarChart
+                data={skills}
+                labelKey="skill"
+                series={[
+                  { key: 'alice', label: 'Alice' },
+                  { key: 'bob', label: 'Bob' },
+                ]}
+                height={240}
+                animation={animation}
+              />
+            </div>
+          </Card>
+        </SceneSection>
+      )}
+    </ScenePage>
   );
 }
