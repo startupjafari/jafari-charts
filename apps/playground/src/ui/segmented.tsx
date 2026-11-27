@@ -6,8 +6,10 @@ export interface SegmentedItem<T extends string> {
   value: T;
   label: ReactNode;
   icon?: LucideIcon;
-  /** Accessible name when the label is visually hidden (icon-only items). */
+  /** Tooltip; also the accessible name when the label is visually hidden (icon-only items). */
   title?: string;
+  /** Language of the label when it differs from the page (a language switcher). */
+  lang?: string;
 }
 
 /**
@@ -22,6 +24,7 @@ export function Segmented<T extends string>({
   labelledBy,
   iconOnly = false,
   stretch = false,
+  stacked = false,
   className,
 }: {
   items: readonly SegmentedItem<T>[];
@@ -32,6 +35,8 @@ export function Segmented<T extends string>({
   labelledBy?: string;
   iconOnly?: boolean;
   stretch?: boolean;
+  /** Icon above a small label: leaves room for longer (translated) labels in narrow tracks. */
+  stacked?: boolean;
   className?: string;
 }) {
   return (
@@ -54,12 +59,14 @@ export function Segmented<T extends string>({
             type="button"
             aria-pressed={active}
             aria-label={iconOnly ? (item.title ?? String(item.label)) : undefined}
-            title={iconOnly ? (item.title ?? String(item.label)) : undefined}
+            title={iconOnly ? (item.title ?? String(item.label)) : item.title}
+            lang={item.lang}
             onClick={() => onChange(item.value)}
             className={cn(
               'flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-[0.8rem] font-medium whitespace-nowrap outline-none focus-visible:ring-4 focus-visible:ring-ring/25 lg:min-h-[1.875rem] lg:px-2.5',
               iconOnly && 'px-2.5 lg:px-2',
               stretch ? 'min-w-0 flex-1 px-1.5 lg:px-1.5' : 'shrink-0',
+              stacked && 'flex-col gap-0.5 py-1.5 text-[0.6875rem] leading-tight',
               active
                 ? 'bg-background text-foreground shadow-sm dark:bg-input/40'
                 : 'text-muted-foreground hover:text-foreground',

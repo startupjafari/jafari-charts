@@ -23,7 +23,7 @@ export function Field({
     <div
       className={cn(
         'flex min-w-0',
-        inline ? 'flex-row items-center gap-2' : 'flex-col gap-1.5',
+        inline ? 'flex-row flex-wrap items-center gap-x-2 gap-y-1' : 'flex-col gap-1.5',
         className,
       )}
     >

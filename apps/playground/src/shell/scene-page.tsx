@@ -1,6 +1,7 @@
 import type { LucideIcon } from '../ui/icons';
 import { useState, type ReactNode } from 'react';
-import { sceneInfo } from '../catalog';
+import type { SceneId } from '../catalog';
+import { useT } from '../i18n';
 import { CardGrid, CardHeadingLevel } from '../ui/card';
 import { Field } from '../ui/field';
 import { Segmented } from '../ui/segmented';
@@ -40,19 +41,22 @@ export function PageHeader({
   );
 }
 
-/** Header, interaction hints and content of one scene; title and summary come from the catalog. */
+/**
+ * Header, interaction hints and content of one scene; title and summary come from the
+ * interface messages (`messages.scenes`).
+ */
 export function ScenePage({
   scene,
   actions,
   hints,
   children,
 }: {
-  scene: string;
+  scene: SceneId;
   actions?: ReactNode;
   hints?: ReactNode;
   children: ReactNode;
 }) {
-  const info = sceneInfo(scene);
+  const info = useT().scenes[scene];
   return (
     <>
       <PageHeader title={info.title} subtitle={info.summary} actions={actions} />
@@ -64,9 +68,10 @@ export function ScenePage({
 
 /** "How to use this page": short instructions, each with an icon. */
 export function Hints({ children }: { children: ReactNode }) {
+  const t = useT();
   return (
     <ul
-      aria-label="How to interact"
+      aria-label={t.a11y.hints}
       className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl bg-primary/[0.04] px-4 py-2.5 text-xs text-muted-foreground ring-1 ring-primary/10 dark:bg-primary/[0.07]"
     >
       {children}
@@ -95,13 +100,14 @@ export function SceneSection({
   count?: number;
   children: ReactNode;
 }) {
+  const t = useT();
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 px-0.5">
         <h2 className="text-sm font-semibold">{title}</h2>
         {count !== undefined && (
           <span className="text-xs text-muted-foreground tabular-nums">
-            {count} {count === 1 ? 'chart' : 'charts'}
+            {t.sections.chartCount(count)}
           </span>
         )}
         <p className="basis-full text-xs text-muted-foreground">{description}</p>
@@ -115,18 +121,17 @@ export function SceneSection({
 
 export type CaseFilter = 'all' | 'showcase' | 'edge';
 
-const CASES = [
-  { value: 'all', label: 'All' },
-  { value: 'showcase', label: 'Showcase' },
-  { value: 'edge', label: 'Edge cases' },
-] as const;
-
 /** "Show: All · Showcase · Edge cases" for scenes that mix examples and stress fixtures. */
 export function useCaseFilter() {
+  const t = useT();
   const [filter, setFilter] = useState<CaseFilter>('all');
+  const cases = (['all', 'showcase', 'edge'] as const).map((value) => ({
+    value,
+    label: t.filter[value],
+  }));
   const control = (
-    <Field label="Show" inline>
-      {(id) => <Segmented items={CASES} value={filter} onChange={setFilter} labelledBy={id} />}
+    <Field label={t.filter.label} inline>
+      {(id) => <Segmented items={cases} value={filter} onChange={setFilter} labelledBy={id} />}
     </Field>
   );
   return [filter, control] as const;
