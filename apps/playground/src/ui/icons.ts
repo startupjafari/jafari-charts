@@ -27,6 +27,7 @@ export { default as Keyboard } from 'lucide-react/icons/keyboard';
 export { default as LayoutDashboard } from 'lucide-react/icons/layout-dashboard';
 export { default as LayoutGrid } from 'lucide-react/icons/layout-grid';
 export { default as Link2 } from 'lucide-react/icons/link-2';
+export { default as Loader2 } from 'lucide-react/icons/loader-circle';
 export { default as Menu } from 'lucide-react/icons/menu';
 export { default as Monitor } from 'lucide-react/icons/monitor';
 export { default as Moon } from 'lucide-react/icons/moon';
