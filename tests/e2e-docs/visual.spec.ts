@@ -25,7 +25,7 @@ for (const theme of ['light', 'dark'] as const) {
     await expect(page.locator('section.example').first()).toHaveScreenshot(
       `bar-chart-example-${theme}.png`,
     );
-    const props = page.locator('details').first();
+    const props = page.locator('[data-prop-group]').first();
     await props.scrollIntoViewIfNeeded();
     await expect(props.locator('tbody tr').first()).toHaveScreenshot(`props-row-${theme}.png`);
   });
