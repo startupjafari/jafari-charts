@@ -1,8 +1,10 @@
 import { createContext, useContext } from 'react';
 import type { ThemePreference } from '../lib/theme';
 
+/** Chart number and date locales offered in the sidebar (any BCP 47 tag works in `?locale=`). */
 export type Locale = 'en' | 'ru' | 'kk';
 
+/** Native language names: a locale picker lists every language in its own name. */
 export const LOCALES: ReadonlyArray<{ value: Locale; label: string }> = [
   { value: 'en', label: 'English' },
   { value: 'ru', label: 'Русский' },
@@ -10,7 +12,7 @@ export const LOCALES: ReadonlyArray<{ value: Locale; label: string }> = [
 ];
 
 /** Query parameters that survive navigation between scenes. */
-const PRESERVED = ['locale', 'animation', 'theme'] as const;
+const PRESERVED = ['lang', 'locale', 'animation', 'theme'] as const;
 
 export function currentSceneId(fallback: string): string {
   return (new URLSearchParams(location.search).get('scene') ?? fallback).toLowerCase();
@@ -39,8 +41,11 @@ export function replaceParams(updates: Record<string, string | null>) {
 export interface PlaygroundState {
   scene: string;
   navigate: (scene: string) => void;
+  /** Number and date locale of the charts: `?locale=`, otherwise the interface language. */
   locale: string;
-  setLocale: (locale: string) => void;
+  /** The explicit chart locale (`?locale=`), or `null` to follow the interface language. */
+  localeOverride: string | null;
+  setLocaleOverride: (locale: string | null) => void;
   /** Entry animations; `?animation=off` turns them off (the e2e suites do). */
   animation: boolean;
   setAnimation: (on: boolean) => void;

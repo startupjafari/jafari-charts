@@ -13,9 +13,10 @@ import {
   Trash2,
   Waves,
 } from '../ui/icons';
-import { useEffect, useState, type ComponentType } from 'react';
+import { useEffect, useState, type ComponentType, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { rng } from '../data';
+import { enPlural, formatNum, kkPlural, ruPlural, useLang, useT, useText, type L } from '../i18n';
 import { replaceParams } from '../shell/playground';
 import { Hint, ScenePage } from '../shell/scene-page';
 import { Button } from '../ui/button';
@@ -80,8 +81,177 @@ declare global {
   }
 }
 
+type ChartType = 'line' | 'area' | 'bar' | 'scatter';
+type Metric =
+  'mount' | 'update' | 'stream' | 'resize' | 'hoverP50' | 'hoverP95' | 'unmount' | 'domNodes';
+
+interface BenchText {
+  chart: string;
+  points: string;
+  charts: string;
+  chartTypes: Record<ChartType, string>;
+  auto: string;
+  hintTiming: string;
+  hintCompare: (command: ReactNode) => ReactNode;
+  measure: string;
+  runAll: string;
+  mount: string;
+  update: string;
+  stream: string;
+  hoverSweep: string;
+  resize: string;
+  unmount: string;
+  reset: string;
+  results: string;
+  tiles: Record<Metric, { label: string; hint: string }>;
+  ms: string;
+  nodes: (n: number) => string;
+  area: string;
+  areaDescription: (c: {
+    count: number;
+    chart: string;
+    points: string;
+    pointsCount: number;
+    renderer: string;
+  }) => string;
+  emptyTitle: string;
+  emptyDescription: (c: {
+    count: number;
+    chart: string;
+    points: string;
+    pointsCount: number;
+  }) => string;
+}
+
+const TEXT: L<BenchText> = {
+  en: {
+    chart: 'Chart',
+    points: 'Points per chart',
+    charts: 'Charts',
+    chartTypes: { line: 'Line', area: 'Area', bar: 'Bar', scatter: 'Scatter' },
+    auto: 'Auto',
+    hintTiming: 'Times include layout and paint of the next frame',
+    hintCompare: (command) => (
+      <>Compare runs on the same machine; the dev server is slower than {command}</>
+    ),
+    measure: 'Measure',
+    runAll: 'Run all',
+    mount: 'Mount',
+    update: 'Update',
+    stream: 'Stream',
+    hoverSweep: 'Hover sweep',
+    resize: 'Resize to 600 px',
+    unmount: 'Unmount',
+    reset: 'Reset',
+    results: 'Results',
+    tiles: {
+      mount: { label: 'Mount', hint: 'first render to painted frame' },
+      update: { label: 'Update', hint: 'replace the whole dataset' },
+      stream: { label: 'Stream', hint: 'append one point, drop the oldest' },
+      resize: { label: 'Resize', hint: 'container to 600 px' },
+      hoverP50: { label: 'Hover, median', hint: 'pointer move to next frame' },
+      hoverP95: { label: 'Hover, 95th percentile', hint: 'over 60 pointer moves' },
+      unmount: { label: 'Unmount', hint: 'remove every chart' },
+      domNodes: { label: 'DOM nodes', hint: 'elements inside the bench area' },
+    },
+    ms: 'ms',
+    nodes: (n) => enPlural(n, ['node', 'nodes']),
+    area: 'Bench area',
+    areaDescription: ({ count, chart, points, pointsCount, renderer }) =>
+      `${count} × ${chart} · ${points} ${enPlural(pointsCount, ['point', 'points'])} · ${renderer} renderer, animations off.`,
+    emptyTitle: 'Nothing mounted yet',
+    emptyDescription: ({ count, chart, points, pointsCount }) =>
+      `Press Mount to render ${count} ${chart} ${enPlural(count, ['chart', 'charts'])} of ${points} ${enPlural(pointsCount, ['point', 'points'])}, or Run all for the full sequence.`,
+  },
+  ru: {
+    chart: 'Диаграмма',
+    points: 'Точек на диаграмму',
+    charts: 'Диаграммы',
+    chartTypes: { line: 'Линия', area: 'Область', bar: 'Столбцы', scatter: 'Точки' },
+    auto: 'Авто',
+    hintTiming: 'Время включает раскладку и отрисовку следующего кадра',
+    hintCompare: (command) => (
+      <>Сравнивайте запуски на одной машине; dev-сервер медленнее, чем {command}</>
+    ),
+    measure: 'Замер',
+    runAll: 'Запустить всё',
+    mount: 'Смонтировать',
+    update: 'Обновить',
+    stream: 'Поток',
+    hoverSweep: 'Проход указателем',
+    resize: 'Ширина 600 px',
+    unmount: 'Размонтировать',
+    reset: 'Сбросить',
+    results: 'Результаты',
+    tiles: {
+      mount: { label: 'Монтирование', hint: 'от рендера до кадра' },
+      update: { label: 'Обновление', hint: 'замена всего набора данных' },
+      stream: { label: 'Поток', hint: 'новая точка вместо старой' },
+      resize: { label: 'Изменение размера', hint: 'контейнер до 600 px' },
+      hoverP50: { label: 'Наведение, медиана', hint: 'от движения до кадра' },
+      hoverP95: { label: 'Наведение, p95', hint: '95-й процентиль из 60 движений' },
+      unmount: { label: 'Размонтирование', hint: 'удаление всех диаграмм' },
+      domNodes: { label: 'DOM-узлы', hint: 'в области замера' },
+    },
+    ms: 'мс',
+    nodes: (n) => ruPlural(n, ['узел', 'узла', 'узлов']),
+    area: 'Область замера',
+    areaDescription: ({ count, chart, points, pointsCount, renderer }) =>
+      `${count} × «${chart}» · ${points} ${ruPlural(pointsCount, ['точка', 'точки', 'точек'])} · рендерер ${renderer}, анимация выключена.`,
+    emptyTitle: 'Пока ничего не смонтировано',
+    emptyDescription: ({ count, chart, points, pointsCount }) =>
+      `Нажмите «Смонтировать», чтобы отрисовать ${count === 1 ? 'диаграмму' : 'диаграммы'} типа «${chart}»: ${count} × ${points} ${ruPlural(pointsCount, ['точка', 'точки', 'точек'])}. «Запустить всё» выполнит полную последовательность.`,
+  },
+  kk: {
+    chart: 'Диаграмма',
+    points: 'Диаграммадағы нүктелер',
+    charts: 'Диаграммалар',
+    chartTypes: { line: 'Сызық', area: 'Аймақ', bar: 'Бағана', scatter: 'Нүкте' },
+    auto: 'Авто',
+    hintTiming: 'Уақытқа келесі кадрдың орналасуы мен сызылуы кіреді',
+    hintCompare: (command) => (
+      <>
+        Іске қосуларды бір құрылғыда салыстырыңыз; dev-сервер {command} командасына қарағанда баяу
+      </>
+    ),
+    measure: 'Өлшеу',
+    runAll: 'Барлығын іске қосу',
+    mount: 'Монтаждау',
+    update: 'Жаңарту',
+    stream: 'Ағын',
+    hoverSweep: 'Меңзермен өту',
+    resize: 'Енін 600 px ету',
+    unmount: 'Демонтаждау',
+    reset: 'Қалпына келтіру',
+    results: 'Нәтижелер',
+    tiles: {
+      mount: { label: 'Монтаждау', hint: 'рендерден кадрға дейін' },
+      update: { label: 'Жаңарту', hint: 'бүкіл жиынды ауыстыру' },
+      stream: { label: 'Ағын', hint: 'ескі нүктенің орнына жаңасы' },
+      resize: { label: 'Өлшемін өзгерту', hint: 'контейнер 600 px-ке дейін' },
+      hoverP50: { label: 'Меңзер, медиана', hint: 'қозғалыстан кадрға дейін' },
+      hoverP95: { label: 'Меңзер, p95', hint: '60 қозғалыстың 95-процентилі' },
+      unmount: { label: 'Демонтаждау', hint: 'барлық диаграмманы алу' },
+      domNodes: { label: 'DOM түйіндері', hint: 'өлшеу аймағында' },
+    },
+    ms: 'мс',
+    nodes: (n) => kkPlural(n, ['түйін', 'түйін']),
+    area: 'Өлшеу аймағы',
+    areaDescription: ({ count, chart, points, pointsCount, renderer }) =>
+      `${count} × «${chart}» · ${points} ${kkPlural(pointsCount, ['нүкте', 'нүкте'])} · ${renderer} рендерері, анимация өшірулі.`,
+    emptyTitle: 'Әзірге ештеңе монтаждалмаған',
+    emptyDescription: ({ count, chart, points }) =>
+      `${count} × ${points} нүктелі «${chart}» диаграммасын салу үшін «Монтаждау» түймесін, толық тізбек үшін «Барлығын іске қосу» түймесін басыңыз.`,
+  },
+};
+
+const isChartType = (v: string): v is ChartType =>
+  v === 'line' || v === 'area' || v === 'bar' || v === 'scatter';
+
 /** The measured area. Everything inside `#bench` counts towards `domNodes`. */
 function BenchRunner({ chart, points, count, renderer }: BenchConfig) {
+  const { lang } = useLang();
+  const text = useText(TEXT);
   const [mounted, setMounted] = useState(false);
   const [data, setData] = useState(() => makeData(points));
   const [width, setWidth] = useState<number | null>(null);
@@ -157,8 +327,14 @@ function BenchRunner({ chart, points, count, renderer }: BenchConfig) {
       {!mounted && (
         <EmptyState
           icon={<Play className="size-5" aria-hidden />}
-          title="Nothing mounted yet"
-          description={`Press Mount to render ${count} ${chart} chart${count === 1 ? '' : 's'} of ${points.toLocaleString('en')} points, or Run all for the full sequence.`}
+          title={text.emptyTitle}
+          description={text.emptyDescription({
+            count,
+            // English keeps the scenario id ("line"); other languages name the chart type.
+            chart: lang === 'en' || !isChartType(chart) ? chart : text.chartTypes[chart],
+            points: formatNum(lang, points),
+            pointsCount: points,
+          })}
         />
       )}
     </>
@@ -180,27 +356,20 @@ const pct = (values: number[], p: number) => {
   const s = [...values].sort((a, b) => a - b);
   return s.length ? (s[Math.min(s.length - 1, Math.floor(s.length * p))] as number) : NaN;
 };
-const ms = (v: number | undefined) => (v === undefined ? null : v.toFixed(1));
+const CHART_TYPES: readonly ChartType[] = ['line', 'area', 'bar', 'scatter'];
+const POINTS = ['365', '1000', '10000', '100000', '1000000'];
+const COUNTS = ['1', '4', '10', '20'];
 
-const CHART_TYPES = [
-  { value: 'line', label: 'Line' },
-  { value: 'area', label: 'Area' },
-  { value: 'bar', label: 'Bar' },
-  { value: 'scatter', label: 'Scatter' },
-] as const;
-const POINTS = ['365', '1000', '10000', '100000', '1000000'].map((v) => ({
-  value: v,
-  label: Number(v).toLocaleString('en'),
-}));
-const COUNTS = ['1', '4', '10', '20'].map((v) => ({
-  value: v,
-  label: `${v} chart${v === '1' ? '' : 's'}`,
-}));
-const RENDERERS = [
-  { value: 'svg', label: 'SVG' },
-  { value: 'canvas', label: 'Canvas' },
-  { value: 'auto', label: 'Auto' },
-] as const;
+const TILES: ReadonlyArray<{ metric: Metric; icon: typeof Play; tone?: string }> = [
+  { metric: 'mount', icon: Play },
+  { metric: 'update', icon: RefreshCw },
+  { metric: 'stream', icon: Waves },
+  { metric: 'resize', icon: Move },
+  { metric: 'hoverP50', icon: MousePointer2, tone: 'text-success' },
+  { metric: 'hoverP95', icon: Activity, tone: 'text-success' },
+  { metric: 'unmount', icon: Square, tone: 'text-warning' },
+  { metric: 'domNodes', icon: Boxes, tone: 'text-warning' },
+];
 
 export function Bench() {
   const [config, setConfig] = useState(readConfig);
@@ -208,6 +377,25 @@ export function Bench() {
   const [results, setResults] = useState<Results>({});
   const [busy, setBusy] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const t = useT();
+  const { lang } = useLang();
+  const text = useText(TEXT);
+  const ms = (v: number | undefined) =>
+    v === undefined
+      ? null
+      : formatNum(lang, v, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const chartTypes = CHART_TYPES.map((value) => ({ value, label: text.chartTypes[value] }));
+  const renderers = [
+    { value: 'svg', label: 'SVG' },
+    { value: 'canvas', label: 'Canvas' },
+    { value: 'auto', label: text.auto },
+  ] as const;
+  const pointOptions = (
+    POINTS.includes(String(config.points)) ? POINTS : [String(config.points), ...POINTS]
+  ).map((value) => ({ value, label: formatNum(lang, Number(value)) }));
+  const countOptions = (
+    COUNTS.includes(String(config.count)) ? COUNTS : [String(config.count), ...COUNTS]
+  ).map((value) => ({ value, label: t.sections.chartCount(Number(value)) }));
 
   const configure = (patch: Partial<BenchConfig>) => {
     const next = { ...config, ...patch };
@@ -272,54 +460,43 @@ export function Bench() {
 
   const settings = (
     <>
-      <Field label="Chart" inline>
+      <Field label={text.chart} inline>
         {(id) => (
           <Segmented
-            items={CHART_TYPES}
-            value={config.chart as (typeof CHART_TYPES)[number]['value']}
+            items={chartTypes}
+            value={config.chart as ChartType}
             onChange={(chart) => configure({ chart })}
             labelledBy={id}
           />
         )}
       </Field>
-      <Field label="Points per chart" inline>
+      <Field label={text.points} inline>
         {(id) => (
           <Select
             value={String(config.points)}
             onChange={(v) => configure({ points: Number(v) })}
-            options={
-              POINTS.some((p) => p.value === String(config.points))
-                ? POINTS
-                : [
-                    { value: String(config.points), label: config.points.toLocaleString('en') },
-                    ...POINTS,
-                  ]
-            }
+            options={pointOptions}
             labelledBy={id}
             className="w-32"
           />
         )}
       </Field>
-      <Field label="Charts" inline>
+      <Field label={text.charts} inline>
         {(id) => (
           <Select
             value={String(config.count)}
             onChange={(v) => configure({ count: Number(v) })}
-            options={
-              COUNTS.some((c) => c.value === String(config.count))
-                ? COUNTS
-                : [{ value: String(config.count), label: `${config.count} charts` }, ...COUNTS]
-            }
+            options={countOptions}
             labelledBy={id}
-            className="w-28"
+            className="w-28 min-w-fit"
           />
         )}
       </Field>
-      <Field label="Renderer" inline>
+      <Field label={t.controls.renderer} inline>
         {(id) => (
           <Segmented
-            items={RENDERERS}
-            value={config.renderer as (typeof RENDERERS)[number]['value']}
+            items={renderers}
+            value={config.renderer as (typeof renderers)[number]['value']}
             onChange={(renderer) => configure({ renderer })}
             labelledBy={id}
           />
@@ -334,19 +511,16 @@ export function Bench() {
       actions={settings}
       hints={
         <>
-          <Hint icon={Timer}>Times include layout and paint of the next frame</Hint>
-          <Hint icon={Info}>
-            Compare runs on the same machine; the dev server is slower than{' '}
-            <code className="font-mono">pnpm bench</code>
-          </Hint>
+          <Hint icon={Timer}>{text.hintTiming}</Hint>
+          <Hint icon={Info}>{text.hintCompare(<code className="font-mono">pnpm bench</code>)}</Hint>
         </>
       }
     >
       <Card className="flex flex-wrap items-center gap-2 px-4 py-3">
-        <span className="mr-1 text-xs font-medium text-muted-foreground">Measure</span>
+        <span className="mr-1 text-xs font-medium text-muted-foreground">{text.measure}</span>
         <Button size="sm" disabled={busy} onClick={() => void step(runAll)}>
           <Play aria-hidden />
-          Run all
+          {text.runAll}
         </Button>
         <Button
           variant="outline"
@@ -354,7 +528,7 @@ export function Bench() {
           disabled={busy || mounted}
           onClick={() => void step(mount)}
         >
-          Mount
+          {text.mount}
         </Button>
         <Button
           variant="outline"
@@ -362,7 +536,7 @@ export function Bench() {
           disabled={busy || !mounted}
           onClick={() => void step(update)}
         >
-          Update
+          {text.update}
         </Button>
         <Button
           variant="outline"
@@ -370,7 +544,7 @@ export function Bench() {
           disabled={busy || !mounted}
           onClick={() => void step(stream)}
         >
-          Stream
+          {text.stream}
         </Button>
         <Button
           variant="outline"
@@ -378,7 +552,7 @@ export function Bench() {
           disabled={busy || !mounted}
           onClick={() => void step(hover)}
         >
-          Hover sweep
+          {text.hoverSweep}
         </Button>
         <Button
           variant="outline"
@@ -386,7 +560,7 @@ export function Bench() {
           disabled={busy || !mounted}
           onClick={() => void step(resize)}
         >
-          Resize to 600 px
+          {text.resize}
         </Button>
         <Button
           variant="outline"
@@ -395,80 +569,50 @@ export function Bench() {
           onClick={() => void step(unmount)}
         >
           <Trash2 aria-hidden />
-          Unmount
+          {text.unmount}
         </Button>
         <Button variant="ghost" size="sm" disabled={busy} onClick={reset} className="ml-auto">
           <RotateCcw aria-hidden />
-          Reset
+          {text.reset}
         </Button>
       </Card>
 
-      <section aria-label="Results" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <MetricTile
-          icon={Play}
-          label="Mount"
-          hint="first render to painted frame"
-          value={ms(results.mount)}
-          unit="ms"
-        />
-        <MetricTile
-          icon={RefreshCw}
-          label="Update"
-          hint="replace the whole dataset"
-          value={ms(results.update)}
-          unit="ms"
-        />
-        <MetricTile
-          icon={Waves}
-          label="Stream"
-          hint="append one point, drop the oldest"
-          value={ms(results.stream)}
-          unit="ms"
-        />
-        <MetricTile
-          icon={Move}
-          label="Resize"
-          hint="container to 600 px"
-          value={ms(results.resize)}
-          unit="ms"
-        />
-        <MetricTile
-          icon={MousePointer2}
-          label="Hover, median"
-          hint="pointer move to next frame"
-          value={ms(results.hoverP50)}
-          unit="ms"
-          tone="text-success"
-        />
-        <MetricTile
-          icon={Activity}
-          label="Hover, 95th percentile"
-          hint="over 60 pointer moves"
-          value={ms(results.hoverP95)}
-          unit="ms"
-          tone="text-success"
-        />
-        <MetricTile
-          icon={Square}
-          label="Unmount"
-          hint="remove every chart"
-          value={ms(results.unmount)}
-          unit="ms"
-          tone="text-warning"
-        />
-        <MetricTile
-          icon={Boxes}
-          label="DOM nodes"
-          hint="elements inside the bench area"
-          value={results.domNodes?.toLocaleString('en')}
-          unit="nodes"
-          tone="text-warning"
-        />
+      <section aria-label={text.results} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {TILES.map(({ metric, icon, tone }) => {
+          const value = results[metric];
+          return (
+            <MetricTile
+              key={metric}
+              icon={icon}
+              label={text.tiles[metric].label}
+              hint={text.tiles[metric].hint}
+              value={
+                metric === 'domNodes'
+                  ? value === undefined
+                    ? undefined
+                    : formatNum(lang, value)
+                  : ms(value)
+              }
+              unit={metric === 'domNodes' ? text.nodes(value ?? 0) : text.ms}
+              tone={tone}
+            />
+          );
+        })}
       </section>
 
       <ChartCard
-        title="Bench area"
-        description={`${config.count} × ${config.chart} · ${config.points.toLocaleString('en')} points · ${config.renderer} renderer, animations off.`}
+        id={TEXT.en.area}
+        title={text.area}
+        description={text.areaDescription({
+          count: config.count,
+          chart:
+            lang === 'en' || !isChartType(config.chart)
+              ? config.chart
+              : text.chartTypes[config.chart],
+          points: formatNum(lang, config.points),
+          pointsCount: config.points,
+          renderer: config.renderer,
+        })}
       >
         <BenchRunner
           key={`${config.chart}:${config.points}:${config.count}:${config.renderer}:${run}`}

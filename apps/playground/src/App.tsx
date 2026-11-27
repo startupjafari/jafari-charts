@@ -7,7 +7,8 @@ import {
   useState,
   type ComponentType,
 } from 'react';
-import { DEFAULT_SCENE, SCENES } from './catalog';
+import { DEFAULT_SCENE, isSceneId } from './catalog';
+import { LangProvider, messagesFor, useLangState } from './i18n';
 import { useTheme } from './lib/theme';
 import { AppShell } from './shell/app-shell';
 import {
@@ -29,13 +30,17 @@ for (const [path, mod] of Object.entries(modules)) {
   if (component) scenes.set(name.toLowerCase(), component);
 }
 
-const readParam = (name: string) => new URLSearchParams(location.search).get(name);
+const readParam = (name: string) => new URLSearchParams(location.search).get(name) || null;
 
 export function App() {
+  const langState = useLangState();
+  const { lang } = langState;
   const [scene, setScene] = useState(() => currentSceneId(DEFAULT_SCENE));
-  const [locale, setLocaleState] = useState(() => readParam('locale') ?? 'en');
+  const [localeOverride, setLocaleOverrideState] = useState(() => readParam('locale'));
   const [animation, setAnimationState] = useState(() => readParam('animation') !== 'off');
   const [theme, setTheme] = useTheme();
+  // Charts format numbers and dates in the interface language unless a locale was picked.
+  const locale = localeOverride ?? lang;
 
   useEffect(() => {
     const onPop = () => setScene(currentSceneId(DEFAULT_SCENE));
@@ -53,9 +58,9 @@ export function App() {
     );
   }, []);
 
-  const setLocale = useCallback((next: string) => {
-    replaceParams({ locale: next === 'en' ? null : next });
-    setLocaleState(next);
+  const setLocaleOverride = useCallback((next: string | null) => {
+    replaceParams({ locale: next });
+    setLocaleOverrideState(next);
   }, []);
 
   const setAnimation = useCallback((on: boolean) => {
@@ -63,38 +68,61 @@ export function App() {
     setAnimationState(on);
   }, []);
 
+  // <html lang>, the tab title and the meta description follow the interface language.
   useEffect(() => {
-    const title = SCENES.find((s) => s.id === scene)?.title;
-    document.title = title ? `${title} · Jafari Charts Playground` : 'Jafari Charts Playground';
-  }, [scene]);
+    const t = messagesFor(lang);
+    document.documentElement.lang = lang;
+    document.title = isSceneId(scene) ? t.app.documentTitle(t.scenes[scene].title) : t.app.title;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', t.app.description);
+  }, [scene, lang]);
 
   const state = useMemo<PlaygroundState>(
-    () => ({ scene, navigate, locale, setLocale, animation, setAnimation, theme, setTheme }),
-    [scene, navigate, locale, setLocale, animation, setAnimation, theme, setTheme],
+    () => ({
+      scene,
+      navigate,
+      locale,
+      localeOverride,
+      setLocaleOverride,
+      animation,
+      setAnimation,
+      theme,
+      setTheme,
+    }),
+    [
+      scene,
+      navigate,
+      locale,
+      localeOverride,
+      setLocaleOverride,
+      animation,
+      setAnimation,
+      theme,
+      setTheme,
+    ],
   );
 
   const Scene = scenes.get(scene);
+  const t = messagesFor(lang);
   return (
-    <PlaygroundContext.Provider value={state}>
-      <ChartProvider locale={locale}>
-        <AppShell>
-          {Scene ? (
-            // Remount on the animation switch so entry animations replay (or stop).
-            createElement(Scene, { key: `${scene}:${animation}` })
-          ) : (
-            <>
-              <PageHeader
-                title="Scene not found"
-                subtitle={`There is no scene called “${scene}”.`}
-              />
-              <EmptyState
-                title="Nothing to show here"
-                description="Pick a scene in the navigation, or open ?scene=overview."
-              />
-            </>
-          )}
-        </AppShell>
-      </ChartProvider>
-    </PlaygroundContext.Provider>
+    <LangProvider value={langState}>
+      <PlaygroundContext.Provider value={state}>
+        <ChartProvider locale={locale}>
+          <AppShell>
+            {Scene ? (
+              // Remount on the animation switch so entry animations replay (or stop).
+              createElement(Scene, { key: `${scene}:${animation}` })
+            ) : (
+              <>
+                <PageHeader title={t.notFound.title} subtitle={t.notFound.subtitle(scene)} />
+                <EmptyState
+                  title={t.notFound.emptyTitle}
+                  description={t.notFound.emptyDescription}
+                />
+              </>
+            )}
+          </AppShell>
+        </ChartProvider>
+      </PlaygroundContext.Provider>
+    </LangProvider>
   );
 }

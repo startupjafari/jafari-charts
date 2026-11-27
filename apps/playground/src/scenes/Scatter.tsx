@@ -1,7 +1,8 @@
 import { ChartReferenceLine, ScatterChart } from '@startupjafari/charts';
 import { Keyboard, MousePointer2, MousePointerClick } from '../ui/icons';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { rng } from '../data';
+import { defineCards, useCards, useT, useText, type L } from '../i18n';
 import { useAnimation } from '../shell/playground';
 import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
 import { ChartCard as Card, Readout } from '../ui/card';
@@ -80,9 +81,132 @@ const messy = [
   { x: -2, y: -1 },
 ];
 
+const CARDS = defineCards({
+  en: {
+    groups: {
+      title: 'Scatter chart (groups)',
+      description: 'Study hours against exam score, coloured by degree.',
+    },
+    bubble: {
+      title: 'Bubble chart (log x, size = population)',
+      description: 'Log-scaled GDP; bubble area encodes population.',
+    },
+    negative: {
+      title: 'Negative values + reference lines',
+      description: 'Quadrants around zero with target lines.',
+    },
+    many: {
+      title: '10 000 points (renderer auto → canvas)',
+      description: 'Past a threshold the chart switches to canvas by itself.',
+    },
+    wide: {
+      title: 'Wide data (series) + differentiate',
+      description: 'Two series from one row each; marker shapes differ.',
+    },
+    edge: {
+      title: 'Edge cases: NaN/null, duplicates, single point, empty',
+      description: 'NaN and null are skipped; duplicates, one point, no data.',
+    },
+  },
+  ru: {
+    groups: {
+      title: 'Точечная диаграмма (группы)',
+      description: 'Часы самоподготовки и балл за экзамен, цвет — уровень обучения.',
+    },
+    bubble: {
+      title: 'Пузырьковая диаграмма (лог. ось X, размер = население)',
+      description: 'ВВП на логарифмической шкале; площадь пузырька — численность населения.',
+    },
+    negative: {
+      title: 'Отрицательные значения и опорные линии',
+      description: 'Квадранты вокруг нуля с линиями целей.',
+    },
+    many: {
+      title: '10 000 точек (renderer auto → canvas)',
+      description: 'После порога диаграмма сама переключается на canvas.',
+    },
+    wide: {
+      title: 'Широкие данные (series) и differentiate',
+      description: 'Два ряда из каждой строки; формы маркеров различаются.',
+    },
+    edge: {
+      title: 'Пограничные случаи: NaN/null, дубли, одна точка, пусто',
+      description: 'NaN и null пропускаются; дубли, одна точка, нет данных.',
+    },
+  },
+  kk: {
+    groups: {
+      title: 'Нүктелік диаграмма (топтар)',
+      description: 'Өздік оқу сағаттары мен емтихан балы, түсі — оқу деңгейі.',
+    },
+    bubble: {
+      title: 'Көпіршікті диаграмма (X осі лог., өлшемі = халық саны)',
+      description: 'ЖІӨ логарифмдік шкалада; көпіршік ауданы — халық саны.',
+    },
+    negative: {
+      title: 'Теріс мәндер және тірек сызықтар',
+      description: 'Нөл маңындағы квадранттар және мақсат сызықтары.',
+    },
+    many: {
+      title: '10 000 нүкте (renderer auto → canvas)',
+      description: 'Шектен асқанда диаграмма өзі canvas-қа ауысады.',
+    },
+    wide: {
+      title: 'Кең деректер (series) және differentiate',
+      description: 'Әр жолдан екі қатар; маркер пішіндері әртүрлі.',
+    },
+    edge: {
+      title: 'Шеткі жағдайлар: NaN/null, қайталанулар, бір нүкте, бос',
+      description: 'NaN мен null өткізіліп жіберіледі; қайталанулар, бір нүкте, дерек жоқ.',
+    },
+  },
+});
+
+interface ScatterText {
+  hover: string;
+  legend: string;
+  keyboard: (keys: ReactNode) => ReactNode;
+  hovered: string;
+  showcase: string;
+  edge: string;
+}
+
+const TEXT: L<ScatterText> = {
+  en: {
+    hover: 'Hover near a point to pick it up',
+    legend: 'Click legend items to hide groups',
+    keyboard: (keys) => <>Focus, then {keys} through the points</>,
+    hovered: 'Hovered',
+    showcase:
+      'Two measures per point: groups, bubble sizes, log scales, quadrants and many points.',
+    edge: 'Dirty and degenerate input.',
+  },
+  ru: {
+    hover: 'Подведите указатель к точке, чтобы выбрать её',
+    legend: 'Щелчок по легенде скрывает группу',
+    keyboard: (keys) => <>В фокусе: {keys} — по точкам</>,
+    hovered: 'Под указателем',
+    showcase:
+      'Два показателя на точку: группы, размер пузырьков, логарифмические шкалы, квадранты и множество точек.',
+    edge: 'Грязные и вырожденные данные.',
+  },
+  kk: {
+    hover: 'Нүктені таңдау үшін меңзерді оған жақындатыңыз',
+    legend: 'Топты жасыру үшін шартты белгіні басыңыз',
+    keyboard: (keys) => <>Фокус қойылғанда: {keys} — нүктелер бойынша жылжу</>,
+    hovered: 'Меңзер астында',
+    showcase:
+      'Әр нүктеде екі көрсеткіш: топтар, көпіршік өлшемі, логарифмдік шкалалар, квадранттар және көп нүкте.',
+    edge: 'Таза емес және азғындалған деректер.',
+  },
+};
+
 export function Scatter() {
   const animation = useAnimation();
   const [show, filter] = useCaseFilter();
+  const t = useT();
+  const text = useText(TEXT);
+  const card = useCards(CARDS);
   const [hovered, setHovered] = useState('—');
   const bigData = useMemo(() => big, []);
   return (
@@ -91,25 +215,22 @@ export function Scatter() {
       actions={filter}
       hints={
         <>
-          <Hint icon={MousePointer2}>Hover near a point to pick it up</Hint>
-          <Hint icon={MousePointerClick}>Click legend items to hide groups</Hint>
+          <Hint icon={MousePointer2}>{text.hover}</Hint>
+          <Hint icon={MousePointerClick}>{text.legend}</Hint>
           <Hint icon={Keyboard}>
-            Focus, then <Kbd>←</Kbd>
-            <Kbd>→</Kbd> through the points
+            {text.keyboard(
+              <>
+                <Kbd>←</Kbd>
+                <Kbd>→</Kbd>
+              </>,
+            )}
           </Hint>
         </>
       }
     >
       {show !== 'edge' && (
-        <SceneSection
-          title="Showcase"
-          count={5}
-          description="Two measures per point: groups, bubble sizes, log scales, quadrants and many points."
-        >
-          <Card
-            title="Scatter chart (groups)"
-            description="Study hours against exam score, coloured by degree."
-          >
+        <SceneSection title={t.sections.showcase} count={5} description={text.showcase}>
+          <Card {...card('groups')}>
             <ScatterChart
               data={students}
               xKey="hours"
@@ -121,10 +242,7 @@ export function Scatter() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Bubble chart (log x, size = population)"
-            description="Log-scaled GDP; bubble area encodes population."
-          >
+          <Card {...card('bubble')}>
             <ScatterChart
               data={countries}
               xKey="gdp"
@@ -139,10 +257,7 @@ export function Scatter() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Negative values + reference lines"
-            description="Quadrants around zero with target lines."
-          >
+          <Card {...card('negative')}>
             <ScatterChart
               data={changes}
               xKey="enrolment"
@@ -156,11 +271,7 @@ export function Scatter() {
               <ChartReferenceLine x={10} />
             </ScatterChart>
           </Card>
-          <Card
-            title="10 000 points (renderer auto → canvas)"
-            description="Past a threshold the chart switches to canvas by itself."
-            footer={<Readout label="Hovered">{hovered}</Readout>}
-          >
+          <Card {...card('many')} footer={<Readout label={text.hovered}>{hovered}</Readout>}>
             <ScatterChart
               data={bigData}
               xKey="x"
@@ -171,10 +282,7 @@ export function Scatter() {
               onHover={(e) => setHovered(e ? `${e.series} #${e.index}` : '—')}
             />
           </Card>
-          <Card
-            title="Wide data (series) + differentiate"
-            description="Two series from one row each; marker shapes differ."
-          >
+          <Card {...card('wide')}>
             <ScatterChart
               data={wide}
               xKey="month"
@@ -190,11 +298,8 @@ export function Scatter() {
         </SceneSection>
       )}
       {show !== 'showcase' && (
-        <SceneSection title="Edge cases" count={1} description="Dirty and degenerate input.">
-          <Card
-            title="Edge cases: NaN/null, duplicates, single point, empty"
-            description="NaN and null are skipped; duplicates, one point, no data."
-          >
+        <SceneSection title={t.sections.edgeCases} count={1} description={text.edge}>
+          <Card {...card('edge')}>
             <div className="grid grid-cols-2 gap-3">
               <ScatterChart data={messy} xKey="x" yKey="y" height={180} animation={animation} />
               <ScatterChart

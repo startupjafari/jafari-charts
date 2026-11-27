@@ -1,5 +1,7 @@
 import { CalendarHeatmap, HeatmapChart } from '@startupjafari/charts';
 import { Keyboard, MousePointer2 } from '../ui/icons';
+import type { ReactNode } from 'react';
+import { defineCards, useCards, useT, useText, type L } from '../i18n';
 import { useAnimation } from '../shell/playground';
 import { Hint, ScenePage, SceneSection, useCaseFilter } from '../shell/scene-page';
 import { ChartCard as Card } from '../ui/card';
@@ -91,36 +93,206 @@ const commits = [
   { date: '2026-01-05', count: 15 },
 ];
 
+const CARDS = defineCards({
+  en: {
+    year: {
+      title: 'Calendar heatmap (last 12 months)',
+      description: 'Daily submissions over a year, GitHub-style.',
+    },
+    logins: {
+      title: 'Logins by weekday and hour',
+      description: 'A 7 × 24 matrix on a continuous scale.',
+    },
+    grades: {
+      title: 'Average score by subject and group (labels)',
+      description: 'Four colour buckets, values printed in the cells.',
+    },
+    change: {
+      title: 'Enrolment change, % (diverging, missing cell, long labels)',
+      description: 'Diverging scale around zero; one cell has no data.',
+    },
+    big: {
+      title: '50 × 50 grid (custom colour ramp)',
+      description: '2,500 cells with a custom orange ramp.',
+    },
+    ru: {
+      title: 'Календарь активности (ru, month gaps)',
+      description: 'Russian month and weekday names, gaps between months.',
+    },
+    twoYears: {
+      title: 'Two years, stacked by year',
+      description: 'Custom thresholds, one row of weeks per year.',
+    },
+    narrow: {
+      title: 'Calendar (narrow, explicit range, duplicates summed)',
+      description: 'A 320 px box, weeks from Monday, duplicate days summed.',
+    },
+    kk: {
+      title: 'Calendar (kk, Q1, all weekday labels)',
+      description: 'Kazakh locale, one quarter, every weekday labelled.',
+    },
+    emptyMatrix: {
+      title: 'Empty heatmap',
+      description: 'No rows: the matrix shows its empty state.',
+    },
+    emptyCalendar: {
+      title: 'Empty calendar',
+      description: 'No rows: the calendar shows its empty state.',
+    },
+  },
+  ru: {
+    year: {
+      title: 'Календарная тепловая карта (последние 12 месяцев)',
+      description: 'Ежедневные сдачи работ за год, в стиле GitHub.',
+    },
+    logins: {
+      title: 'Входы по дням недели и часам',
+      description: 'Матрица 7 × 24 на непрерывной шкале.',
+    },
+    grades: {
+      title: 'Средний балл по предметам и группам (подписи)',
+      description: 'Четыре цветовых интервала, значения выведены в ячейках.',
+    },
+    change: {
+      title: 'Изменение набора, % (расходящаяся шкала, пропуск, длинные подписи)',
+      description: 'Расходящаяся шкала вокруг нуля; в одной ячейке нет данных.',
+    },
+    big: {
+      title: 'Сетка 50 × 50 (своя цветовая шкала)',
+      description: '2 500 ячеек с собственной оранжевой шкалой.',
+    },
+    ru: {
+      title: 'Календарь активности (ru, промежутки между месяцами)',
+      description: 'Русские названия месяцев и дней недели, промежутки между месяцами.',
+    },
+    twoYears: {
+      title: 'Два года, по году в строке',
+      description: 'Свои пороги, по ряду недель на каждый год.',
+    },
+    narrow: {
+      title: 'Календарь (узкий, явный диапазон, дубли суммируются)',
+      description: 'Контейнер 320 px, недели с понедельника, повторяющиеся дни суммируются.',
+    },
+    kk: {
+      title: 'Календарь (kk, I квартал, подписаны все дни недели)',
+      description: 'Казахская локаль, один квартал, подписан каждый день недели.',
+    },
+    emptyMatrix: {
+      title: 'Пустая тепловая карта',
+      description: 'Нет строк: матрица показывает пустое состояние.',
+    },
+    emptyCalendar: {
+      title: 'Пустой календарь',
+      description: 'Нет строк: календарь показывает пустое состояние.',
+    },
+  },
+  kk: {
+    year: {
+      title: 'Күнтізбелік жылу картасы (соңғы 12 ай)',
+      description: 'Бір жылдағы күнделікті тапсырылған жұмыстар, GitHub стилінде.',
+    },
+    logins: {
+      title: 'Апта күндері мен сағаттар бойынша кірулер',
+      description: 'Үздіксіз шкаладағы 7 × 24 матрица.',
+    },
+    grades: {
+      title: 'Пәндер мен топтар бойынша орташа балл (жазулар)',
+      description: 'Төрт түс аралығы, мәндер ұяшықтарда жазылған.',
+    },
+    change: {
+      title: 'Қабылдаудың өзгерісі, % (екіжақты шкала, бос ұяшық, ұзын жазулар)',
+      description: 'Нөлге қатысты екіжақты шкала; бір ұяшықта дерек жоқ.',
+    },
+    big: {
+      title: '50 × 50 тор (өз түс шкаласы)',
+      description: 'Өз қызғылт сары шкаласы бар 2 500 ұяшық.',
+    },
+    ru: {
+      title: 'Белсенділік күнтізбесі (ru, айлар арасында аралық)',
+      description: 'Айлар мен апта күндерінің орысша атаулары, айлар арасында аралық бар.',
+    },
+    twoYears: {
+      title: 'Екі жыл, әр жыл бөлек жолда',
+      description: 'Өз шектері, әр жылға бір апталар қатары.',
+    },
+    narrow: {
+      title: 'Күнтізбе (тар, нақты аралық, қайталанғандар қосылады)',
+      description: '320 px контейнер, апта дүйсенбіден басталады, қайталанған күндер қосылады.',
+    },
+    kk: {
+      title: 'Күнтізбе (kk, I тоқсан, апта күндерінің бәрі жазылған)',
+      description: 'Қазақ локалі, бір тоқсан, апта күндерінің әрқайсысы жазылған.',
+    },
+    emptyMatrix: {
+      title: 'Бос жылу картасы',
+      description: 'Жолдар жоқ: матрица бос күйін көрсетеді.',
+    },
+    emptyCalendar: {
+      title: 'Бос күнтізбе',
+      description: 'Жолдар жоқ: күнтізбе бос күйін көрсетеді.',
+    },
+  },
+});
+
+interface HeatmapText {
+  hover: string;
+  keyboard: (keys: ReactNode) => ReactNode;
+  showcase: string;
+  edge: string;
+}
+
+const TEXT: L<HeatmapText> = {
+  en: {
+    hover: 'Hover a cell for its value',
+    keyboard: (keys) => <>Focus a chart, then move between cells with {keys}</>,
+    showcase: 'Value matrices and daily calendars with sequential, bucketed and diverging scales.',
+    edge: 'Empty data sets.',
+  },
+  ru: {
+    hover: 'Наведите указатель на ячейку, чтобы увидеть значение',
+    keyboard: (keys) => <>Переведите фокус на диаграмму и перемещайтесь по ячейкам: {keys}</>,
+    showcase:
+      'Матрицы значений и календари по дням: последовательные, интервальные и расходящиеся шкалы.',
+    edge: 'Пустые наборы данных.',
+  },
+  kk: {
+    hover: 'Мәнін көру үшін меңзерді ұяшыққа апарыңыз',
+    keyboard: (keys) => <>Диаграммаға фокус қойып, ұяшықтар арасында {keys} арқылы жылжыңыз</>,
+    showcase:
+      'Мәндер матрицалары мен күндік күнтізбелер: бірізді, аралықтық және екіжақты шкалалар.',
+    edge: 'Бос деректер жиындары.',
+  },
+};
+
 export function Heatmap() {
   const animation = useAnimation();
   const [show, filter] = useCaseFilter();
+  const t = useT();
+  const text = useText(TEXT);
+  const card = useCards(CARDS);
   return (
     <ScenePage
       scene="heatmap"
       actions={filter}
       hints={
         <>
-          <Hint icon={MousePointer2}>Hover a cell for its value</Hint>
+          <Hint icon={MousePointer2}>{text.hover}</Hint>
           <Hint icon={Keyboard}>
-            Focus a chart, then move between cells with <Kbd>←</Kbd>
-            <Kbd>↑</Kbd>
-            <Kbd>→</Kbd>
-            <Kbd>↓</Kbd>
+            {text.keyboard(
+              <>
+                <Kbd>←</Kbd>
+                <Kbd>↑</Kbd>
+                <Kbd>→</Kbd>
+                <Kbd>↓</Kbd>
+              </>,
+            )}
           </Hint>
         </>
       }
     >
       {show !== 'edge' && (
-        <SceneSection
-          title="Showcase"
-          count={9}
-          description="Value matrices and daily calendars with sequential, bucketed and diverging scales."
-        >
-          <Card
-            title="Calendar heatmap (last 12 months)"
-            description="Daily submissions over a year, GitHub-style."
-            wide
-          >
+        <SceneSection title={t.sections.showcase} count={9} description={text.showcase}>
+          <Card {...card('year')} wide>
             <CalendarHeatmap
               data={lastYear}
               dateKey="date"
@@ -129,10 +301,7 @@ export function Heatmap() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Logins by weekday and hour"
-            description="A 7 × 24 matrix on a continuous scale."
-          >
+          <Card {...card('logins')}>
             <HeatmapChart
               data={logins}
               xKey="hour"
@@ -144,10 +313,7 @@ export function Heatmap() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Average score by subject and group (labels)"
-            description="Four colour buckets, values printed in the cells."
-          >
+          <Card {...card('grades')}>
             <HeatmapChart
               data={grades}
               xKey="group"
@@ -160,10 +326,7 @@ export function Heatmap() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Enrolment change, % (diverging, missing cell, long labels)"
-            description="Diverging scale around zero; one cell has no data."
-          >
+          <Card {...card('change')}>
             <HeatmapChart
               data={change}
               xKey="quarter"
@@ -176,10 +339,7 @@ export function Heatmap() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="50 × 50 grid (custom colour ramp)"
-            description="2,500 cells with a custom orange ramp."
-          >
+          <Card {...card('big')}>
             <HeatmapChart
               data={big}
               xKey="x"
@@ -191,11 +351,7 @@ export function Heatmap() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Календарь активности (ru, month gaps)"
-            description="Russian month and weekday names, gaps between months."
-            wide
-          >
+          <Card {...card('ru')} wide>
             <CalendarHeatmap
               data={lastYear}
               dateKey="date"
@@ -205,11 +361,7 @@ export function Heatmap() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Two years, stacked by year"
-            description="Custom thresholds, one row of weeks per year."
-            wide
-          >
+          <Card {...card('twoYears')} wide>
             <CalendarHeatmap
               data={twoYears}
               dateKey="date"
@@ -219,10 +371,7 @@ export function Heatmap() {
               animation={animation}
             />
           </Card>
-          <Card
-            title="Calendar (narrow, explicit range, duplicates summed)"
-            description="A 320 px box, weeks from Monday, duplicate days summed."
-          >
+          <Card {...card('narrow')}>
             <div style={{ maxWidth: 320 }}>
               <CalendarHeatmap
                 data={commits}
@@ -235,10 +384,7 @@ export function Heatmap() {
               />
             </div>
           </Card>
-          <Card
-            title="Calendar (kk, Q1, all weekday labels)"
-            description="Kazakh locale, one quarter, every weekday labelled."
-          >
+          <Card {...card('kk')}>
             <CalendarHeatmap
               data={commits}
               dateKey="date"
@@ -253,11 +399,11 @@ export function Heatmap() {
         </SceneSection>
       )}
       {show !== 'showcase' && (
-        <SceneSection title="Edge cases" count={2} description="Empty data sets.">
-          <Card title="Empty heatmap" description="No rows: the matrix shows its empty state.">
+        <SceneSection title={t.sections.edgeCases} count={2} description={text.edge}>
+          <Card {...card('emptyMatrix')}>
             <HeatmapChart data={[] as typeof grades} xKey="group" yKey="subject" valueKey="score" />
           </Card>
-          <Card title="Empty calendar" description="No rows: the calendar shows its empty state.">
+          <Card {...card('emptyCalendar')}>
             <CalendarHeatmap data={[] as typeof lastYear} dateKey="date" valueKey="count" />
           </Card>
         </SceneSection>

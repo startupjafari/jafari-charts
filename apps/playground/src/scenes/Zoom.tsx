@@ -11,6 +11,7 @@ import {
 import { Hand, Keyboard, MousePointerClick, SquareDashedMousePointer, ZoomIn } from '../ui/icons';
 import { useState, type ReactNode } from 'react';
 import { months, rng } from '../data';
+import { defineCards, useCards, useT, useText, type L } from '../i18n';
 import { useAnimation } from '../shell/playground';
 import { Hint, ScenePage } from '../shell/scene-page';
 import { Button } from '../ui/button';
@@ -103,8 +104,8 @@ const faculties: TreemapDatum = {
   ],
 };
 
-const fmt = (d: readonly [number, number] | null) =>
-  d ? `${d[0].toFixed(1)}–${d[1].toFixed(1)}` : 'full';
+const fmt = (d: readonly [number, number] | null, full: string) =>
+  d ? `${d[0].toFixed(1)}–${d[1].toFixed(1)}` : full;
 const day = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
@@ -117,6 +118,7 @@ function Card(props: {
   readouts: ReactNode;
   children: ReactNode;
 }) {
+  const t = useT();
   return (
     <ChartCard
       id={props.id}
@@ -127,7 +129,7 @@ function Card(props: {
         <>
           {props.presets && (
             <span className="flex flex-wrap items-center gap-2">
-              <span className="text-muted-foreground">Presets</span>
+              <span className="text-muted-foreground">{t.controls.presets}</span>
               {props.presets}
             </span>
           )}
@@ -152,7 +154,209 @@ function Preset({ onClick, children }: { onClick: () => void; children: ReactNod
 
 const placeholder = "empty:before:text-muted-foreground empty:before:content-['—']";
 
+const CARDS = defineCards({
+  en: {
+    scatter: {
+      title: 'Scatter: zoom both axes, brush points',
+      description:
+        'Ctrl/⌘ + wheel zooms x and y together; dragging a rectangle selects points and zooms into them.',
+    },
+    bars: {
+      title: 'Bar chart: category window',
+      description:
+        'Zoom into whole months: Ctrl/⌘ + wheel, drag to pan, + − 0 and ⇧ + arrows when focused.',
+    },
+    barBrush: {
+      title: 'Stacked bars: select a range',
+      description: 'Drag across the bars to select a run of months.',
+    },
+    combo: {
+      title: 'Combo chart: brush to zoom',
+      description: 'Bars and a pass-rate line on a second axis; brushing zooms into the months.',
+    },
+    waterfall: {
+      title: 'Waterfall: zoom into steps',
+      description: 'Running totals stay correct inside a zoomed window.',
+    },
+    treemap: {
+      title: 'Treemap: controlled drill-down',
+      description: 'The drill-down path is React state; clicks report back, buttons set it.',
+    },
+    calendar: {
+      title: 'Calendar: select days',
+      description:
+        'Drag, or ⇧ + arrows when focused, to select a range of days; the active day is controlled.',
+    },
+  },
+  ru: {
+    scatter: {
+      title: 'Точечная: масштаб по обеим осям, выделение точек',
+      description:
+        'Ctrl/⌘ + колесо масштабирует X и Y одновременно; прямоугольное выделение выбирает точки и приближает их.',
+    },
+    bars: {
+      title: 'Столбчатая: окно категорий',
+      description:
+        'Масштаб по целым месяцам: Ctrl/⌘ + колесо, перетаскивание — сдвиг, в фокусе + − 0 и ⇧ + стрелки.',
+    },
+    barBrush: {
+      title: 'Столбцы с накоплением: выделение диапазона',
+      description: 'Протяните указатель по столбцам, чтобы выделить несколько месяцев подряд.',
+    },
+    combo: {
+      title: 'Комбинированная: выделение для масштаба',
+      description:
+        'Столбцы и линия доли сдавших на второй оси; выделение приближает выбранные месяцы.',
+    },
+    waterfall: {
+      title: 'Каскадная: масштаб по шагам',
+      description: 'Нарастающие итоги остаются верными и в увеличенном окне.',
+    },
+    treemap: {
+      title: 'Древовидная карта: контролируемая детализация',
+      description:
+        'Путь детализации хранится в состоянии React: щелчки сообщают о нём, кнопки его задают.',
+    },
+    calendar: {
+      title: 'Календарь: выбор дней',
+      description:
+        'Выделите диапазон дней перетаскиванием или ⇧ + стрелки в фокусе; активный день контролируется.',
+    },
+  },
+  kk: {
+    scatter: {
+      title: 'Нүктелік: екі ось бойынша масштаб, нүктелерді таңдау',
+      description:
+        'Ctrl/⌘ + дөңгелек X пен Y-ті бірге масштабтайды; тіктөртбұрышты сүйреу нүктелерді таңдап, соларға жақындатады.',
+    },
+    bars: {
+      title: 'Бағаналы: санаттар терезесі',
+      description:
+        'Толық айлармен масштабтау: Ctrl/⌘ + дөңгелек, сүйреу — жылжыту, фокуста + − 0 және ⇧ + көрсеткілер.',
+    },
+    barBrush: {
+      title: 'Жинақталған бағаналар: аралықты таңдау',
+      description: 'Қатарынан бірнеше айды таңдау үшін бағаналар бойымен сүйреңіз.',
+    },
+    combo: {
+      title: 'Аралас: таңдау арқылы масштабтау',
+      description:
+        'Бағаналар және екінші осьтегі тапсыру үлесінің сызығы; таңдау сол айларға жақындатады.',
+    },
+    waterfall: {
+      title: 'Сарқырама: қадамдарға жақындату',
+      description: 'Үлкейтілген терезе ішінде де өспелі жиынтықтар дұрыс қалады.',
+    },
+    treemap: {
+      title: 'Ағаштық карта: басқарылатын ішіне үңілу',
+      description: 'Үңілу жолы React күйінде: басулар оны хабарлайды, түймелер оны орнатады.',
+    },
+    calendar: {
+      title: 'Күнтізбе: күндерді таңдау',
+      description:
+        'Күндер аралығын сүйреп немесе фокуста ⇧ + көрсеткілермен таңдаңыз; белсенді күн басқарылады.',
+    },
+  },
+});
+
+interface ZoomText {
+  wheel: (mod: ReactNode) => ReactNode;
+  drag: string;
+  brush: string;
+  keyboard: (keys: { zoom: ReactNode; pan: ReactNode }) => ReactNode;
+  topPerformers: string;
+  lastSixMonths: string;
+  showEngineering: string;
+  wholeUniversity: string;
+  highlightJune1: string;
+  domain: string;
+  brushed: string;
+  window: string;
+  selection: string;
+  path: string;
+  activeDay: string;
+  uncontrolled: string;
+}
+
+const TEXT: L<ZoomText> = {
+  en: {
+    wheel: (mod) => <>{mod} + wheel zooms</>,
+    drag: 'Drag pans when zoomed',
+    brush: 'Drag selects on brush charts',
+    keyboard: ({ zoom, pan }) => (
+      <>
+        Focused: {zoom} zoom, {pan} pan
+      </>
+    ),
+    topPerformers: 'Zoom to top performers',
+    lastSixMonths: 'Last 6 months',
+    showEngineering: 'Show Engineering',
+    wholeUniversity: 'Whole university',
+    highlightJune1: 'Highlight Jun 1',
+    domain: 'Domain',
+    brushed: 'Brushed points',
+    window: 'Window',
+    selection: 'Selection',
+    path: 'Path',
+    activeDay: 'Active day',
+    uncontrolled: 'Uncontrolled: the chart keeps its own window',
+  },
+  ru: {
+    wheel: (mod) => <>{mod} + колесо — масштаб</>,
+    drag: 'Перетаскивание сдвигает увеличенный вид',
+    brush: 'На диаграммах с brush перетаскивание выделяет диапазон',
+    keyboard: ({ zoom, pan }) => (
+      <>
+        В фокусе: {zoom} — масштаб, {pan} — сдвиг
+      </>
+    ),
+    topPerformers: 'Приблизить лучших',
+    lastSixMonths: 'Последние 6 месяцев',
+    showEngineering: 'Показать Engineering',
+    wholeUniversity: 'Весь университет',
+    highlightJune1: 'Выделить 1 июня',
+    domain: 'Диапазон осей',
+    brushed: 'Выделено точек',
+    window: 'Окно',
+    selection: 'Выделение',
+    path: 'Путь',
+    activeDay: 'Активный день',
+    uncontrolled: 'Неконтролируемая: диаграмма сама хранит своё окно',
+  },
+  kk: {
+    wheel: (mod) => <>{mod} + дөңгелек — масштаб</>,
+    drag: 'Үлкейтілгенде сүйреу көріністі жылжытады',
+    brush: 'Brush диаграммаларында сүйреу аралықты таңдайды',
+    keyboard: ({ zoom, pan }) => (
+      <>
+        Фокуста: {zoom} — масштаб, {pan} — жылжыту
+      </>
+    ),
+    topPerformers: 'Үздіктерге жақындату',
+    lastSixMonths: 'Соңғы 6 ай',
+    showEngineering: 'Engineering көрсету',
+    wholeUniversity: 'Бүкіл университет',
+    highlightJune1: '1 маусымды белгілеу',
+    domain: 'Ось аралығы',
+    brushed: 'Таңдалған нүктелер',
+    window: 'Терезе',
+    selection: 'Таңдау',
+    path: 'Жол',
+    activeDay: 'Белсенді күн',
+    uncontrolled: 'Басқарылмайтын: диаграмма өз терезесін өзі сақтайды',
+  },
+};
+
+const MOD = (
+  <>
+    <Kbd>Ctrl</Kbd>/<Kbd>⌘</Kbd>
+  </>
+);
+
 export function Zoom() {
+  const t = useT();
+  const text = useText(TEXT);
+  const card = useCards(CARDS);
   const animation = useAnimation();
   const [xDomain, setXDomain] = useState<readonly [number, number] | null>(null);
   const [yDomain, setYDomain] = useState<readonly [number, number] | null>(null);
@@ -169,26 +373,34 @@ export function Zoom() {
       scene="zoom"
       hints={
         <>
-          <Hint icon={ZoomIn}>
-            <Kbd>Ctrl</Kbd>/<Kbd>⌘</Kbd> + wheel zooms
-          </Hint>
-          <Hint icon={Hand}>Drag pans when zoomed</Hint>
-          <Hint icon={SquareDashedMousePointer}>Drag selects on brush charts</Hint>
-          <Hint icon={MousePointerClick}>Double-click resets</Hint>
+          <Hint icon={ZoomIn}>{text.wheel(MOD)}</Hint>
+          <Hint icon={Hand}>{text.drag}</Hint>
+          <Hint icon={SquareDashedMousePointer}>{text.brush}</Hint>
+          <Hint icon={MousePointerClick}>{t.hints.doubleClickResets}</Hint>
           <Hint icon={Keyboard}>
-            Focused: <Kbd>+</Kbd>
-            <Kbd>−</Kbd>
-            <Kbd>0</Kbd> zoom, <Kbd>⇧</Kbd>+<Kbd>←</Kbd>
-            <Kbd>→</Kbd> pan
+            {text.keyboard({
+              zoom: (
+                <>
+                  <Kbd>+</Kbd>
+                  <Kbd>−</Kbd>
+                  <Kbd>0</Kbd>
+                </>
+              ),
+              pan: (
+                <>
+                  <Kbd>⇧</Kbd>+<Kbd>←</Kbd>
+                  <Kbd>→</Kbd>
+                </>
+              ),
+            })}
           </Hint>
         </>
       }
     >
       <CardGrid>
         <Card
+          {...card('scatter')}
           id="scatter"
-          title="Scatter: zoom both axes, brush points"
-          description="Ctrl/⌘ + wheel zooms x and y together; dragging a rectangle selects points and zooms into them."
           presets={
             <Preset
               onClick={() => {
@@ -196,15 +408,15 @@ export function Zoom() {
                 setYDomain([60, 100]);
               }}
             >
-              Zoom to top performers
+              {text.topPerformers}
             </Preset>
           }
           readouts={
             <>
-              <Readout label="Domain">
-                <output data-testid="scatter-domain">{`x ${fmt(xDomain)}; y ${fmt(yDomain)}`}</output>
+              <Readout label={text.domain}>
+                <output data-testid="scatter-domain">{`x ${fmt(xDomain, t.readout.full)}; y ${fmt(yDomain, t.readout.full)}`}</output>
               </Readout>
-              <Readout label="Brushed points">
+              <Readout label={text.brushed}>
                 <output data-testid="scatter-brush" className={placeholder}>
                   {picked}
                 </output>
@@ -233,13 +445,12 @@ export function Zoom() {
         </Card>
 
         <Card
+          {...card('bars')}
           id="bars"
-          title="Bar chart: category window"
-          description="Zoom into whole months: Ctrl/⌘ + wheel, drag to pan, + − 0 and ⇧ + arrows when focused."
-          presets={<Preset onClick={() => setRange([18, 23])}>Last 6 months</Preset>}
+          presets={<Preset onClick={() => setRange([18, 23])}>{text.lastSixMonths}</Preset>}
           readouts={
-            <Readout label="Window">
-              <output data-testid="bars-range">{range ? range.join('-') : 'all'}</output>
+            <Readout label={text.window}>
+              <output data-testid="bars-range">{range ? range.join('-') : t.readout.all}</output>
             </Readout>
           }
         >
@@ -259,11 +470,10 @@ export function Zoom() {
         </Card>
 
         <Card
+          {...card('barBrush')}
           id="bar-brush"
-          title="Stacked bars: select a range"
-          description="Drag across the bars to select a run of months."
           readouts={
-            <Readout label="Selection">
+            <Readout label={text.selection}>
               <output data-testid="bar-brush-result" className={placeholder}>
                 {brushed}
               </output>
@@ -285,12 +495,13 @@ export function Zoom() {
         </Card>
 
         <Card
+          {...card('combo')}
           id="combo"
-          title="Combo chart: brush to zoom"
-          description="Bars and a pass-rate line on a second axis; brushing zooms into the months."
           readouts={
-            <Readout label="Window">
-              <output data-testid="combo-range">{comboRange ? comboRange.join('-') : 'all'}</output>
+            <Readout label={text.window}>
+              <output data-testid="combo-range">
+                {comboRange ? comboRange.join('-') : t.readout.all}
+              </output>
             </Readout>
           }
         >
@@ -311,14 +522,9 @@ export function Zoom() {
         </Card>
 
         <Card
+          {...card('waterfall')}
           id="waterfall"
-          title="Waterfall: zoom into steps"
-          description="Running totals stay correct inside a zoomed window."
-          readouts={
-            <span className="text-muted-foreground">
-              Uncontrolled: the chart keeps its own window
-            </span>
-          }
+          readouts={<span className="text-muted-foreground">{text.uncontrolled}</span>}
         >
           <WaterfallChart
             data={budget}
@@ -332,20 +538,21 @@ export function Zoom() {
         </Card>
 
         <Card
+          {...card('treemap')}
           id="treemap"
-          title="Treemap: controlled drill-down"
-          description="The drill-down path is React state; clicks report back, buttons set it."
           presets={
             <>
               <Preset onClick={() => setPath(['Academics', 'Engineering'])}>
-                Show Engineering
+                {text.showEngineering}
               </Preset>
-              <Preset onClick={() => setPath([])}>Whole university</Preset>
+              <Preset onClick={() => setPath([])}>{text.wholeUniversity}</Preset>
             </>
           }
           readouts={
-            <Readout label="Path">
-              <output data-testid="treemap-path">{path.length ? path.join(' / ') : 'root'}</output>
+            <Readout label={text.path}>
+              <output data-testid="treemap-path">
+                {path.length ? path.join(' / ') : t.readout.root}
+              </output>
             </Readout>
           }
         >
@@ -359,22 +566,23 @@ export function Zoom() {
         </Card>
 
         <Card
+          {...card('calendar')}
           id="calendar"
-          title="Calendar: select days"
-          description="Drag, or ⇧ + arrows when focused, to select a range of days; the active day is controlled."
           wide
-          presets={<Preset onClick={() => setActiveDate('2025-06-01')}>Highlight Jun 1</Preset>}
+          presets={
+            <Preset onClick={() => setActiveDate('2025-06-01')}>{text.highlightJune1}</Preset>
+          }
           readouts={
             <>
-              <Readout label="Selection">
+              <Readout label={text.selection}>
                 <output data-testid="calendar-range" className={placeholder}>
                   {selection}
                 </output>
               </Readout>
-              <Readout label="Active day">
+              <Readout label={text.activeDay}>
                 <output data-testid="calendar-active">
                   {activeDate === null
-                    ? 'none'
+                    ? t.readout.none
                     : typeof activeDate === 'string'
                       ? activeDate
                       : day(activeDate)}
