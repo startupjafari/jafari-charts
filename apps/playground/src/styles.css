@@ -23,6 +23,7 @@
   --color-overlay: var(--overlay);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-ink: var(--primary-ink);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -61,6 +62,8 @@
   --overlay: oklch(0.145 0 0);
   --primary: oklch(0.546 0.215 262.9);
   --primary-foreground: oklch(1 0 0);
+  /* Brand blue as text on a primary/10 tint: one step deeper so small text keeps AA. */
+  --primary-ink: oklch(0.488 0.217 264.4);
   --secondary: oklch(0.967 0.003 264.5);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.967 0.003 264.5);
@@ -100,6 +103,7 @@
   --overlay: oklch(0.09 0.008 264.3);
   --primary: oklch(0.573 0.188 259.8);
   --primary-foreground: oklch(1 0 0);
+  --primary-ink: oklch(0.746 0.14 254.6);
   --secondary: oklch(0.261 0.024 267.1);
   --secondary-foreground: oklch(0.967 0.003 264.5);
   --muted: oklch(0.261 0.024 267.1);

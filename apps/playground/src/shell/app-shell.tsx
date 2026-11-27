@@ -24,7 +24,7 @@ function Logo() {
       </span>
       <span className="flex min-w-0 flex-col leading-none">
         <span className="truncate text-[0.9375rem] font-bold tracking-tight">Jafari Charts</span>
-        <span className="mt-0.5 text-[0.6875rem] font-semibold tracking-wide text-primary uppercase">
+        <span className="mt-0.5 text-[0.6875rem] font-semibold tracking-wide text-primary-ink uppercase">
           Playground
         </span>
       </span>
@@ -46,7 +46,7 @@ function SceneNav({ onNavigate }: { onNavigate?: () => void }) {
       {GROUPS.map((group) => (
         <div key={group.id} className="flex flex-col gap-0.5">
           {group.id !== 'start' && (
-            <p className="px-3 pt-3 pb-1 text-[0.6875rem] font-semibold tracking-wide text-muted-foreground/80 uppercase">
+            <p className="px-3 pt-3 pb-1 text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase">
               {group.label}
             </p>
           )}
@@ -62,7 +62,7 @@ function SceneNav({ onNavigate }: { onNavigate?: () => void }) {
                 className={cn(
                   'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium outline-none focus-visible:ring-4 focus-visible:ring-ring/25',
                   active
-                    ? 'bg-primary/10 text-primary'
+                    ? 'bg-primary/10 text-primary-ink'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                 )}
               >
@@ -82,7 +82,7 @@ function PreviewSettings() {
   const { theme, setTheme, locale, setLocale, animation, setAnimation } = usePlayground();
   return (
     <div className="flex flex-col gap-3 border-t border-sidebar-border px-4 pt-3 pb-4">
-      <p className="text-[0.6875rem] font-semibold tracking-wide text-muted-foreground/80 uppercase">
+      <p className="text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase">
         Preview
       </p>
       <Field label="Theme">
@@ -128,7 +128,7 @@ function MobileBar() {
   const navigated = useRef(false);
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <div className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-sidebar-border bg-sidebar/90 px-3 backdrop-blur supports-[backdrop-filter]:bg-sidebar/75 lg:hidden">
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-sidebar-border bg-sidebar/90 px-3 backdrop-blur supports-[backdrop-filter]:bg-sidebar/75 lg:hidden">
         <Dialog.Trigger
           aria-label="Open navigation"
           className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/25"
@@ -136,7 +136,7 @@ function MobileBar() {
           <Menu className="size-5" aria-hidden />
         </Dialog.Trigger>
         <Logo />
-      </div>
+      </header>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[190] bg-overlay/30 backdrop-blur-[2px] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-(--motion-panel) lg:hidden" />
         <Dialog.Content

@@ -1,5 +1,14 @@
-import type { ComponentProps, CSSProperties, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  type ComponentProps,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { cn } from '../lib/utils';
+
+/** Heading level of chart card titles: 2 at the top of a page, 3 inside a titled section. */
+export const CardHeadingLevel = createContext<2 | 3>(2);
 
 /** Content surface: card background separated by a ring, never a shadow. */
 export function Card({ className, ...props }: ComponentProps<'div'>) {
@@ -45,6 +54,7 @@ export function ChartCard({
   style?: CSSProperties;
   children: ReactNode;
 }) {
+  const Heading = useContext(CardHeadingLevel) === 3 ? 'h3' : 'h2';
   return (
     <section
       className={cn(
@@ -57,7 +67,7 @@ export function ChartCard({
     >
       <header className="flex flex-wrap items-start gap-x-3 gap-y-2 border-b border-border px-4 py-3">
         <div className="min-w-0 flex-1 basis-48">
-          <h3 className="text-sm leading-snug font-semibold">{title}</h3>
+          <Heading className="text-sm leading-snug font-semibold">{title}</Heading>
           <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
         </div>
         {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}

@@ -13,7 +13,7 @@ export function MetricTile({
   value,
   unit,
   hint,
-  tone = 'text-primary',
+  tone = 'text-primary-ink',
 }: {
   icon: LucideIcon;
   label: string;
@@ -47,7 +47,7 @@ export function MetricTile({
         </span>
         <span className="block truncate text-xs text-muted-foreground">{label}</span>
         {hint && (
-          <span className="block truncate text-[0.6875rem] text-muted-foreground/80">{hint}</span>
+          <span className="block truncate text-[0.6875rem] text-muted-foreground">{hint}</span>
         )}
       </span>
     </Card>

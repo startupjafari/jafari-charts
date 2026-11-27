@@ -31,7 +31,7 @@ function SceneLink({ scene }: { scene: SceneInfo }) {
       className="group flex min-w-0 flex-col gap-3 rounded-xl bg-card p-4 text-card-foreground ring-1 ring-foreground/10 outline-none hover:bg-muted/40 hover:ring-ring/40 focus-visible:ring-2 focus-visible:ring-ring/60"
     >
       <span className="flex items-center gap-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary-ink">
           <Icon className="size-[1.125rem]" aria-hidden />
         </span>
         <span className="min-w-0 flex-1 truncate text-sm font-semibold">{scene.title}</span>

@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { sceneInfo } from '../catalog';
-import { CardGrid } from '../ui/card';
+import { CardGrid, CardHeadingLevel } from '../ui/card';
 import { Field } from '../ui/field';
 import { Segmented } from '../ui/segmented';
 
@@ -106,7 +106,9 @@ export function SceneSection({
         )}
         <p className="basis-full text-xs text-muted-foreground">{description}</p>
       </div>
-      <CardGrid>{children}</CardGrid>
+      <CardHeadingLevel.Provider value={3}>
+        <CardGrid>{children}</CardGrid>
+      </CardHeadingLevel.Provider>
     </div>
   );
 }
