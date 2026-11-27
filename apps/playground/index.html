@@ -3,65 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Jafari Charts playground: every chart type, interaction and export in one place."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563eb'/%3E%3Cpath d='M9 22v-5M14 22V11M19 22v-8M24 22V8' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
     <title>Jafari Charts Playground</title>
-    <style>
-      :root {
-        font-family:
-          Inter,
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          'Segoe UI',
-          Roboto,
-          sans-serif;
-      }
-      .dark {
-        color-scheme: dark;
-      }
-      body {
-        margin: 0;
-        background: #f6f7f9;
-        color: #0f172a;
-      }
-      .dark body,
-      body.dark {
-        background: #0b0d12;
-        color: #f1f5f9;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
-        gap: 16px;
-        padding: 16px;
-      }
-      .card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 16px 16px 12px;
-        min-width: 0;
-      }
-      .dark .card {
-        background: #0f1115;
-        border-color: #1f2430;
-      }
-      .card h3 {
-        margin: 0 0 12px;
-        font-size: 13px;
-        font-weight: 600;
-      }
-      nav {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        padding: 12px 16px;
-        border-bottom: 1px solid #e5e7eb;
-      }
-      nav a {
-        font-size: 13px;
-        color: inherit;
-      }
-    </style>
+    <script>
+      // Apply the colour theme before the first paint (no light flash in dark mode).
+      // Mirrors src/lib/theme.ts: ?theme= wins, then the saved choice, then the OS.
+      (function () {
+        var pref = new URLSearchParams(location.search).get('theme');
+        if (pref !== 'light' && pref !== 'dark') {
+          try {
+            pref = localStorage.getItem('jc-playground-theme');
+          } catch (e) {
+            pref = null;
+          }
+        }
+        var dark =
+          pref === 'dark' ||
+          ((!pref || pref === 'system') && matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.classList.add('dark');
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
