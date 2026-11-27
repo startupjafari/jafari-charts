@@ -10,67 +10,108 @@ const TOKEN_NOTES: Record<TokenName, L<string>> = {
   background: {
     en: 'Surface behind the chart; also the 2 px ring around markers.',
     ru: 'Фон под диаграммой; также кольцо толщиной 2 px вокруг маркеров.',
+    kk: 'Диаграмманың фоны; маркерлердің айналасындағы 2 px сақина да осы түспен салынады.',
   },
   surface: {
     en: 'Tooltip and popover surface.',
     ru: 'Фон подсказок и всплывающих панелей.',
+    kk: 'Қалқымалы кеңестер мен қалқымалы панельдердің фоны.',
   },
   textPrimary: {
     en: 'Values, titles, centre labels.',
     ru: 'Значения, заголовки, подписи в центре.',
+    kk: 'Мәндер, атаулар, ортадағы жазулар.',
   },
   textSecondary: {
     en: 'Axis labels, legend, tooltip labels.',
     ru: 'Подписи осей, легенда, подписи в подсказке.',
+    kk: 'Ось жазулары, шартты белгілер, қалқымалы кеңестегі жазулар.',
   },
   textMuted: {
     en: 'Reference lines, de-emphasised text.',
     ru: 'Опорные линии, второстепенный текст.',
+    kk: 'Тірек сызықтар, қосалқы мәтін.',
   },
-  border: { en: 'Tooltip and button borders.', ru: 'Границы подсказок и кнопок.' },
-  grid: { en: 'Gridlines.', ru: 'Линии сетки.' },
+  border: {
+    en: 'Tooltip and button borders.',
+    ru: 'Границы подсказок и кнопок.',
+    kk: 'Қалқымалы кеңестер мен түймелердің жиектері.',
+  },
+  grid: { en: 'Gridlines.', ru: 'Линии сетки.', kk: 'Тор сызықтары.' },
   axis: {
     en: 'Axis baselines and the zero line.',
     ru: 'Базовые линии осей и нулевая линия.',
+    kk: 'Осьтердің негізгі сызықтары және нөл сызығы.',
   },
-  crosshair: { en: 'Crosshair line.', ru: 'Линия перекрестия.' },
+  crosshair: { en: 'Crosshair line.', ru: 'Линия перекрестия.', kk: 'Айқас сызық.' },
   track: {
     en: 'Unfilled tracks (radial progress, gauge) and placeholders.',
     ru: 'Незаполненные дорожки (радиальный прогресс, gauge) и заглушки.',
+    kk: 'Толтырылмаған жолақтар (сақиналы прогресс, шкала көрсеткіші) және толтырғыштар.',
   },
   focus: {
     en: 'Focus rings and brush selection.',
     ru: 'Кольца фокуса и выделение диапазона (brush).',
+    kk: 'Фокус сақиналары және аралықты таңдау (brush).',
   },
-  onFill: { en: 'Text drawn inside filled marks.', ru: 'Текст внутри залитых меток.' },
+  onFill: {
+    en: 'Text drawn inside filled marks.',
+    ru: 'Текст внутри залитых меток.',
+    kk: 'Боялған белгілердің ішіндегі мәтін.',
+  },
   positive: {
     en: 'Increases (waterfall), good values.',
     ru: 'Рост (каскадная диаграмма), хорошие значения.',
+    kk: 'Өсім (сарқырама диаграммасы), жақсы мәндер.',
   },
   negative: {
     en: 'Decreases (waterfall), bad values.',
     ru: 'Снижение (каскадная диаграмма), плохие значения.',
+    kk: 'Төмендеу (сарқырама диаграммасы), нашар мәндер.',
   },
   warning: {
     en: 'Warnings (gauge bands).',
     ru: 'Предупреждения (цветовые диапазоны gauge).',
+    kk: 'Ескертулер (шкала көрсеткішінің түсті аралықтары).',
   },
-  neutral: { en: 'Neutral values.', ru: 'Нейтральные значения.' },
+  neutral: { en: 'Neutral values.', ru: 'Нейтральные значения.', kk: 'Бейтарап мәндер.' },
   fontFamily: {
     en: 'Font family (inherits from the page).',
     ru: 'Семейство шрифтов (наследуется от страницы).',
+    kk: 'Қаріп гарнитурасы (беттен мұраланады).',
   },
   fontSize: {
     en: 'Tick and label size.',
     ru: 'Размер подписей делений и других подписей.',
+    kk: 'Бөлік жазуларының және басқа жазулардың өлшемі.',
   },
-  fontSizeSmall: { en: 'Small text.', ru: 'Мелкий текст.' },
-  fontSizeLarge: { en: 'Large text.', ru: 'Крупный текст.' },
-  radius: { en: 'Bar corner radius.', ru: 'Радиус скругления столбцов.' },
-  tooltipRadius: { en: 'Tooltip corner radius.', ru: 'Радиус скругления подсказки.' },
-  tooltipShadow: { en: 'Tooltip shadow.', ru: 'Тень подсказки.' },
-  duration: { en: 'Transition duration.', ru: 'Длительность переходов.' },
-  easing: { en: 'Transition easing.', ru: 'Функция плавности переходов.' },
+  fontSizeSmall: { en: 'Small text.', ru: 'Мелкий текст.', kk: 'Ұсақ мәтін.' },
+  fontSizeLarge: { en: 'Large text.', ru: 'Крупный текст.', kk: 'Ірі мәтін.' },
+  radius: {
+    en: 'Bar corner radius.',
+    ru: 'Радиус скругления столбцов.',
+    kk: 'Бағана бұрыштарының дөңгелектеу радиусы.',
+  },
+  tooltipRadius: {
+    en: 'Tooltip corner radius.',
+    ru: 'Радиус скругления подсказки.',
+    kk: 'Қалқымалы кеңес бұрыштарының дөңгелектеу радиусы.',
+  },
+  tooltipShadow: {
+    en: 'Tooltip shadow.',
+    ru: 'Тень подсказки.',
+    kk: 'Қалқымалы кеңестің көлеңкесі.',
+  },
+  duration: {
+    en: 'Transition duration.',
+    ru: 'Длительность переходов.',
+    kk: 'Ауысулардың ұзақтығы.',
+  },
+  easing: {
+    en: 'Transition easing.',
+    ru: 'Функция плавности переходов.',
+    kk: 'Ауысулардың easing функциясы.',
+  },
 };
 
 const TOKENS = Object.keys(TOKEN_NOTES) as TokenName[];
@@ -266,6 +307,105 @@ const TEXT: L<typeof en> = {
       light: 'Светлая',
       dark: 'Тёмная',
       usedFor: 'Назначение',
+    },
+  },
+  kk: {
+    lead: 'Әрбір визуалды параметр — CSS айнымалысы (--jc-*) ретінде қолжетімді дизайн-токен. Тақырып — токен мәндерінің жиыны ғана: оны проппен, провайдермен немесе қарапайым CSS арқылы ауыстырыңыз.',
+    modes: {
+      title: 'Ашық, күңгірт және автоматты',
+      body: (
+        <>
+          <p>
+            <code>theme="auto"</code> (әдепкі мән) операциялық жүйеге емес,{' '}
+            <strong>қолданбаның өзіне</strong> бағынады:
+          </p>
+          <ol>
+            <li>
+              <code>.dark</code>, <code>[data-theme=dark]</code>, <code>[data-mode=dark]</code>{' '}
+              немесе <code>[data-color-scheme=dark]</code> бар ата элемент (Tailwind, next-themes) →
+              күңгірт тақырып; <code>.light</code> баламалары ашық тақырыпты мәжбүрлеп қосады;
+            </li>
+            <li>
+              әйтпесе — CSS <code>light-dark()</code> арқылы қолданбаның <code>color-scheme</code>{' '}
+              мәні;
+            </li>
+            <li>
+              күңгірт тақырыпқа қолдау жарияламаған қолданбада ОЖ күңгірт болса да, диаграммалар
+              ашық күйінде қалады.
+            </li>
+          </ol>
+          <p>
+            Бұл сайт <code>&lt;html&gt;</code> элементіндегі <code>dark</code> класын қосып-өшіреді;
+            барлық диаграмма <code>theme="auto"</code> пайдаланады. Әр мысалдағы «Ашық»/«Күңгірт»
+            ауыстырғыштары алдын ала көру аймағына <code>.light</code>/<code>.dark</code> класын
+            қосады.
+          </p>
+        </>
+      ),
+      example: 'Мәжбүрлі және автоматты режимдер',
+    },
+    createTheme: {
+      body: (
+        <p>
+          <code>createTheme</code> кез келген токенді барлық режим үшін бірден немесе әр режим үшін
+          бөлек қайта анықтайды. Нәтижені диаграмманың <code>theme</code> пропына немесе{' '}
+          <code>ChartProvider</code>-ге беріңіз. Барлық режимге ортақ мәндер CSS айнымалылары
+          ретінде кірістіріледі, ал жекелеген режимдерге арналған мәндер автоматты түрде жасалатын
+          style элементі арқылы тек осы диаграммаға қолданылады.
+        </p>
+      ),
+      example: 'Фирмалық тақырып',
+    },
+    css: {
+      title: 'Қарапайым CSS',
+      body: (
+        <p>
+          Токендер — <code>.jc-root</code> элементіндегі CSS айнымалылары, сондықтан стильдер
+          кестесі жеткілікті:
+        </p>
+      ),
+      example: 'Токендер инлайн стильдерде',
+      calloutTitle: 'Canvas сол түстерді пайдаланады',
+      calloutBody: (
+        <>
+          Canvas рендерері түстерді жасырын тексеру элементі арқылы анықтайды, сондықтан CSS нені
+          есептесе, дәл соны салады — <code>light-dark()</code>, <code>color-mix()</code> және CSS
+          айнымалыларын қоса алғанда.
+        </>
+      ),
+    },
+    palette: {
+      title: 'Санаттық палитра',
+      body: (
+        <p>
+          Қатарларға түстер ретімен беріледі. Бұл рет түс ажырату бұзылыстары ескеріліп тексерілген:
+          көрші екі түс екі режимде де ажыратылады (протанопия мен дейтеранопияны модельдегенде
+          OKLab ΔE ≥ 8), сондықтан жинақталған бағаналар, шартты белгілер мен көрші бағаналар оңай
+          оқылады. Күңгірт режимде сол реңктердің қоюырақ сатылары қолданылады. Қатарлар тек түсімен
+          ғана ерекшеленбеуі үшін <code>differentiate</code> пайдаланыңыз.
+        </p>
+      ),
+      brand: (
+        <p>
+          Фирмалық палитра <code>palette</code> ретінде экспортталады:
+        </p>
+      ),
+    },
+    tokens: {
+      title: 'Токендер анықтамалығы',
+      body: (
+        <p>
+          <code>createTheme</code> және <code>cssVar()</code> қабылдайтын атаулар, сәйкес CSS
+          айнымалылары мен әдепкі мәндерімен.
+        </p>
+      ),
+    },
+    table: {
+      slot: 'Слот',
+      token: 'Токен',
+      light: 'Ашық',
+      dark: 'Күңгірт',
+      usedFor: 'Мақсаты',
     },
   },
 };

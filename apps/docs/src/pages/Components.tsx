@@ -7,12 +7,32 @@ import { PropsTable, type PropDef } from '../ui/PropsTable';
 
 const VALUE = 'number | string | Date';
 
-const CHART_TICKS: L<string> = { en: "the chart's ticks", ru: 'деления диаграммы' };
-const CHART_PLOT: L<string> = { en: "the chart's plot", ru: 'область построения диаграммы' };
-const FILL_COLOUR: L<string> = { en: 'Fill colour.', ru: 'Цвет заливки.' };
-const EXTRA_CLASS: L<string> = { en: 'Extra class.', ru: 'Дополнительный класс.' };
-const X_PIXELS: L<string> = { en: 'x in chart pixels.', ru: 'x в пикселях диаграммы.' };
-const Y_PIXELS: L<string> = { en: 'y in chart pixels.', ru: 'y в пикселях диаграммы.' };
+const CHART_TICKS: L<string> = {
+  en: "the chart's ticks",
+  ru: 'деления диаграммы',
+  kk: 'диаграмманың бөліктері',
+};
+const CHART_PLOT: L<string> = {
+  en: "the chart's plot",
+  ru: 'область построения диаграммы',
+  kk: 'диаграмманың салу аймағы',
+};
+const FILL_COLOUR: L<string> = { en: 'Fill colour.', ru: 'Цвет заливки.', kk: 'Бояу түсі.' };
+const EXTRA_CLASS: L<string> = {
+  en: 'Extra class.',
+  ru: 'Дополнительный класс.',
+  kk: 'Қосымша класс.',
+};
+const X_PIXELS: L<string> = {
+  en: 'x in chart pixels.',
+  ru: 'x в пикселях диаграммы.',
+  kk: 'Диаграмма пиксельдеріндегі x.',
+};
+const Y_PIXELS: L<string> = {
+  en: 'y in chart pixels.',
+  ru: 'y в пикселях диаграммы.',
+  kk: 'Диаграмма пиксельдеріндегі y.',
+};
 
 const REFERENCE_LINE: PropDef[] = [
   {
@@ -21,6 +41,7 @@ const REFERENCE_LINE: PropDef[] = [
     description: {
       en: 'Value on the value axis (a horizontal line in vertical charts).',
       ru: 'Значение на оси значений (в вертикальных диаграммах — горизонтальная линия).',
+      kk: 'Мәндер осіндегі мән (тік диаграммаларда — көлденең сызық).',
     },
   },
   {
@@ -29,12 +50,17 @@ const REFERENCE_LINE: PropDef[] = [
     description: {
       en: 'Value on the x/category axis (a vertical line).',
       ru: 'Значение на оси X или оси категорий (вертикальная линия).',
+      kk: 'X осіндегі немесе санаттар осіндегі мән (тік сызық).',
     },
   },
   {
     name: 'label',
     type: 'ReactNode',
-    description: { en: 'Text next to the line.', ru: 'Текст рядом с линией.' },
+    description: {
+      en: 'Text next to the line.',
+      ru: 'Текст рядом с линией.',
+      kk: 'Сызықтың жанындағы мәтін.',
+    },
   },
   {
     name: 'labelPosition',
@@ -43,13 +69,14 @@ const REFERENCE_LINE: PropDef[] = [
     description: {
       en: 'Label placement along a horizontal line.',
       ru: 'Положение подписи вдоль горизонтальной линии.',
+      kk: 'Көлденең сызық бойындағы жазудың орны.',
     },
   },
   {
     name: 'color',
     type: 'string',
     default: 'var(--jc-text-muted)',
-    description: { en: 'Line colour.', ru: 'Цвет линии.' },
+    description: { en: 'Line colour.', ru: 'Цвет линии.', kk: 'Сызық түсі.' },
   },
   {
     name: 'dashed',
@@ -58,6 +85,7 @@ const REFERENCE_LINE: PropDef[] = [
     description: {
       en: 'Dashed (default) or solid.',
       ru: 'Пунктирная (по умолчанию) или сплошная линия.',
+      kk: 'Үзік (әдепкі) немесе тұтас сызық.',
     },
   },
 ];
@@ -69,6 +97,7 @@ const REFERENCE_AREA: PropDef[] = [
     description: {
       en: 'Start on the x/category axis (default: plot edge).',
       ru: 'Начало на оси X или оси категорий (по умолчанию — край области построения).',
+      kk: 'X осіндегі немесе санаттар осіндегі басы (әдепкі — салу аймағының шеті).',
     },
   },
   {
@@ -77,29 +106,46 @@ const REFERENCE_AREA: PropDef[] = [
     description: {
       en: 'End on the x/category axis.',
       ru: 'Конец на оси X или оси категорий.',
+      kk: 'X осіндегі немесе санаттар осіндегі соңы.',
     },
   },
   {
     name: 'y1',
     type: 'number',
-    description: { en: 'Start on the value axis.', ru: 'Начало на оси значений.' },
+    description: {
+      en: 'Start on the value axis.',
+      ru: 'Начало на оси значений.',
+      kk: 'Мәндер осіндегі басы.',
+    },
   },
   {
     name: 'y2',
     type: 'number',
-    description: { en: 'End on the value axis.', ru: 'Конец на оси значений.' },
+    description: {
+      en: 'End on the value axis.',
+      ru: 'Конец на оси значений.',
+      kk: 'Мәндер осіндегі соңы.',
+    },
   },
   {
     name: 'label',
     type: 'ReactNode',
-    description: { en: 'Text in the top-left corner.', ru: 'Текст в левом верхнем углу.' },
+    description: {
+      en: 'Text in the top-left corner.',
+      ru: 'Текст в левом верхнем углу.',
+      kk: 'Жоғарғы сол жақ бұрыштағы мәтін.',
+    },
   },
   { name: 'color', type: 'string', default: 'var(--jc-text)', description: FILL_COLOUR },
   {
     name: 'opacity',
     type: 'number',
     default: '0.05',
-    description: { en: 'Fill opacity.', ru: 'Непрозрачность заливки.' },
+    description: {
+      en: 'Fill opacity.',
+      ru: 'Непрозрачность заливки.',
+      kk: 'Бояудың мөлдірсіздігі.',
+    },
   },
 ];
 
@@ -111,25 +157,34 @@ const REFERENCE_DOT: PropDef[] = [
     description: {
       en: 'Position on the x/category axis.',
       ru: 'Положение на оси X или оси категорий.',
+      kk: 'X осіндегі немесе санаттар осіндегі орны.',
     },
   },
   {
     name: 'y',
     type: 'number',
     required: true,
-    description: { en: 'Position on the value axis.', ru: 'Положение на оси значений.' },
+    description: {
+      en: 'Position on the value axis.',
+      ru: 'Положение на оси значений.',
+      kk: 'Мәндер осіндегі орны.',
+    },
   },
   {
     name: 'r',
     type: 'number',
     default: '5',
-    description: { en: 'Radius, px.', ru: 'Радиус, px.' },
+    description: { en: 'Radius, px.', ru: 'Радиус, px.', kk: 'Радиусы, px.' },
   },
   { name: 'color', type: 'string', default: 'var(--jc-text)', description: FILL_COLOUR },
   {
     name: 'label',
     type: 'ReactNode',
-    description: { en: 'Text above-right of the dot.', ru: 'Текст сверху справа от точки.' },
+    description: {
+      en: 'Text above-right of the dot.',
+      ru: 'Текст сверху справа от точки.',
+      kk: 'Нүктенің жоғарғы оң жағындағы мәтін.',
+    },
   },
 ];
 
@@ -141,6 +196,7 @@ const ANNOTATION: PropDef[] = [
     description: {
       en: 'Anchor x in chart pixels.',
       ru: 'Координата x точки привязки в пикселях диаграммы.',
+      kk: 'Байлау нүктесінің диаграмма пиксельдеріндегі x координатасы.',
     },
   },
   {
@@ -150,6 +206,7 @@ const ANNOTATION: PropDef[] = [
     description: {
       en: 'Anchor y in chart pixels.',
       ru: 'Координата y точки привязки в пикселях диаграммы.',
+      kk: 'Байлау нүктесінің диаграмма пиксельдеріндегі y координатасы.',
     },
   },
   {
@@ -159,13 +216,18 @@ const ANNOTATION: PropDef[] = [
     description: {
       en: 'Horizontal offset of the note.',
       ru: 'Смещение заметки по горизонтали.',
+      kk: 'Ескертпенің көлденең ығысуы.',
     },
   },
   {
     name: 'dy',
     type: 'number',
     default: '-18',
-    description: { en: 'Vertical offset of the note.', ru: 'Смещение заметки по вертикали.' },
+    description: {
+      en: 'Vertical offset of the note.',
+      ru: 'Смещение заметки по вертикали.',
+      kk: 'Ескертпенің тік ығысуы.',
+    },
   },
   {
     name: 'connector',
@@ -174,13 +236,14 @@ const ANNOTATION: PropDef[] = [
     description: {
       en: 'Leader line from the point to the note.',
       ru: 'Выносная линия от точки к заметке.',
+      kk: 'Нүктеден ескертпеге дейінгі сілтеме сызығы.',
     },
   },
   {
     name: 'children',
     type: 'ReactNode',
     required: true,
-    description: { en: 'Note text.', ru: 'Текст заметки.' },
+    description: { en: 'Note text.', ru: 'Текст заметки.', kk: 'Ескертпе мәтіні.' },
   },
 ];
 
@@ -191,7 +254,7 @@ const LABEL: PropDef[] = [
     name: 'children',
     type: 'ReactNode',
     required: true,
-    description: { en: 'Text.', ru: 'Текст.' },
+    description: { en: 'Text.', ru: 'Текст.', kk: 'Мәтін.' },
   },
   {
     name: 'anchor',
@@ -200,6 +263,7 @@ const LABEL: PropDef[] = [
     description: {
       en: 'Text anchor.',
       ru: 'Выравнивание текста относительно точки привязки.',
+      kk: 'Мәтінді байлау нүктесіне қатысты туралау.',
     },
   },
   {
@@ -209,6 +273,7 @@ const LABEL: PropDef[] = [
     description: {
       en: 'Text colour token — never the series colour, for contrast.',
       ru: 'Токен цвета текста — ради контраста это никогда не цвет ряда.',
+      kk: 'Мәтін түсінің токені — контраст үшін ол ешқашан қатар түсі болмайды.',
     },
   },
   {
@@ -217,6 +282,7 @@ const LABEL: PropDef[] = [
     description: {
       en: 'Font size, px (default: --jc-font-size).',
       ru: 'Размер шрифта, px (по умолчанию — --jc-font-size).',
+      kk: 'Қаріп өлшемі, px (әдепкі — --jc-font-size).',
     },
   },
   { name: 'className', type: 'string', description: EXTRA_CLASS },
@@ -229,13 +295,13 @@ const MARKER: PropDef[] = [
     name: 'shape',
     type: "'circle' | 'square' | 'diamond' | 'triangle' | 'triangleDown' | 'cross' | 'star'",
     default: "'circle'",
-    description: { en: 'Symbol shape.', ru: 'Форма символа.' },
+    description: { en: 'Symbol shape.', ru: 'Форма символа.', kk: 'Таңба пішіні.' },
   },
   {
     name: 'size',
     type: 'number',
     default: '8',
-    description: { en: 'Symbol size, px.', ru: 'Размер символа, px.' },
+    description: { en: 'Symbol size, px.', ru: 'Размер символа, px.', kk: 'Таңба өлшемі, px.' },
   },
   { name: 'color', type: 'string', required: true, description: FILL_COLOUR },
   {
@@ -245,6 +311,7 @@ const MARKER: PropDef[] = [
     description: {
       en: 'Surface-coloured ring so the marker stays legible over lines.',
       ru: 'Кольцо цвета фона, чтобы маркер оставался различимым поверх линий.',
+      kk: 'Маркер сызықтардың үстінде де анық көрінуі үшін фон түстес сақина.',
     },
   },
   { name: 'className', type: 'string', description: EXTRA_CLASS },
@@ -258,6 +325,7 @@ const GRADIENT: PropDef[] = [
     description: {
       en: 'Gradient id; reference it as `fill="url(#id)"`. Must be unique in the document.',
       ru: 'id градиента; ссылайтесь на него как `fill="url(#id)"`. Должен быть уникальным в пределах документа.',
+      kk: 'Градиент id-і; оған `fill="url(#id)"` түрінде сілтеме жасаңыз. Құжат ішінде бірегей болуы керек.',
     },
   },
   {
@@ -267,6 +335,7 @@ const GRADIENT: PropDef[] = [
     description: {
       en: 'Gradient colour (CSS variables work).',
       ru: 'Цвет градиента (CSS-переменные тоже подходят).',
+      kk: 'Градиент түсі (CSS айнымалылары да жарайды).',
     },
   },
   {
@@ -276,6 +345,7 @@ const GRADIENT: PropDef[] = [
     description: {
       en: 'Opacity at the start (top/left).',
       ru: 'Непрозрачность в начале (сверху или слева).',
+      kk: 'Басындағы мөлдірсіздік (жоғарыда немесе сол жақта).',
     },
   },
   {
@@ -285,13 +355,18 @@ const GRADIENT: PropDef[] = [
     description: {
       en: 'Opacity at the end (bottom/right).',
       ru: 'Непрозрачность в конце (снизу или справа).',
+      kk: 'Соңындағы мөлдірсіздік (төменде немесе оң жақта).',
     },
   },
   {
     name: 'direction',
     type: "'vertical' | 'horizontal'",
     default: "'vertical'",
-    description: { en: 'Gradient direction.', ru: 'Направление градиента.' },
+    description: {
+      en: 'Gradient direction.',
+      ru: 'Направление градиента.',
+      kk: 'Градиент бағыты.',
+    },
   },
 ];
 
@@ -303,6 +378,7 @@ const AXIS: PropDef[] = [
     description: {
       en: 'Edge of the plot (ChartAxis only; XAxis defaults to bottom, YAxis to left).',
       ru: 'Сторона области построения (только для ChartAxis; XAxis по умолчанию снизу, YAxis — слева).',
+      kk: 'Салу аймағының жағы (тек ChartAxis үшін; XAxis әдепкі бойынша төменде, YAxis — сол жақта).',
     },
   },
   {
@@ -312,6 +388,7 @@ const AXIS: PropDef[] = [
     description: {
       en: '`{ value, position, label, anchor, lines? }` — required outside a chart. `lines` — the lines of a multi-line label.',
       ru: '`{ value, position, label, anchor, lines? }` — обязателен вне диаграммы. `lines` — строки многострочной подписи.',
+      kk: '`{ value, position, label, anchor, lines? }` — диаграммадан тыс міндетті. `lines` — көп жолды жазудың жолдары.',
     },
   },
   {
@@ -321,13 +398,18 @@ const AXIS: PropDef[] = [
     description: {
       en: '`{ x, y, width, height }` — required outside a chart.',
       ru: '`{ x, y, width, height }` — обязателен вне диаграммы.',
+      kk: '`{ x, y, width, height }` — диаграммадан тыс міндетті.',
     },
   },
   {
     name: 'line',
     type: 'boolean',
     default: 'false',
-    description: { en: 'Draw the axis baseline.', ru: 'Рисовать базовую линию оси.' },
+    description: {
+      en: 'Draw the axis baseline.',
+      ru: 'Рисовать базовую линию оси.',
+      kk: 'Остің негізгі сызығын салу.',
+    },
   },
   {
     name: 'tickPadding',
@@ -336,9 +418,14 @@ const AXIS: PropDef[] = [
     description: {
       en: 'Distance between labels and the plot, px.',
       ru: 'Расстояние между подписями и областью построения, px.',
+      kk: 'Жазулар мен салу аймағы арасындағы қашықтық, px.',
     },
   },
-  { name: 'title', type: 'string', description: { en: 'Axis title.', ru: 'Заголовок оси.' } },
+  {
+    name: 'title',
+    type: 'string',
+    description: { en: 'Axis title.', ru: 'Заголовок оси.', kk: 'Ось атауы.' },
+  },
   { name: 'className', type: 'string', description: EXTRA_CLASS },
 ];
 
@@ -347,31 +434,51 @@ const GRID: PropDef[] = [
     name: 'horizontal',
     type: 'boolean',
     default: 'true',
-    description: { en: 'Lines at y ticks.', ru: 'Линии на делениях по Y.' },
+    description: {
+      en: 'Lines at y ticks.',
+      ru: 'Линии на делениях по Y.',
+      kk: 'Y осі бөліктеріндегі сызықтар.',
+    },
   },
   {
     name: 'vertical',
     type: 'boolean',
     default: 'false',
-    description: { en: 'Lines at x ticks.', ru: 'Линии на делениях по X.' },
+    description: {
+      en: 'Lines at x ticks.',
+      ru: 'Линии на делениях по X.',
+      kk: 'X осі бөліктеріндегі сызықтар.',
+    },
   },
   {
     name: 'xTicks',
     type: 'readonly AxisTick[]',
     default: CHART_TICKS,
-    description: { en: 'Ticks for vertical lines.', ru: 'Деления для вертикальных линий.' },
+    description: {
+      en: 'Ticks for vertical lines.',
+      ru: 'Деления для вертикальных линий.',
+      kk: 'Тік сызықтарға арналған бөліктер.',
+    },
   },
   {
     name: 'yTicks',
     type: 'readonly AxisTick[]',
     default: CHART_TICKS,
-    description: { en: 'Ticks for horizontal lines.', ru: 'Деления для горизонтальных линий.' },
+    description: {
+      en: 'Ticks for horizontal lines.',
+      ru: 'Деления для горизонтальных линий.',
+      kk: 'Көлденең сызықтарға арналған бөліктер.',
+    },
   },
   {
     name: 'plot',
     type: 'Rect',
     default: CHART_PLOT,
-    description: { en: 'Plot rectangle.', ru: 'Прямоугольник области построения.' },
+    description: {
+      en: 'Plot rectangle.',
+      ru: 'Прямоугольник области построения.',
+      kk: 'Салу аймағының тіктөртбұрышы.',
+    },
   },
   {
     name: 'zeroLine',
@@ -379,6 +486,7 @@ const GRID: PropDef[] = [
     description: {
       en: 'Pixel y of an emphasised zero line.',
       ru: 'Координата y (в пикселях) выделенной нулевой линии.',
+      kk: 'Ерекшеленген нөл сызығының y координатасы (пиксельмен).',
     },
   },
 ];
@@ -391,6 +499,7 @@ const TOOLTIP: PropDef[] = [
     description: {
       en: '`shared`: every series at the active x; `item`: only the series under the pointer.',
       ru: '`shared` — все ряды в активной точке по X; `item` — только ряд под указателем.',
+      kk: '`shared` — X бойынша белсенді нүктедегі барлық қатар; `item` — тек меңзер астындағы қатар.',
     },
   },
   {
@@ -399,19 +508,24 @@ const TOOLTIP: PropDef[] = [
     description: {
       en: 'Custom content. `data` has `title`, formatted `rows` and an optional `footer`.',
       ru: 'Собственное содержимое. В `data` есть `title`, отформатированные `rows` и необязательный `footer`.',
+      kk: 'Өз мазмұныңыз. `data` ішінде `title`, пішімделген `rows` және міндетті емес `footer` бар.',
     },
   },
   {
     name: 'sort',
     type: "'none' | 'asc' | 'desc'",
     default: "'none'",
-    description: { en: 'Row order.', ru: 'Порядок строк.' },
+    description: { en: 'Row order.', ru: 'Порядок строк.', kk: 'Жолдар реті.' },
   },
   {
     name: 'hideEmpty',
     type: 'boolean',
     default: 'false',
-    description: { en: 'Hide rows without a value.', ru: 'Скрывать строки без значения.' },
+    description: {
+      en: 'Hide rows without a value.',
+      ru: 'Скрывать строки без значения.',
+      kk: 'Мәні жоқ жолдарды жасыру.',
+    },
   },
   {
     name: 'offset',
@@ -420,6 +534,7 @@ const TOOLTIP: PropDef[] = [
     description: {
       en: 'Distance from the anchor, px.',
       ru: 'Расстояние от точки привязки, px.',
+      kk: 'Байлау нүктесінен қашықтық, px.',
     },
   },
 ];
@@ -429,13 +544,21 @@ const LEGEND: PropDef[] = [
     name: 'position',
     type: "'top' | 'bottom'",
     default: "'bottom'",
-    description: { en: 'Above or below the plot.', ru: 'Над областью построения или под ней.' },
+    description: {
+      en: 'Above or below the plot.',
+      ru: 'Над областью построения или под ней.',
+      kk: 'Салу аймағының үстінде немесе астында.',
+    },
   },
   {
     name: 'align',
     type: "'start' | 'center' | 'end'",
     default: "'start'",
-    description: { en: 'Horizontal alignment.', ru: 'Выравнивание по горизонтали.' },
+    description: {
+      en: 'Horizontal alignment.',
+      ru: 'Выравнивание по горизонтали.',
+      kk: 'Көлденең туралау.',
+    },
   },
   {
     name: 'interactive',
@@ -444,6 +567,7 @@ const LEGEND: PropDef[] = [
     description: {
       en: 'Clicking an item toggles the series (the last visible one stays on).',
       ru: 'Нажатие на элемент скрывает или показывает ряд (последний видимый ряд скрыть нельзя).',
+      kk: 'Элементті басу қатарды жасырады немесе көрсетеді (соңғы көрінетін қатарды жасыруға болмайды).',
     },
   },
   {
@@ -452,6 +576,7 @@ const LEGEND: PropDef[] = [
     description: {
       en: 'Custom legend. Items carry `id`, `label`, `color`, `kind`, `symbol`, `visible`, `value`.',
       ru: 'Собственная легенда. Элементы содержат `id`, `label`, `color`, `kind`, `symbol`, `visible`, `value`.',
+      kk: 'Өз шартты белгілеріңіз. Элементтерде `id`, `label`, `color`, `kind`, `symbol`, `visible`, `value` бар.',
     },
   },
 ];
@@ -464,6 +589,7 @@ const CROSSHAIR: PropDef[] = [
     description: {
       en: 'Also draw a horizontal line at the pointer.',
       ru: 'Дополнительно рисовать горизонтальную линию на уровне указателя.',
+      kk: 'Меңзер деңгейінде көлденең сызықты да салу.',
     },
   },
   {
@@ -473,6 +599,7 @@ const CROSSHAIR: PropDef[] = [
     description: {
       en: 'Draw the vertical line (ChartCrosshair primitive only).',
       ru: 'Рисовать вертикальную линию (только для примитива ChartCrosshair).',
+      kk: 'Тік сызықты салу (тек ChartCrosshair примитиві үшін).',
     },
   },
 ];
@@ -484,12 +611,13 @@ const PROVIDER: PropDef[] = [
     description: {
       en: 'Default locale for all charts below.',
       ru: 'Локаль по умолчанию для всех вложенных диаграмм.',
+      kk: 'Ішкі диаграммалардың барлығына арналған әдепкі локаль.',
     },
   },
   {
     name: 'theme',
     type: "'auto' | 'light' | 'dark' | Theme",
-    description: { en: 'Default theme.', ru: 'Тема по умолчанию.' },
+    description: { en: 'Default theme.', ru: 'Тема по умолчанию.', kk: 'Әдепкі тақырып.' },
   },
   {
     name: 'animation',
@@ -497,12 +625,13 @@ const PROVIDER: PropDef[] = [
     description: {
       en: '`{ duration, easing, initial, maxComplexity }`; easing names: linear, quadOut, cubicOut, cubicInOut, expoOut, backOut.',
       ru: '`{ duration, easing, initial, maxComplexity }`; функции плавности (easing): linear, quadOut, cubicOut, cubicInOut, expoOut, backOut.',
+      kk: '`{ duration, easing, initial, maxComplexity }`; easing функциялары: linear, quadOut, cubicOut, cubicInOut, expoOut, backOut.',
     },
   },
   {
     name: 'renderer',
     type: "'svg' | 'canvas' | 'auto'",
-    description: { en: 'Default renderer.', ru: 'Рендерер по умолчанию.' },
+    description: { en: 'Default renderer.', ru: 'Рендерер по умолчанию.', kk: 'Әдепкі рендерер.' },
   },
   {
     name: 'messages',
@@ -510,6 +639,7 @@ const PROVIDER: PropDef[] = [
     description: {
       en: 'Text overrides, merged with parent providers.',
       ru: 'Переопределения текстов; объединяются с переопределениями родительских провайдеров.',
+      kk: 'Мәтіндерді қайта анықтау; сыртқы провайдерлердің мәндерімен біріктіріледі.',
     },
   },
   {
@@ -519,12 +649,13 @@ const PROVIDER: PropDef[] = [
     description: {
       en: 'Inject the stylesheet automatically. Disable when importing `@startupjafari/charts/styles.css`.',
       ru: 'Автоматически внедрять таблицу стилей. Отключите, если импортируете `@startupjafari/charts/styles.css`.',
+      kk: 'Стильдер кестесін автоматты түрде енгізу. `@startupjafari/charts/styles.css` импорттасаңыз, өшіріңіз.',
     },
   },
   {
     name: 'children',
     type: 'ReactNode',
-    description: { en: 'Your app.', ru: 'Ваше приложение.' },
+    description: { en: 'Your app.', ru: 'Ваше приложение.', kk: 'Сіздің қолданбаңыз.' },
   },
 ];
 
@@ -536,6 +667,7 @@ const STATES: PropDef[] = [
     description: {
       en: 'With data: dims the previous render. Without data: a static placeholder.',
       ru: 'При наличии данных приглушает предыдущую отрисовку. Без данных — статичная заглушка.',
+      kk: 'Деректер болса, алдыңғы рендерингті күңгірттейді. Деректер болмаса — статикалық толтырғыш.',
     },
   },
   {
@@ -544,6 +676,7 @@ const STATES: PropDef[] = [
     description: {
       en: '`true` for the default message, or your own node.',
       ru: '`true` — стандартное сообщение; можно передать и собственный React-узел.',
+      kk: '`true` — әдепкі хабарлама; өз React түйініңізді де беруге болады.',
     },
   },
   {
@@ -552,13 +685,18 @@ const STATES: PropDef[] = [
     description: {
       en: 'Adds a retry button to the error state.',
       ru: 'Добавляет в состояние ошибки кнопку «Повторить».',
+      kk: 'Қате күйіне «Қайталау» түймесін қосады.',
     },
   },
   {
     name: 'emptyMessage',
     type: 'ReactNode',
-    default: { en: "'No data'", ru: "'Нет данных' (для ru)" },
-    description: { en: 'Text of the empty state.', ru: 'Текст состояния «нет данных».' },
+    default: { en: "'No data'", ru: "'Нет данных' (для ru)", kk: "'Деректер жоқ' (kk үшін)" },
+    description: {
+      en: 'Text of the empty state.',
+      ru: 'Текст состояния «нет данных».',
+      kk: '«Деректер жоқ» күйінің мәтіні.',
+    },
   },
   {
     name: 'messages',
@@ -566,6 +704,7 @@ const STATES: PropDef[] = [
     description: {
       en: 'noData, loading, error, retry, resetZoom and more.',
       ru: 'noData, loading, error, retry, resetZoom и другие.',
+      kk: 'noData, loading, error, retry, resetZoom және басқалары.',
     },
   },
 ];
@@ -836,6 +975,137 @@ const TEXT: L<typeof en> = {
         <>
           <code>useChartConfig()</code> возвращает объединённую конфигурацию провайдеров — это
           пригодится, когда собственный компонент должен использовать ту же локаль.
+        </>
+      ),
+    },
+  },
+  kk: {
+    lead: 'Диаграммалар примитивтерден құралады. Олардың көбі автоматты түрде салынады, ал төменде сипатталғандарын кез келген декарттық диаграмманың ішіне орналастыруға, диаграмма пропстары арқылы баптауға немесе бөлек пайдалануға болады.',
+    toc: {
+      reference: 'Тірек сызықтар, аймақтар, нүктелер',
+      annotations: 'Аннотациялар, жазулар, маркерлер',
+      gradient: 'Градиенттер',
+      axes: 'Осьтер мен тор',
+      tooltip: 'Қалқымалы кеңес',
+      legend: 'Шартты белгілер',
+      crosshair: 'Айқас сызық және курсор',
+      states: 'Күйлер',
+      'chart-provider': 'ChartProvider',
+    },
+    reference: {
+      title: 'Тірек сызықтар, аймақтар және нүктелер',
+      body: (
+        <p>
+          <code>ChartReferenceLine</code>, <code>ChartReferenceArea</code> және{' '}
+          <code>ChartReferenceDot</code> <em>деректер мәндерін</em> қабылдайды және кез келген
+          орналасуда диаграмма шкалаларын пайдаланады (<code>y</code> әрқашан мәндер осін
+          білдіреді). Оларды декарттық диаграмманың еншілес элементтері ретінде орналастырыңыз.
+        </p>
+      ),
+    },
+    annotations: {
+      title: 'Аннотациялар, жазулар және маркерлер',
+      body: (
+        <p>
+          <code>ChartAnnotation</code>, <code>ChartLabel</code> және <code>ChartMarker</code>{' '}
+          диаграмманың <em>пиксельдерімен</em> жұмыс істейді. Диаграмма ішінде{' '}
+          <code>useChart()</code> шкалаларды (<code>frame.x</code>, <code>frame.y</code>), салу
+          аймағының тіктөртбұрышын, өзара әрекеттесу қоймасын және қатарларды қайтарады, сондықтан
+          шағын компонент деректерді пиксельге айналдыра алады — өз примитивтеріңіз осылай жасалады.
+        </p>
+      ),
+      example: 'useChart() негізіндегі өз примитивіңіз',
+    },
+    gradient: {
+      title: 'Градиенттер',
+      body: (
+        <p>
+          <code>ChartGradient</code> өз белгілеріңізге арналған <code>&lt;linearGradient&gt;</code>{' '}
+          анықтамасын жасайды. Екі диаграммада бірдей id болмауы үшін id-ді <code>useId</code>{' '}
+          арқылы жасаңыз.
+        </p>
+      ),
+    },
+    axes: {
+      title: 'Осьтер мен тор',
+      body: (
+        <p>
+          Диаграммалар осьтер мен торды өздері салады — оларды <code>xAxis</code>,{' '}
+          <code>yAxis</code>, <code>y2Axis</code> және <code>grid</code> пропстарымен баптаңыз (кез
+          келген{' '}
+          <Link to="/charts/line-chart" section="props">
+            декарттық диаграмманы
+          </Link>{' '}
+          қараңыз). <code>XAxis</code>, <code>YAxis</code>, <code>ChartAxis</code> және{' '}
+          <code>ChartGrid</code> — олардың негізіндегі примитивтер; диаграммадан тыс оларға{' '}
+          <code>ticks</code> пен <code>plot</code> мәндерін анық беру керек.
+        </p>
+      ),
+      example: 'Диаграммадан тыс примитивтер',
+    },
+    tooltip: {
+      title: 'Қалқымалы кеңес',
+      body: (
+        <p>
+          HTML қалқымалы кеңес (tooltip) тек белсенді элемент ауысқанда қайта рендерленеді;
+          меңзердің соңынан ол стильдерді тікелей жаңарту арқылы жүреді, сондықтан тінтуірдің
+          қозғалысы React рендерингін ешқашан іске қоспайды. Ол <code>tooltip</code> пропымен
+          бапталады (<code>false</code> оны жасырады). Қалқымалы кеңес — деректерге жетудің жалғыз
+          жолы емес, тек ыңғайлылық: әр мән деректер кестесінде де, пернетақтамен шарлағанда
+          берілетін хабарландыруларда да бар.
+        </p>
+      ),
+      example: 'Қалқымалы кеңестің өз мазмұны',
+    },
+    legend: {
+      title: 'Шартты белгілер',
+      body: (
+        <p>
+          Шартты белгілер екі не одан көп қатар болғанда пайда болады және тар экрандарда бірнеше
+          жолға тасымалданады. Олардың элементтері — <code>aria-pressed</code> бар түймелер;
+          элементке меңзерді апарғанда немесе фокус бергенде сәйкес қатар ерекшеленеді.
+        </p>
+      ),
+      example: 'Өз шартты белгілеріңіз',
+    },
+    crosshair: {
+      title: 'Айқас сызық және курсор',
+      body: (
+        <p>
+          <code>ChartCrosshair</code> — X бойынша белсенді нүктеге тартылатын жіңішке сызық;{' '}
+          <code>ChartCursor</code> — бағаналы диаграммалардағы белсенді санаттың артындағы бозғылт
+          жолақ. Екеуі де автоматты түрде салынады және <code>crosshair</code> пропымен басқарылады.
+        </p>
+      ),
+      example: 'Айқас сызық және курсор',
+    },
+    states: {
+      title: 'Күйлер',
+      body: (
+        <p>
+          «Деректер жоқ», жүктелу және қате күйлері диаграмманың өлшемін сақтайды. Жүктелу кезінде
+          деректер бұрыннан болса, алдыңғы рендеринг күңгірттеліп көрініп тұрады — скелетон
+          жыпылықтамайды. Күй компоненттері (<code>ChartEmptyState</code>,{' '}
+          <code>ChartLoadingState</code>, <code>ChartErrorState</code>) өз диаграммаларыңыз үшін
+          экспортталады.
+        </p>
+      ),
+      example: 'Барлық күйлер',
+      caption: 'Күй пропстары (барлық диаграммада)',
+    },
+    provider: {
+      body: (
+        <p>
+          Ішіндегі барлық диаграммаға әдепкі мәндерді орнатады. Провайдерлерді бір-біріне салуға
+          болады: ішкісі сыртқысын қайта анықтайды, ал <code>messages</code> біріктіріледі.
+        </p>
+      ),
+      example: 'Фирмалық тақырып, локаль және анимация',
+      calloutTitle: 'Конфигурацияны оқу',
+      calloutBody: (
+        <>
+          <code>useChartConfig()</code> провайдерлердің біріктірілген конфигурациясын қайтарады — өз
+          компонентіңіз сол локальді пайдалануы керек болғанда пайдалы.
         </>
       ),
     },

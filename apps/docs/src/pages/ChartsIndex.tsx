@@ -1,6 +1,6 @@
 import { CHARTS } from '../docs/charts';
 import type { ChartDoc, ChartGroup } from '../docs/types';
-import { ruPlural, useLang, useT, useText, type L } from '../i18n';
+import { kkPlural, ruPlural, useLang, useT, useText, type L } from '../i18n';
 import { Link } from '../lib/router';
 import { PageHeader } from '../ui/Callout';
 import { ErrorBoundary } from '../ui/ErrorBoundary';
@@ -30,6 +30,15 @@ const TEXT: L<ChartsIndexText> = {
       Core: 'Диаграммы, из которых состоит большинство дашбордов.',
       Advanced: 'Распределения, взаимосвязи, иерархии и отдельные показатели.',
       Professional: 'Финансовые и аналитические композиции.',
+    },
+  },
+  kk: {
+    lead: (n) =>
+      `${n} ${kkPlural(n, 'түрлі')} диаграмма — бір қозғалтқыш. Барлық диаграмманың тақырып, локаль, анимация, күйлер, қолжетімділік және өзара әрекеттесу пропстары бірдей: біреуін меңгерсеңіз, бәрін білесіз.`,
+    groupLeads: {
+      Core: 'Бақылау тақталарының көбі осы диаграммалардан құралады.',
+      Advanced: 'Үлестірімдер, өзара байланыстар, иерархиялар және жеке көрсеткіштер.',
+      Professional: 'Қаржылық және аналитикалық композициялар.',
     },
   },
 };

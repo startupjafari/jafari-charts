@@ -10,6 +10,8 @@ import type { ChartGroup } from '../docs/types';
  */
 export const en = {
   langName: 'English',
+  /** Short label on the header language switch. */
+  langCode: 'EN',
   meta: {
     description:
       'Jafari Charts — engineered for performance. Beautiful charts. Zero compromise. A from-scratch React charting library.',

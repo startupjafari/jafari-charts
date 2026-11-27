@@ -2,21 +2,21 @@
  * Site languages, the visitor's preference and browser detection. No React here:
  * the router imports this module to resolve the language of a URL.
  */
-export type Lang = 'en' | 'ru';
+export type Lang = 'en' | 'ru' | 'kk';
 
 /** Every site language, in switcher order. English is the default (unprefixed URLs). */
-export const LANGS: readonly Lang[] = ['en', 'ru'];
+export const LANGS: readonly Lang[] = ['en', 'ru', 'kk'];
 
 /** A value in every site language. TypeScript reports a missing translation. */
 export type L<T> = { readonly [K in Lang]: T };
 
 /** The same (language-neutral) value for every language, e.g. a code identifier. */
 export function same<T>(value: T): L<T> {
-  return { en: value, ru: value };
+  return { en: value, ru: value, kk: value };
 }
 
 export function isLang(value: unknown): value is Lang {
-  return value === 'en' || value === 'ru';
+  return value === 'en' || value === 'ru' || value === 'kk';
 }
 
 const STORAGE_KEY = 'jc-docs-lang';
@@ -50,7 +50,8 @@ export function sessionLang(): Lang | null {
 
 /**
  * Language from the browser settings: the first supported entry of
- * `navigator.languages`. Russian also serves Kazakh readers (`kk`), who read Russian.
+ * `navigator.languages`: `kk*` (and the country code `kz*`, which some systems report
+ * as a language) → Kazakh, `ru*` → Russian, anything else → English.
  */
 export function browserLang(): Lang {
   const list =
@@ -61,7 +62,8 @@ export function browserLang(): Lang {
         : [navigator.language];
   for (const tag of list) {
     const primary = (tag ?? '').toLowerCase().split('-')[0];
-    if (primary === 'ru' || primary === 'kk') return 'ru';
+    if (primary === 'kk' || primary === 'kz') return 'kk';
+    if (primary === 'ru') return 'ru';
     if (primary === 'en') return 'en';
   }
   return 'en';

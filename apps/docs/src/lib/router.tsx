@@ -15,11 +15,11 @@ import { LANGS, preferredLang, rememberLang, sessionLang, type Lang } from '../i
  * for a section). Links are plain anchors, so opening in a new tab, copying and
  * history all work natively.
  *
- * Languages: English pages are unprefixed (`#/charts/line-chart`), Russian pages
- * live under `#/ru` (`#/ru/charts/line-chart`). A URL without a prefix follows the
- * visitor's preference (switcher choice → stored choice → browser language) and is
- * rewritten in place when that preference is Russian, so existing English links keep
- * working and Russian readers still land on Russian pages. After the visitor switches
+ * Languages: English pages are unprefixed (`#/charts/line-chart`), Russian and Kazakh
+ * pages live under `#/ru` and `#/kk` (`#/kk/charts/line-chart`). A URL without a prefix
+ * follows the visitor's preference (switcher choice → stored choice → browser language)
+ * and is rewritten in place when that preference is not English, so existing English
+ * links keep working and Russian or Kazakh readers still land on pages in their language. After the visitor switches
  * language, back/forward show the history entries in the chosen language.
  *
  * Scroll restoration: entries created by clicking a link have no `history.state`;

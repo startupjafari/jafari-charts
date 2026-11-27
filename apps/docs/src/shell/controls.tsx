@@ -40,7 +40,7 @@ export function ThemeSwitch({ labels = false }: { labels?: boolean }) {
   );
 }
 
-/** EN / RU switch: keeps the current page and section, remembers the choice. */
+/** EN / RU / ҚАЗ switch: keeps the current page and section, remembers the choice. */
 export function LanguageSwitch({ labels = false }: { labels?: boolean }) {
   const lang = useLang();
   const t = useT();
@@ -58,7 +58,7 @@ export function LanguageSwitch({ labels = false }: { labels?: boolean }) {
           }}
           className={cn(OPTION, labels ? 'flex-1 px-2.5' : 'min-w-8 px-2')}
         >
-          {labels ? messagesFor(l).langName : l.toUpperCase()}
+          {labels ? messagesFor(l).langName : messagesFor(l).langCode}
         </button>
       ))}
     </div>
