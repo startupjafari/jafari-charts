@@ -1,11 +1,18 @@
-import type { ReactNode } from 'react';
+import { ArrowRightLeft, Check, ChevronRight, Lightbulb } from 'lucide-react';
+import { useId, useState, type ReactNode } from 'react';
 import type { ChartDoc, ChartSectionId, PropGroup } from '../docs/types';
 import { useLang, useT, useText, type L } from '../i18n';
+import { cn } from '../lib/cn';
 import { Link, useLocation } from '../lib/router';
 import { Callout, Kbd, PageHeader, Section } from '../ui/Callout';
 import { CodeBlock } from '../ui/CodeBlock';
 import { Example } from '../ui/Example';
-import { PropsTable, richText } from '../ui/PropsTable';
+import { inlineCode, PropsTable, richText } from '../ui/PropsTable';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { WHEN_TO_USE } from '../docs/when-to-use';
+
+const INSTALL = 'pnpm add @startupjafari/charts';
 
 interface SectionText {
   id: ChartSectionId;
@@ -117,18 +124,126 @@ const TEXT: L<ChartPageText> = {
       </>
     ),
   },
+  kk: {
+    sections: [
+      { id: 'usage', title: 'Қолдану', short: 'Қолдану', lead: '' },
+      {
+        id: 'styling',
+        title: 'Безендіру нұсқалары',
+        short: 'Безендіру',
+        lead: 'Әр визуалды параметрдің ойластырылған әдепкі мәні бар; бұл мысалдар оны өзгертетін пропстарды көрсетеді. Екі тақырыпты тексеру үшін әр алдын ала көру аймағының үстіндегі «Ашық / Күңгірт» ауыстырғышын пайдаланыңыз.',
+      },
+      {
+        id: 'interaction',
+        title: 'Өзара әрекеттесу',
+        short: 'Өзара әрекеттесу',
+        lead: 'Қалқымалы кеңестер, шартты белгілерде қатарларды жасыру мен көрсету және пернетақтамен навигация баптаусыз жұмыс істейді. Басқарылатын пропстар арқылы қолданба бұл күйді оқып, оны басқара алады.',
+      },
+      {
+        id: 'responsive',
+        title: 'Бейімделгіштік',
+        short: 'Бейімделгіштік',
+        lead: 'Диаграммалар контейнерді толтырады және оның өлшемінің өзгеруін бір ортақ ResizeObserver арқылы бақылайды. Бөлік жазулары бір-бірін ешқашан жаппауы үшін сиретіледі. Кез келген мысалда 480 және 320 ен ауыстырғыштарын қолданып көріңіз.',
+      },
+      {
+        id: 'empty',
+        title: 'Күйлер: деректер жоқ, жүктелу, қате',
+        short: 'Күйлер',
+        lead: 'Кез келген күйде диаграмма өз өлшемін сақтайды, сондықтан деректер жүктеліп жатқанда бет орналасуы ығыспайды.',
+      },
+    ],
+    importTitle: 'Импорт',
+    props: 'Пропстар',
+    keyboardCaption: 'Пернетақта (алдымен Tab пернесімен диаграммаға фокус қойыңыз)',
+    keys: 'Пернелер',
+    action: 'Әрекет',
+    typesCallout: (
+      <>
+        Типтер дәл: <code>xKey</code> сияқты кілттер мен қатар кілттері деректеріңіздің типі бойынша
+        тексеріледі, сондықтан қате терілген кілт немесе сандық емес өріс компиляция қатесін береді.
+      </>
+    ),
+    seeApi: (
+      <>
+        Экспортталатын типтер <Link to="/api">API анықтамалығында</Link> сипатталған.
+      </>
+    ),
+  },
 };
 
+/** A collapsible group of props: StudentHub's ghost Button as the disclosure toggle. */
 function PropGroupView({ group, open }: { group: PropGroup; open: boolean }) {
   const lang = useLang();
+  const [expanded, setExpanded] = useState(open);
+  const panelId = useId();
   return (
-    <details className="prop-group" open={open}>
-      <summary>
-        {group.title[lang]} <span className="muted">({group.props.length})</span>
-      </summary>
-      {group.note ? <p className="prop-group-note">{richText(group.note[lang])}</p> : null}
-      <PropsTable props={group.props} />
-    </details>
+    <div
+      data-prop-group=""
+      data-state={expanded ? 'open' : 'closed'}
+      className="my-4 overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10"
+    >
+      <div className={cn('p-1.5', expanded && 'border-b border-border')}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="xl"
+          aria-expanded={expanded}
+          aria-controls={panelId}
+          onClick={() => setExpanded((v) => !v)}
+          className="w-full justify-start px-2.5 font-semibold"
+        >
+          <ChevronRight
+            className={cn(
+              'text-muted-foreground transition-transform motion-reduce:transition-none',
+              expanded && 'rotate-90',
+            )}
+            aria-hidden
+          />
+          <span className="min-w-0 flex-1 truncate text-left">{group.title[lang]}</span>
+          <Badge variant="secondary" className="tabular-nums">
+            {group.props.length}
+          </Badge>
+        </Button>
+      </div>
+      <div id={panelId} hidden={!expanded}>
+        {group.note ? (
+          <p className="m-0 border-b border-border bg-muted/20 px-4 py-2.5 text-sm text-muted-foreground">
+            {richText(group.note[lang])}
+          </p>
+        ) : null}
+        <PropsTable props={group.props} bare />
+      </div>
+    </div>
+  );
+}
+
+/** “When to use it” card: what the chart answers well, and what to pick instead. */
+function WhenToUse({ slug }: { slug: string }) {
+  const lang = useLang();
+  const ui = useT();
+  const guide = WHEN_TO_USE[slug]?.[lang];
+  if (!guide) return null;
+  return (
+    <div className="flex flex-col gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10">
+      <p className="m-0 flex items-center gap-2 text-sm font-semibold">
+        <span className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-primary-ink">
+          <Lightbulb className="size-4" aria-hidden />
+        </span>
+        {ui.chartPage.whenToUse}
+      </p>
+      <ul className="m-0 flex list-none flex-col gap-1.5 p-0 text-sm">
+        {guide.good.map((g) => (
+          <li key={g} className="m-0 flex gap-2">
+            <Check className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
+            <span>{g}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="m-0 flex gap-2 border-t border-border pt-3 text-sm text-muted-foreground">
+        <ArrowRightLeft className="mt-0.5 size-4 shrink-0" aria-hidden />
+        <span>{inlineCode(guide.instead)}</span>
+      </p>
+    </div>
   );
 }
 
@@ -169,7 +284,6 @@ export function ChartPage({ doc }: { doc: ChartDoc }) {
   const lang = useLang();
   const ui = useT();
   const t = useText(TEXT);
-  const usage = doc.sections.usage;
   const importLine = `import { ${doc.component} } from '@startupjafari/charts';`;
   const toc = [
     ...t.sections
@@ -197,7 +311,13 @@ export function ChartPage({ doc }: { doc: ChartDoc }) {
         </nav>
       </PageHeader>
       <div className="prose">{doc.description[lang]}</div>
-      <CodeBlock code={importLine} language="tsx" title={t.importTitle} />
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <WhenToUse slug={doc.slug} />
+        <div className="flex min-w-0 flex-col gap-3">
+          <CodeBlock code={INSTALL} language="bash" title={ui.chartPage.install} className="my-0" />
+          <CodeBlock code={importLine} language="tsx" title={t.importTitle} className="my-0" wrap />
+        </div>
+      </div>
       {t.sections.map((s) => {
         const examples = doc.sections[s.id];
         if (!examples.length) return null;
@@ -213,7 +333,6 @@ export function ChartPage({ doc }: { doc: ChartDoc }) {
                 anchor={`${s.id}-${e.id.split('/').pop()?.toLowerCase() ?? i}`}
                 title={e.title[lang]}
                 description={e.description?.[lang]}
-                codeOpen={s.id === 'usage' && i === 0 && e === usage[0]}
                 {...(e.width !== undefined ? { width: e.width } : {})}
               />
             ))}
@@ -225,7 +344,7 @@ export function ChartPage({ doc }: { doc: ChartDoc }) {
         {doc.props.map((g, i) => (
           <PropGroupView key={g.title.en} group={g} open={!g.collapsed || i === 0} />
         ))}
-        <p className="muted">{t.seeApi}</p>
+        <p className="muted mt-4">{t.seeApi}</p>
       </Section>
     </article>
   );

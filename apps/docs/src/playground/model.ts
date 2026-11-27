@@ -357,6 +357,14 @@ export const DEMO_TEXT: L<DemoText> = {
     item: (n) => `Элемент ${n}`,
     gauge: 'Оценка',
   },
+  kk: {
+    series: ['A қатары', 'B қатары', 'C қатары', 'D қатары'],
+    slices: ['Альфа', 'Бета', 'Гамма', 'Дельта', 'Эпсилон', 'Дзета', 'Эта', 'Тета'],
+    ring: (n) => `${n}-сақина`,
+    slice: (n) => `${n}-сектор`,
+    item: (n) => `${n}-элемент`,
+    gauge: 'Ұпай',
+  },
 };
 
 const START = Date.UTC(2025, 0, 1);
@@ -514,8 +522,8 @@ function formatInt(n: number): string {
 
 /**
  * React code for the current configuration (only non-default props are listed).
- * On the Russian site the preview inherits `locale="ru"` from the site's
- * ChartProvider, so the code states it explicitly.
+ * On the Russian and Kazakh sites the preview inherits `locale="ru"` / `locale="kk"`
+ * from the site's ChartProvider, so the code states it explicitly.
  */
 export function generateCode(config: PlaygroundConfig, lang: Lang): string {
   const info = kindInfo(config.kind);

@@ -8,11 +8,16 @@ import type { ChartDoc } from '../types';
 export const stackedAreaChart: ChartDoc = {
   slug: 'stacked-area-chart',
   component: 'StackedAreaChart',
-  title: { en: 'Stacked area chart', ru: 'Диаграмма с областями и накоплением' },
+  title: {
+    en: 'Stacked area chart',
+    ru: 'Диаграмма с областями и накоплением',
+    kk: 'Жинақталған аймақтық диаграмма',
+  },
   group: 'Professional',
   summary: {
     en: 'Parts of a total over time, in absolute values or as a 100 % composition.',
     ru: 'Составные части целого во времени — в абсолютных значениях или в долях от 100 %.',
+    kk: 'Уақыт бойынша тұтастың бөліктері — абсолютті мәндермен немесе 100 %-ға келтірілген құрам ретінде.',
   },
   description: {
     en: (
@@ -28,6 +33,13 @@ export const stackedAreaChart: ChartDoc = {
         все слои на активную дату.
       </p>
     ),
+    kk: (
+      <p>
+        Қатарлар ретімен жинақталады. Деректер көп болғанда барлық қабат бірдей индекстер бойынша
+        сиретіледі, сондықтан олардың шекаралары сәйкес қалады. Қалқымалы кеңес белсенді күндегі
+        барлық қабатты тізіп көрсетеді.
+      </p>
+    ),
   },
   thumbnail: () => (
     <StackedAreaChart
@@ -41,11 +53,11 @@ export const stackedAreaChart: ChartDoc = {
     usage: [
       {
         id: 'stacked-area-chart/Basic',
-        title: { en: 'Absolute', ru: 'Абсолютные значения' },
+        title: { en: 'Absolute', ru: 'Абсолютные значения', kk: 'Абсолютті мәндер' },
       },
       {
         id: 'stacked-area-chart/Percent',
-        title: { en: 'Percent', ru: 'Проценты' },
+        title: { en: 'Percent', ru: 'Проценты', kk: 'Пайыздар' },
         description: {
           en: (
             <p>
@@ -57,6 +69,11 @@ export const stackedAreaChart: ChartDoc = {
               <code>mode="percent"</code> нормирует каждую позицию по X к 100 %.
             </p>
           ),
+          kk: (
+            <p>
+              <code>mode="percent"</code> X бойынша әр позицияны 100 %-ға нормалайды.
+            </p>
+          ),
         },
       },
     ],
@@ -66,17 +83,26 @@ export const stackedAreaChart: ChartDoc = {
         title: {
           en: 'Solid layers, colours, legend on top, sorted tooltip',
           ru: 'Сплошные слои, цвета, легенда сверху, сортировка в подсказке',
+          kk: 'Тұтас қабаттар, түстер, жоғарыдағы шартты белгілер, қалқымалы кеңестегі сұрыптау',
         },
       },
       {
         id: 'stacked-area-chart/Stepped',
-        title: { en: 'Step curve without axes', ru: 'Ступенчатая кривая без осей' },
+        title: {
+          en: 'Step curve without axes',
+          ru: 'Ступенчатая кривая без осей',
+          kk: 'Осьтерсіз сатылы қисық',
+        },
       },
     ],
     interaction: [
       {
         id: 'stacked-area-chart/Highlight',
-        title: { en: 'Highlight and toggle series', ru: 'Выделение и переключение рядов' },
+        title: {
+          en: 'Highlight and toggle series',
+          ru: 'Выделение и переключение рядов',
+          kk: 'Қатарларды ерекшелеу және ауыстыру',
+        },
         description: {
           en: (
             <p>
@@ -90,22 +116,37 @@ export const stackedAreaChart: ChartDoc = {
               <code>hiddenSeries</code>.
             </p>
           ),
+          kk: (
+            <p>
+              <code>highlightedSeries</code> қалған қабаттарды күңгірттейді; шартты белгілерді басу{' '}
+              <code>hiddenSeries</code> мәнін жаңартады.
+            </p>
+          ),
         },
       },
     ],
     responsive: [
       {
         id: 'stacked-area-chart/Responsive',
-        title: { en: 'Narrow container', ru: 'Узкий контейнер' },
+        title: { en: 'Narrow container', ru: 'Узкий контейнер', kk: 'Тар контейнер' },
         width: 320,
       },
     ],
-    empty: [{ id: 'stacked-area-chart/States', title: { en: 'Empty state', ru: 'Нет данных' } }],
+    empty: [
+      {
+        id: 'stacked-area-chart/States',
+        title: { en: 'Empty state', ru: 'Нет данных', kk: 'Деректер жоқ' },
+      },
+    ],
   },
   keyboard: CARTESIAN_KEYS,
   props: [
     {
-      title: { en: 'StackedAreaChart props', ru: 'Пропсы StackedAreaChart' },
+      title: {
+        en: 'StackedAreaChart props',
+        ru: 'Пропсы StackedAreaChart',
+        kk: 'StackedAreaChart пропстары',
+      },
       props: [
         {
           name: 'mode',
@@ -114,6 +155,7 @@ export const stackedAreaChart: ChartDoc = {
           description: {
             en: '`percent` normalises each x position to 100 %.',
             ru: '`percent` нормирует каждую позицию по X к 100 %.',
+            kk: '`percent` X бойынша әр позицияны 100 %-ға нормалайды.',
           },
         },
         {
@@ -123,6 +165,7 @@ export const stackedAreaChart: ChartDoc = {
           description: {
             en: 'Gradient fill; `false` for flat layers.',
             ru: 'Градиентная заливка; `false` — сплошные слои.',
+            kk: 'Градиентті бояу; `false` — тұтас қабаттар.',
           },
         },
       ],

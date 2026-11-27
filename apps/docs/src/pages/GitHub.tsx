@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useT, useText, type L } from '../i18n';
 import { Link } from '../lib/router';
 import { REPO_URL } from '../lib/repo';
+import { Button } from '../ui/button';
 import { Callout, PageHeader } from '../ui/Callout';
 
 interface GitHubText {
@@ -40,6 +41,19 @@ const TEXT: L<GitHubText> = {
       </>
     ),
   },
+  kk: {
+    lead: 'Бастапқы код, тапсырмалар және релиздер.',
+    open: 'Репозиторийді ашу',
+    notPublicTitle: 'Репозиторий әзірге жабық',
+    notPublic:
+      'Jafari Charts репозиторийі әлі жарияланған жоқ. Жарияланған соң, осы бетте оған сілтеме пайда болады.',
+    meanwhile: (
+      <>
+        Әзірге не өзгергенін <Link to="/changelog">өзгерістер журналынан</Link>, ал жобаның қазіргі
+        күйін <Link to="/getting-started">кіріспеден</Link> оқи аласыз.
+      </>
+    ),
+  },
 };
 
 export function GitHub() {
@@ -50,9 +64,11 @@ export function GitHub() {
       <article>
         <PageHeader eyebrow={ui.nav.reference} title={ui.pages.github} lead={t.lead} />
         <p>
-          <a className="btn btn-primary" href={REPO_URL} target="_blank" rel="noopener noreferrer">
-            {t.open}
-          </a>
+          <Button asChild>
+            <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
+              {t.open}
+            </a>
+          </Button>
         </p>
         <p className="muted">
           <code>{REPO_URL}</code>

@@ -1,0 +1,245 @@
+/*
+ * Playground chrome in the StudentHub visual language: the "education blue" oklch palette,
+ * Inter Variable, one radius root (0.625rem) and the motion tokens. Charts keep their own
+ * theme (packages/themes); they follow the `.dark` class set on <html> by the theme toggle.
+ */
+@import 'tailwindcss' source('../');
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans:
+    'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-overlay: var(--overlay);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-ink: var(--primary-ink);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --ease-out: var(--motion-ease);
+  --default-transition-timing-function: var(--motion-ease);
+  --default-transition-duration: var(--motion-control);
+  /* tw-animate-css with StudentHub's fallbacks: a floating layer enters at menu speed and
+     leaves faster than it came. */
+  --animate-in: enter var(--tw-animation-duration, var(--tw-duration, var(--motion-menu)))
+    var(--tw-ease, var(--motion-ease)) var(--tw-animation-delay, 0s)
+    var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
+    var(--tw-animation-fill-mode, none);
+  --animate-out: exit var(--tw-animation-duration, var(--tw-duration, var(--motion-exit)))
+    var(--tw-ease, var(--motion-ease)) var(--tw-animation-delay, 0s)
+    var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal)
+    var(--tw-animation-fill-mode, none);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --overlay: oklch(0.145 0 0);
+  --primary: oklch(0.546 0.215 262.9);
+  --primary-foreground: oklch(1 0 0);
+  /* Brand blue as text on a primary/10 tint: one step deeper so small text keeps AA. */
+  --primary-ink: oklch(0.488 0.217 264.4);
+  --secondary: oklch(0.967 0.003 264.5);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.967 0.003 264.5);
+  --muted-foreground: oklch(0.545 0.023 264.4);
+  --accent: oklch(0.967 0.003 264.5);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.561 0.208 25.3);
+  --success: oklch(0.522 0.114 162.5);
+  --warning: oklch(0.543 0.119 70.1);
+  --info: oklch(0.543 0.188 259.8);
+  --border: oklch(0.928 0.006 264.5);
+  --input: oklch(0.668 0.006 264.5);
+  --ring: oklch(0.546 0.215 262.9);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-border: oklch(0.928 0.006 264.5);
+
+  /* Motion: fast start, soft stop (StudentHub DESIGN_SYSTEM §7). */
+  --motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-micro: 120ms;
+  --motion-control: 150ms;
+  --motion-menu: 180ms;
+  --motion-exit: 150ms;
+  --motion-page: 200ms;
+  --motion-modal: 220ms;
+  --motion-panel: 260ms;
+  --motion-large: 320ms;
+
+  /* Bottom edge for layers that float up from the bottom (the collapsed SegmentedTabs
+     list). StudentHub lifts them over its mobile bottom navigation; the playground has
+     none, so it uses StudentHub's desktop value on every width. */
+  --kb-inset: 0px;
+  --bottom-nav-offset: calc(0.75rem + env(safe-area-inset-bottom));
+}
+
+.dark {
+  --background: oklch(0.177 0.009 264.3);
+  --foreground: oklch(0.967 0.003 264.5);
+  --card: oklch(0.214 0.019 266.1);
+  --card-foreground: oklch(0.967 0.003 264.5);
+  --popover: oklch(0.214 0.019 266.1);
+  --popover-foreground: oklch(0.967 0.003 264.5);
+  --overlay: oklch(0.09 0.008 264.3);
+  --primary: oklch(0.573 0.188 259.8);
+  --primary-foreground: oklch(1 0 0);
+  --primary-ink: oklch(0.746 0.14 254.6);
+  --secondary: oklch(0.261 0.024 267.1);
+  --secondary-foreground: oklch(0.967 0.003 264.5);
+  --muted: oklch(0.261 0.024 267.1);
+  --muted-foreground: oklch(0.714 0.019 261.3);
+  --accent: oklch(0.261 0.024 267.1);
+  --accent-foreground: oklch(0.967 0.003 264.5);
+  --destructive: oklch(0.711 0.166 22.2);
+  --success: oklch(0.696 0.149 162.5);
+  --warning: oklch(0.769 0.165 70.1);
+  --info: oklch(0.623 0.188 259.8);
+  --border: oklch(0.311 0.022 259.4);
+  --input: oklch(0.49 0.025 260.1);
+  --ring: oklch(0.623 0.188 259.8);
+  --sidebar: oklch(0.214 0.019 266.1);
+  --sidebar-foreground: oklch(0.967 0.003 264.5);
+  --sidebar-border: oklch(0.311 0.022 259.4);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    color-scheme: light;
+    font-optical-sizing: auto;
+    -webkit-text-size-adjust: 100%;
+    /* Keyboard focus never lands under the sticky mobile top bar. */
+    scroll-padding-top: 4.5rem;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  @media (min-width: 64rem) {
+    html {
+      scroll-padding-top: 1.5rem;
+    }
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border: 2px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--muted-foreground);
+  }
+}
+
+/* Clickable things: pointer cursor and a soft colour transition (StudentHub globals). */
+button:not(:disabled):not([aria-disabled='true']),
+a[href],
+[role='button']:not([aria-disabled='true']),
+[role='menuitem'],
+label[for],
+summary {
+  cursor: pointer;
+}
+
+button,
+a,
+[role='button'],
+[role='menuitem'],
+summary {
+  transition-property: background-color, color, border-color, box-shadow, transform, opacity;
+  transition-duration: var(--motion-control);
+  transition-timing-function: var(--motion-ease);
+}
+
+/* Floating islands (the collapsed SegmentedTabs list): StudentHub's dense frosted material. */
+.material-island {
+  background: color-mix(in oklch, var(--background) 88%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .material-island {
+    background: var(--background);
+  }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .material-island {
+    background: var(--background);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}
+
+/*
+ * Chart harmonisation. In dark mode the chart's background token (used for the rings
+ * around markers and for inverse labels) matches the card surface the chart sits on,
+ * so rings read as gaps instead of darker halos. Hex, not oklch: exports copy the value
+ * into standalone files.
+ */
+.dark .jc-root[data-jc-theme='auto'] {
+  --jc-bg: #151922;
+}

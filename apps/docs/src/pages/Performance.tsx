@@ -7,7 +7,7 @@ import {
 import type { ReactNode } from 'react';
 import bench from '../../../../benchmarks/results/latest.json';
 import sizes from '../../../../benchmarks/size.json';
-import { ruPlural, useLang, useT, useText, type L, type Lang } from '../i18n';
+import { kkPlural, ruPlural, useLang, useT, useText, type L, type Lang } from '../i18n';
 import { Link, useLocation } from '../lib/router';
 import { Callout, PageHeader, Section } from '../ui/Callout';
 import { CodeBlock } from '../ui/CodeBlock';
@@ -125,6 +125,37 @@ const RU_CHARTS: Record<string, string> = {
   area: 'области',
   bar: 'столбцы',
   scatter: 'точки',
+};
+
+const KK_SCENARIOS: Record<string, string> = {
+  'streaming (1 000-point window)': 'ағынды деректер (1 000 нүктелік терезе)',
+  'leak check (100 × mount/unmount of 10 charts)':
+    'жадтың ағуын тексеру (10 диаграмманы 100 × монтаждау және демонтаждау)',
+};
+
+const KK_SIZE_SCENARIOS: Record<string, string> = {
+  'core: scales + ticks + format': 'core: шкалалар + бөліктер + пішімдеу',
+  'core: base (scales, ticks, geometry, curves, data, formatting)':
+    'core: негіз (шкалалар, бөліктер, геометрия, қисықтар, деректер, пішімдеу)',
+  'core: everything (incl. chart models)': 'core: бәрі (диаграмма модельдерін қоса)',
+  'react layer: LineChart (core external)': 'React қабаты: LineChart (core — сыртқы)',
+  'react layer: all components (core external)': 'React қабаты: барлық компонент (core — сыртқы)',
+  'app: LineChart (React layer + core it needs)':
+    'қолданба: LineChart (React қабаты + core-дың қажетті бөлігі)',
+  'app: AreaChart + BarChart + Sparkline': 'қолданба: AreaChart + BarChart + Sparkline',
+  'app: everything from @startupjafari/charts': 'қолданба: @startupjafari/charts толығымен',
+  'canvas renderer (lazy chunk, core external)':
+    'canvas рендерері (кешіктіріліп жүктелетін чанк, core — сыртқы)',
+  'export module': 'экспорт модулі',
+  'themes: tokens only': 'тақырыптар: тек токендер',
+};
+
+/** Short names: they are x-axis labels on the charts below. */
+const KK_CHARTS: Record<string, string> = {
+  line: 'сызықтар',
+  area: 'аймақтар',
+  bar: 'бағаналар',
+  scatter: 'нүктелер',
 };
 
 const TEXT: L<PerformanceText> = {
@@ -474,6 +505,188 @@ pnpm size           # размеры бандла → benchmarks/size.json`,
       </>,
     ],
   },
+  kk: {
+    lead: 'Репозиторийдегі бенчмарктер мен бандл өлшемін тексерудің нәтижелері, Jafari Charts арқылы салынған. Осы беттегі әр сан репозиторийге енгізілген файлдардан алынған.',
+    toc: [
+      ['run', 'Осы өлшеу'],
+      ['single', 'Бір диаграмма'],
+      ['many', 'Көп диаграмма'],
+      ['scenarios', 'Сценарийлер'],
+      ['bundle', 'Бандл өлшемі'],
+      ['methodology', 'Әдістеме'],
+      ['renderer', 'SVG әлде Canvas'],
+    ],
+    run: 'Осы өлшеу',
+    date: 'Күні',
+    cpu: 'Процессор',
+    cpuValue: (cpu, cores, memory) => `${cpu} (${cores} ${kkPlural(cores, 'ядро')}, ${memory} ГБ)`,
+    browser: 'Браузер',
+    browserValue: (v) => `Chromium ${v} (Playwright, headless режимі)`,
+    mode: 'Режим',
+    quickRun: 'Жылдам өлшеу (өлшемдер мен қайталаулар азырақ)',
+    fullRun: 'Толық өлшеу',
+    machineTitle: 'Абсолют мәндер машинаға байланысты',
+    machine:
+      'Бір машинада жасалған өлшеулерді ғана салыстырыңыз. Бұл нәтижелер тек Jafari Charts-ты сипаттайды: басқа кітапханалар өлшенген жоқ, сондықтан бұл бетте салыстыру жоқ.',
+    single: 'Бір диаграмма',
+    mountTitle: 'Монтаждау уақыты',
+    mountLead:
+      'Диаграмманы монтаждаудан келесі кадр салынғанға дейінгі уақыттың медианасы — диаграмма түрі мен деректер көлемі бойынша.',
+    mountChart: 'Диаграмма, деректер көлемі және рендерер бойынша монтаждау уақыты',
+    updateTitle: 'Жаңарту уақыты',
+    updateLead:
+      'Бүкіл деректер жиынын ауыстырып (сүзгіні ауыстыру), қайта салуға кететін уақыттың медианасы.',
+    outlier: (o) => (
+      <>
+        Бір нәтиже басқаларынан қатты ерекшеленеді, сондықтан қалғандары оқылатын болуы үшін ол
+        графикте көрсетілмеген: {o.renderer} рендерерінде {o.points} нүктелі «{o.chart}»
+        диаграммасын жаңарту {o.time} алды (нәтиже төмендегі кестеде бар). ARCHITECTURE.md §7
+        бөлімінде осы жағдайға арналған Canvas пакеттік салуын түзету сипатталған (әр 256 ішкі
+        контур сайын пакетті шығару); <code>pnpm bench</code> қайта іске қосылса, бұл нәтижелер
+        жаңарады.
+      </>
+    ),
+    updateChart: 'Диаграмма, деректер көлемі және рендерер бойынша жаңарту уақыты',
+    domTitle: 'DOM өлшемі',
+    domLead:
+      'Бенчмарк контейнерінің ішіндегі элементтер. Белгілерді топтап салу мен сирету арқасында DOM өлшемі 365-тен 100 000 нүктеге дейін дерлік өзгермейді.',
+    domChart: 'Диаграмма, деректер көлемі және рендерер бойынша DOM түйіндері',
+    hoverTitle: 'Меңзерді апарғандағы кідіріс (p95)',
+    hoverLead:
+      'Меңзер қозғалысынан келесі кадрға дейінгі уақыт, 40 қозғалыс бойынша 95-перцентиль. Үзік сызық — 60 Гц жиіліктегі бір кадр (16,7 мс): оған жақын мәндер меңзерді апарғандағы жаңарту бір кадрға сыятынын білдіреді.',
+    hoverChart: 'Меңзерді апарғандағы кідіріс, p95',
+    msUnit: 'мс',
+    mbUnit: 'МБ',
+    kbUnit: 'КБ',
+    points: (n) =>
+      n >= 1_000_000
+        ? `${formatNumber(n / 1_000_000, { locale: 'kk' })} млн`
+        : n >= 1000
+          ? `${formatNumber(n / 1000, { locale: 'kk' })} мың`
+          : String(n),
+    chartName: (id) => KK_CHARTS[id] ?? id,
+    scalingCaption: 'Бір диаграмма (benchmarks/results/latest.json → scaling)',
+    multiCaption: 'Бір беттегі көп сызықтық график, әрқайсысында 365 нүкте (→ multi)',
+    cols: {
+      chart: 'Диаграмма',
+      renderer: 'Рендерер',
+      points: 'Нүктелер',
+      mount: 'Монтаждау',
+      update: 'Жаңарту',
+      hoverP50: 'Апару p50',
+      hoverP95: 'Апару p95',
+      longTasks: 'Ұзақ тапсырмалар',
+      domNodes: 'DOM түйіндері',
+      heap: 'Үйме',
+      charts: 'Диаграммалар',
+      filterSwitch: 'Сүзгіні ауыстыру',
+      resize: 'Өлшемді өзгерту',
+      longestTask: 'Ең ұзақ тапсырма',
+    },
+    many: 'Бір беттегі көп диаграмма',
+    manyLead:
+      'Әрқайсысында 365 нүктесі бар сызықтық графиктер. Сүзгіні ауыстыру барлық диаграмманың деректерін алмастырады, өлшемді өзгерту контейнердің енін өзгертеді. Барлық диаграмма бір ортақ ResizeObserver пайдаланады.',
+    chartsCount: (n) => `${n} ${kkPlural(n, 'диаграмма')}`,
+    manyChart: 'Көп диаграмма: монтаждау, сүзгіні ауыстыру және өлшемді өзгерту',
+    scenarios: 'Сценарийлер',
+    scenarioName: (name) => KK_SCENARIOS[name] ?? name,
+    perUpdate: (p50, p95) => `бір жаңартуға p50 ${p50}, p95 ${p95} (рендеринг + келесі кадр)`,
+    leak: (o) =>
+      `үйме ${formatNumber(o.start, { locale: 'kk' })} МБ → ${formatNumber(o.end, { locale: 'kk' })} МБ (Δ ${formatNumber(o.delta, { locale: 'kk' })} МБ), қалған DOM түйіндері: ${o.dom}`,
+    bundle: 'Бандл өлшемі',
+    bundleLead: (
+      <>
+        <code>pnpm size</code> нәтижесінен (benchmarks/size.json): тұтынушы қолданбаның Vite арқылы
+        жиналған, минификацияланған және gzip-пен сығылған бандлы, React — сыртқы тәуелділік. Әр
+        сценарийдің өлшем шегі бар: одан асса, тексеру сәтсіз аяқталады.
+      </>
+    ),
+    gzipSeries: 'gzip, КБ',
+    budgetSeries: 'Шек, КБ',
+    bundleChart: 'Бандл өлшемі шекпен салыстырғанда',
+    sizeScenario: (name) => KK_SIZE_SCENARIOS[name] ?? name,
+    sizeCols: {
+      scenario: 'Сценарий',
+      minified: 'Минификацияланған',
+      gzip: 'gzip',
+      budget: 'Шек',
+      status: 'Күйі',
+    },
+    status: (s) => (s === 'ok' ? 'қалыпты' : s),
+    methodology: 'Әдістеме',
+    methodItems: [
+      <>
+        <strong>Продакшен жинағы.</strong> <code>pnpm bench</code> тәжірибе алаңы қолданбасын Vite
+        арқылы жинап, <code>vite preview</code> арқылы іске қосады; әзірлеу режимінде ештеңе іске
+        қосылмайды.
+      </>,
+      <>
+        <strong>Chromium.</strong> Беттер Playwright басқаратын Chromium-да (нұсқасы жоғарыда
+        көрсетілген) ашылады: терезе 1000 × 800, анимация өшірулі.
+      </>,
+      <>
+        <strong>Медианалар.</strong> Монтаждау — бетті нөлден 3 рет жүктеудің медианасы, жаңарту —
+        деректер жиынын 5 рет ауыстырудың медианасы; көп диаграмма үшін сүзгіні ауыстыру мен өлшемді
+        өзгерту — 4 өлшеудің медианасы.
+      </>,
+      <>
+        <strong>Монтаждау / жаңарту / өлшемді өзгерту</strong>: React-тің синхронды коммитінен (
+        <code>flushSync</code>) келесі кадрға дейін (<code>requestAnimationFrame</code> +{' '}
+        <code>setTimeout</code>), яғни орналастыру мен салу уақытын қоса.
+      </>,
+      <>
+        <strong>Апару p50/p95</strong>: диаграмма бойымен меңзердің синтетикалық қозғалыстары;
+        оқиғаны жіберуден келесі кадрға дейінгі уақыт. <strong>Ұзақ тапсырмалар</strong> меңзерді
+        апару кезінде <code>PerformanceObserver</code> арқылы саналады (50 мс-тан ұзақ тапсырмалар).
+      </>,
+      <>
+        <strong>DOM түйіндері</strong>: бенчмарк контейнерінің ішіндегі барлық элемент.{' '}
+        <strong>Үйме</strong>: қоқысты мәжбүрлі жинағаннан кейінгі{' '}
+        <code>performance.memory.usedJSHeapSize</code>.
+      </>,
+      <>
+        <strong>Жадтың ағуын тексеру</strong>: 10 диаграмманы қайта-қайта монтаждау және
+        демонтаждау; үйме мен DOM бастапқы деңгейге оралуы керек.
+      </>,
+      <>
+        <strong>Бандл өлшемі</strong>: <code>pnpm size</code> тұтынушы қолданбаның шағын кіру
+        нүктелерін жинап, минификацияланған және gzip өлшемдерін шектермен салыстырып береді.
+      </>,
+    ],
+    commands: `pnpm bench          # толық өлшеу → benchmarks/results/latest.json + REPORT.md
+pnpm bench --quick  # өлшемдер мен қайталаулар азырақ
+pnpm size           # бандл өлшемдері → benchmarks/size.json`,
+    ownDevice: (
+      <>
+        Өз құрылғыңыздың көрсеткіштері керек пе? <Link to="/playground">Тәжірибе алаңы</Link>{' '}
+        рендеринг уақытын, DOM өлшемін және FPS-ті тікелей браузеріңізде өлшейді.
+      </>
+    ),
+    renderer: 'SVG әлде Canvas?',
+    rendererText: [
+      <>
+        Белгілерді топтап салудың арқасында SVG 10 000 бағанаға дейінгі бағаналы диаграммаларда, ал
+        сызықтық және аймақтық диаграммаларда деректердің кез келген көлемінде Canvas-тан қалыспайды
+        немесе одан озады: сирету пиксельге шамамен екі нүкте қалдырады, сондықтан DOM шағын болып
+        қалады. Canvas әр элементке шығын жұмсамайды, бірақ бүкіл кенепті қайта растрлауға уақыт
+        кетіреді, ал мәтін мен меңзер астындағы элементті іздеу оның өзінде бәрібір бөлек жүзеге
+        асырылады.
+      </>,
+      <>
+        Сондықтан <code>renderer="auto"</code> сызықтық, аймақтық және бағаналы диаграммаларды SVG
+        күйінде қалдырады. Белгілерін азайту мүмкін емес диаграмма түрлері — үлкен нүктелік
+        диаграммалар — өз бенчмарктерінің нәтижесі бойынша жеке <code>canvasThreshold</code>{' '}
+        белгілейді және одан асқанда Canvas-қа ауысады. Рендерерді әрқашан анық көрсетуге болады:{' '}
+        <code>renderer="canvas"</code> немесе <code>"svg"</code>.
+      </>,
+      <>
+        Бенчмарктердің бір нәтижесі: Chromium-дағы <code>closePath()</code> мыңдаған тұйық ішкі
+        контуры бар path-тарда квадраттық баяулайды, сондықтан Canvas рендерері пакеттерді әр 256
+        ішкі контур сайын шығарады (ARCHITECTURE.md бойынша, 10 000 бағана үшін шамамен 1 с → 70
+        мс).
+      </>,
+    ],
+  },
 };
 
 /** The slowest update when it is more than 5× the next slowest (it would flatten the chart). */
@@ -498,7 +711,7 @@ function useFormat() {
     ms: (v: number) => `${formatNumber(v, { locale: lang, maximumFractionDigits: 1 })} ${t.msUnit}`,
     mb: (v: number) => `${formatNumber(v, { locale: lang, maximumFractionDigits: 1 })} ${t.mbUnit}`,
     /** A decimal string from size.json ("13.8") in the current language. */
-    kb: (v: string | number) => `${lang === 'ru' ? String(v).replace('.', ',') : v} ${t.kbUnit}`,
+    kb: (v: string | number) => `${lang === 'en' ? v : String(v).replace('.', ',')} ${t.kbUnit}`,
     label: (r: ScalingRow) => `${t.chartName(r.chart)} · ${t.points(r.points)}`,
   };
 }

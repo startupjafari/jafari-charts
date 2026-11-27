@@ -1,9 +1,12 @@
 import { CHARTS } from '../docs/charts';
 import type { ChartDoc, ChartGroup } from '../docs/types';
-import { ruPlural, useLang, useT, useText, type L } from '../i18n';
+import { kkPlural, ruPlural, useLang, useT, useText, type L } from '../i18n';
 import { Link } from '../lib/router';
 import { PageHeader } from '../ui/Callout';
 import { ErrorBoundary } from '../ui/ErrorBoundary';
+import { Badge } from '../ui/badge';
+import { ChartIcon } from '../nav';
+import { ArrowRight } from 'lucide-react';
 
 interface ChartsIndexText {
   lead: (count: number) => string;
@@ -29,6 +32,15 @@ const TEXT: L<ChartsIndexText> = {
       Professional: 'Финансовые и аналитические композиции.',
     },
   },
+  kk: {
+    lead: (n) =>
+      `${n} ${kkPlural(n, 'түрлі')} диаграмма — бір қозғалтқыш. Барлық диаграмманың тақырып, локаль, анимация, күйлер, қолжетімділік және өзара әрекеттесу пропстары бірдей: біреуін меңгерсеңіз, бәрін білесіз.`,
+    groupLeads: {
+      Core: 'Бақылау тақталарының көбі осы диаграммалардан құралады.',
+      Advanced: 'Үлестірімдер, өзара байланыстар, иерархиялар және жеке көрсеткіштер.',
+      Professional: 'Қаржылық және аналитикалық композициялар.',
+    },
+  },
 };
 
 const GROUPS: readonly ChartGroup[] = ['Core', 'Advanced', 'Professional'];
@@ -37,19 +49,30 @@ export function ChartCard({ doc }: { doc: ChartDoc }) {
   const lang = useLang();
   const Thumb = doc.thumbnail;
   return (
-    <div className="card chart-card">
+    <div className="card chart-card gap-0 overflow-hidden p-0">
       {/* Decorative preview: not focusable, hidden from assistive technology. */}
-      <div className="thumb" aria-hidden="true" inert>
+      <div
+        className="pointer-events-none border-b border-border bg-preview px-3 pt-3 pb-1"
+        aria-hidden="true"
+        inert
+      >
         <ErrorBoundary label={doc.component}>
           <Thumb />
         </ErrorBoundary>
       </div>
-      <h3>
-        <Link to={`/charts/${doc.slug}`} className="card-link">
-          {doc.component}
-        </Link>
-      </h3>
-      <p>{doc.summary[lang]}</p>
+      <div className="flex flex-1 flex-col gap-1.5 p-4">
+        <h3 className="flex items-center gap-2">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary-ink">
+            <ChartIcon slug={doc.slug} className="size-4" />
+          </span>
+          <Link to={`/charts/${doc.slug}`} className="card-link min-w-0 truncate">
+            {doc.component}
+          </Link>
+          <ArrowRight className="ml-auto size-4 shrink-0 text-muted-foreground" aria-hidden />
+        </h3>
+        <p className="text-xs font-medium text-muted-foreground">{doc.title[lang]}</p>
+        <p>{doc.summary[lang]}</p>
+      </div>
     </div>
   );
 }
@@ -65,7 +88,12 @@ export function ChartsIndex() {
         if (!docs.length) return null;
         return (
           <section key={group} className="doc-section" aria-labelledby={`group-${group}`}>
-            <h2 id={`group-${group}`}>{ui.chartGroups[group]}</h2>
+            <h2 id={`group-${group}`}>
+              <span>{ui.chartGroups[group]}</span>
+              <Badge variant="secondary" className="tabular-nums">
+                {docs.length}
+              </Badge>
+            </h2>
             <p className="section-lead">{t.groupLeads[group]}</p>
             <div className="card-grid">
               {docs.map((d) => (

@@ -8,11 +8,16 @@ import type { ChartDoc } from '../types';
 export const groupedBarChart: ChartDoc = {
   slug: 'grouped-bar-chart',
   component: 'GroupedBarChart',
-  title: { en: 'Grouped bar chart', ru: 'Сгруппированная столбчатая диаграмма' },
+  title: {
+    en: 'Grouped bar chart',
+    ru: 'Сгруппированная столбчатая диаграмма',
+    kk: 'Топтастырылған бағаналы диаграмма',
+  },
   group: 'Core',
   summary: {
     en: 'Several series side by side within each category.',
     ru: 'Несколько рядов бок о бок внутри каждой категории.',
+    kk: 'Әр санат ішінде бірнеше қатар бір-бірінің жанында көрсетіледі.',
   },
   description: {
     en: (
@@ -29,6 +34,13 @@ export const groupedBarChart: ChartDoc = {
         ряды, а оставшиеся столбцы расширяются и заполняют группу.
       </p>
     ),
+    kk: (
+      <p>
+        Бір санаттың бағаналары шағын <code>barGap</code> аралығымен бір-біріне жуық тұрады;
+        санаттар <code>categoryGap</code> аралығымен бөлінеді. Шартты белгілер қатарларды жасырады
+        және көрсетеді, ал қалған бағаналар кеңейіп, топты толтырады.
+      </p>
+    ),
   },
   thumbnail: () => (
     <GroupedBarChart
@@ -40,20 +52,35 @@ export const groupedBarChart: ChartDoc = {
   ),
   sections: {
     usage: [
-      { id: 'grouped-bar-chart/Basic', title: { en: 'Basic', ru: 'Базовый пример' } },
+      {
+        id: 'grouped-bar-chart/Basic',
+        title: { en: 'Basic', ru: 'Базовый пример', kk: 'Негізгі мысал' },
+      },
       {
         id: 'grouped-bar-chart/Horizontal',
-        title: { en: 'Horizontal layout', ru: 'Горизонтальная ориентация' },
+        title: {
+          en: 'Horizontal layout',
+          ru: 'Горизонтальная ориентация',
+          kk: 'Көлденең орналасу',
+        },
       },
     ],
     styling: [
       {
         id: 'grouped-bar-chart/Styling',
-        title: { en: 'Gaps, sizes and colours', ru: 'Промежутки, размеры и цвета' },
+        title: {
+          en: 'Gaps, sizes and colours',
+          ru: 'Промежутки, размеры и цвета',
+          kk: 'Аралықтар, өлшемдер және түстер',
+        },
       },
       {
         id: 'grouped-bar-chart/Labels',
-        title: { en: 'Labels instead of an axis', ru: 'Подписи вместо оси' },
+        title: {
+          en: 'Labels instead of an axis',
+          ru: 'Подписи вместо оси',
+          kk: 'Ось орнына жазулар',
+        },
       },
     ],
     interaction: [
@@ -62,6 +89,7 @@ export const groupedBarChart: ChartDoc = {
         title: {
           en: 'Legend toggling and item tooltips',
           ru: 'Переключение рядов в легенде и подсказки для отдельных столбцов',
+          kk: 'Шартты белгілерде қатарларды ауыстыру және жеке бағаналардың қалқымалы кеңестері',
         },
         description: {
           en: (
@@ -76,30 +104,45 @@ export const groupedBarChart: ChartDoc = {
               <code>tooltip={'{{ mode: "item" }}'}</code> показывает только столбец под указателем.
             </p>
           ),
+          kk: (
+            <p>
+              <code>defaultHiddenSeries</code> қатарды бастапқыда жасырады;{' '}
+              <code>tooltip={'{{ mode: "item" }}'}</code> меңзер астындағы бағананы ғана көрсетеді.
+            </p>
+          ),
         },
       },
     ],
     responsive: [
       {
         id: 'grouped-bar-chart/Responsive',
-        title: { en: 'Narrow container', ru: 'Узкий контейнер' },
+        title: { en: 'Narrow container', ru: 'Узкий контейнер', kk: 'Тар контейнер' },
         width: 320,
       },
     ],
     empty: [
       {
         id: 'grouped-bar-chart/States',
-        title: { en: 'Error with retry', ru: 'Ошибка и повторная попытка' },
+        title: {
+          en: 'Error with retry',
+          ru: 'Ошибка и повторная попытка',
+          kk: 'Қате және қайталау',
+        },
       },
     ],
   },
   keyboard: CARTESIAN_KEYS,
   props: [
     {
-      title: { en: 'GroupedBarChart props', ru: 'Пропсы GroupedBarChart' },
+      title: {
+        en: 'GroupedBarChart props',
+        ru: 'Пропсы GroupedBarChart',
+        kk: 'GroupedBarChart пропстары',
+      },
       note: {
         en: 'All BarChart props except `stacked`.',
         ru: 'Все пропсы BarChart, кроме `stacked`.',
+        kk: 'BarChart-тың `stacked` пропынан басқа барлық пропстары.',
       },
       props: [
         {
@@ -109,6 +152,7 @@ export const groupedBarChart: ChartDoc = {
           description: {
             en: '`horizontal` draws categories on the left. `xAxis` still configures the categories and `yAxis` the values, whichever side they are on.',
             ru: '`horizontal` размещает категории слева. Категории по-прежнему настраивает `xAxis`, а значения — `yAxis`, на какой бы стороне они ни были.',
+            kk: '`horizontal` санаттарды сол жаққа орналастырады. Қай жақта тұрса да, санаттарды бұрынғыдай `xAxis`, ал мәндерді `yAxis` баптайды.',
           },
         },
       ],
