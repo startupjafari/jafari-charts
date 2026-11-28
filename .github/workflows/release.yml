@@ -1,0 +1,80 @@
+name: Release
+
+# Publishes the six @startupjafari/charts* packages (one shared version) to
+# npm and creates the GitHub release when a tag vX.Y.Z is pushed whose
+# version matches every packages/*/package.json. Versions already on npm are
+# skipped, so a failed run can be re-run. Pull requests touching the release
+# files and manual runs do everything except publishing.
+#
+# npm credentials: npm trusted publishing (GitHub Actions, this workflow)
+# needs no secret; until it is configured on npmjs.com, NPM_TOKEN (a
+# granular token with read and write access to the startupjafari scope).
+
+on:
+  push:
+    tags: ['v[0-9]*']
+  pull_request:
+    paths:
+      - '.github/workflows/release.yml'
+      - 'scripts/release.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PUBLISH: ${{ github.event_name == 'push' }}
+
+jobs:
+  npm:
+    name: npm (@startupjafari/charts*)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # the GitHub release
+      id-token: write # npm provenance and trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - name: npm with trusted publishing (11.5.1+)
+        run: npm install -g npm@11.5.1
+      - run: pnpm install --frozen-lockfile
+
+      - name: Tag matches every package version
+        if: github.event_name == 'push'
+        run: node scripts/release.mjs check-tag "$GITHUB_REF_NAME"
+
+      - name: Verify (format, lint, types, tests, build, size budgets, pack)
+        run: pnpm release:check
+
+      - name: Pack
+        run: node scripts/release.mjs pack release
+      - name: Publish (dry run)
+        if: env.PUBLISH != 'true'
+        run: node scripts/release.mjs publish release --dry-run
+      - name: Publish
+        if: env.PUBLISH == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: node scripts/release.mjs publish release
+
+      - name: GitHub release
+        if: env.PUBLISH == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$GITHUB_REF_NAME"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "release $tag exists"
+          else
+            node scripts/release.mjs notes "$tag" > release-notes.md
+            gh release create "$tag" --verify-tag --title "$tag" --notes-file release-notes.md
+          fi
