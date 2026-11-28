@@ -68,7 +68,7 @@ SVG/Canvas toggle, performance panel), Storybook, export module, npm packaging.
 **Done criteria:** docs built only with Jafari Charts; `pnpm pack` contents verified;
 `@startupjafari/charts` installable from a tarball in a fresh Vite app and a Next.js app.
 
-## Phase 7 — StudentHub integration 🟡 done on a branch, waiting for npm 0.1.0
+## Phase 7 — StudentHub integration 🟡 done on a branch, `0.1.0` is on npm
 
 StudentHub's charts (`shared/ui/chart`, dashboard sparklines, the career funnel) run
 on Jafari Charts on the local branch `feat/jafari-charts`, with no changes to
@@ -77,9 +77,10 @@ StudentHub's own build: chart chunks 124.8 → 51.6 KB gzip, long tasks while ho
 107 ms → 0, hover p95 33.3 → 16.8 ms at 4× CPU slowdown. Report:
 `docs/reports/jafari-charts-migration.md` in StudentHub.
 
-Remaining: once `0.1.0` is on npm, replace the temporary tarball install with
-`@startupjafari/charts@^0.1.0` (StudentHub's 7-day `minimumReleaseAge` needs either the wait
-or an exception for `@startupjafari/*`) before the branch is merged.
+Remaining: `0.1.0` is on npm (published 2026-11-27). In StudentHub, replace the temporary
+tarball install with `@startupjafari/charts@^0.1.0` (StudentHub's 7-day `minimumReleaseAge`
+allows it from 2026-12-04, or with an exception for `@startupjafari/*`) before the branch
+is merged.
 
 ## Later
 

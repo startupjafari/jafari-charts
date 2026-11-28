@@ -66,23 +66,37 @@ The six packages in `packages/*` share one version. Apps and benchmarks are priv
    version with the date and update the compare links at the bottom.
 2. Verify from a clean tree: `pnpm release:check` (clean, format, lint, types,
    tests, build, size budgets, `pack:check` with the consumer smoke test).
-3. Commit `chore(release): x.y.z`, tag `vx.y.z` (annotated), push both; wait for CI.
-4. Publish as the npm user `startupjafari` (owner of the `@startupjafari` scope,
-   two-factor authentication on):
+3. Commit `chore(release): x.y.z`, push it and wait for CI. Then tag and push the tag:
 
    ```bash
-   npm whoami                                   # must print startupjafari
-   pnpm -r publish --access public --dry-run    # list what would be published
-   pnpm -r publish --access public              # add --otp=123456 if 2FA asks
+   git tag -a vx.y.z -m "Jafari Charts x.y.z" && git push origin vx.y.z
    ```
 
-   `pnpm -r publish` rewrites `workspace:*` to the real version, applies
-   `publishConfig.exports` (drops the `@startupjafari/source` condition), publishes in
-   dependency order and skips versions already on npm — rerun it if a one-time
-   password expires halfway. It refuses to run with uncommitted changes or off `main`.
+   The **Release** workflow (`.github/workflows/release.yml`) checks that the tag matches
+   every package version, runs `pnpm release:check`, packs with pnpm (rewriting
+   `workspace:*` and applying `publishConfig.exports`, which drops the
+   `@startupjafari/source` condition), publishes the tarballs with npm in dependency order
+   with provenance (versions already on npm are skipped, so a failed run can be re-run)
+   and creates the GitHub release from the `CHANGELOG.md` section. Running the workflow by
+   hand, or a pull request touching it, does everything except publishing.
+
+   npm credentials: configure npm trusted publishing for each of the six packages
+   (package settings → Trusted Publisher → GitHub Actions, repository
+   `startupjafari/jafari-charts`, workflow `release.yml`); until then the workflow uses the
+   `NPM_TOKEN` secret (a granular token with read and write access to `@startupjafari`):
+   `gh secret set NPM_TOKEN -R startupjafari/jafari-charts`.
+
+4. Manual fallback, as the npm user `startupjafari` (two-factor authentication on):
+
+   ```bash
+   npm whoami                                        # must print startupjafari
+   node scripts/release.mjs pack release             # pnpm pack, dependency order
+   node scripts/release.mjs publish release --dry-run
+   node scripts/release.mjs publish release          # npm may ask for a one-time password
+   ```
 
 5. Check: `npm view @startupjafari/charts version`, then install the package in a fresh
-   app. Create the GitHub release from the tag with the changelog section.
+   app.
 
 ## Progress log
 
